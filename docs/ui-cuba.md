@@ -1,39 +1,40 @@
 # Cuba theme — required markup contract
 
-Cuba's CSS is **already complete** in `public/assets` (style.css 2.3 MB,
-tracked in git). Nothing needs uploading. When pages "look broken" it is the
-markup not matching the selectors, not a missing stylesheet.
+Cuba's own CSS is complete in `public/assets` (tracked). When a page "looks
+broken" it is the markup or the stylesheet order, never a missing download.
+Stylesheets, scripts and asset paths: `ui-assets.md`.
 
 ## Non-negotiable nesting
 ```
 .page-wrapper.compact-wrapper#pageWrapper
-  .page-header > .header-wrapper.row
+  .page-header > .header-wrapper.row            (must stay <= 80px tall)
   .page-body-wrapper
      div.sidebar-wrapper
         .logo-wrapper / .logo-icon-wrapper
         nav.sidebar-main > #sidebar-menu > ul.sidebar-links#simple-bar
            li.sidebar-list > a.sidebar-link.sidebar-title + ul.sidebar-submenu
-     .page-body  (supplied by each view's @section('content'))
-        .container-fluid > .page-title > .row     <- direct child required
+     .page-body  (each view's @section('content'); margin-top is 80px)
+        .container-fluid > .page-title > .row   <- direct child required
      footer.footer
 ```
-Why it matters: style.css nests ~1828 rules under `.page-wrapper` and ~1140
-under `.page-body-wrapper`; `sidebar-menu.js` branches on
-`$("#pageWrapper").hasClass("compact-wrapper")`; `sidebar-pin.js` needs a
-`.pin-title` element plus `.fa-thumbtack` per `.sidebar-list`; simplebar binds
-to `#simple-bar`. Omit a wrapper and the theme silently does nothing.
+~1828 rules nest under `.page-wrapper` and ~1140 under `.page-body-wrapper`;
+`sidebar-menu.js` tests `#pageWrapper.compact-wrapper`, `sidebar-pin.js` needs
+`.pin-title` plus `.fa-thumbtack` per `.sidebar-list`, simplebar binds
+`#simple-bar`. Drop a wrapper and the theme silently does nothing.
+
+## Bootstrap 5 only
+`.media` / `.media-body` are Bootstrap 4 and carry no rules here. The header
+profile is `.d-flex.profile-media > img.img-30 + .flex-grow-1`; get it wrong
+and the header grows past 80px and hides the top of every page.
 
 ## Rules
-- Assets resolve as `asset('assets/...')` — the `assets/` prefix is required.
-- Feather CSS lives at `assets/css/vendors/feather-icon.css`.
-- Valid layout classes: compact-wrapper, horizontal-wrapper, compact-sidebar,
+- Valid layouts: compact-wrapper, horizontal-wrapper, compact-sidebar,
   compact-small, modern-type, material-type, advance-layout, box-layout.
 - `data-sidebar-layout` accepts only `fill-svg` or `stroke-svg`.
-- Logos present: `logo.png`, `logo_dark.png`, `logo-icon.png`. There is **no**
-  `logo-white.png`.
+- Logos: `logo.png`, `logo_dark.png`, `logo-icon.png`. No `logo-white.png`.
 - Before inventing a class, check it exists:
   `grep -c -F ".my-class" public/assets/css/style.css`
 
 ## Verify a page
-`.sidebar-wrapper` must compute to `position: fixed`, width 265px, and
-`.page-body` must get `margin-left: 265px`.
+`.sidebar-wrapper` computes to `position: fixed`, width 265px; `.page-body`
+gets `margin-left: 265px` and `margin-top: 80px`; `.page-header` is <= 80px.

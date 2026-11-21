@@ -1,24 +1,36 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController as ApiAuthController;
 use App\Http\Controllers\Api\CustomerController as ApiCustomerController;
-use App\Http\Controllers\Api\ProductController as ApiProductController;
-use App\Http\Controllers\Api\OrderController as ApiOrderController;
-use App\Http\Controllers\Api\ReportController as ApiReportController;
 use App\Http\Controllers\Api\DashboardController as ApiDashboardController;
+use App\Http\Controllers\Api\OrderController as ApiOrderController;
+use App\Http\Controllers\Api\ProductController as ApiProductController;
+use App\Http\Controllers\Api\ReportController as ApiReportController;
+use App\Modules\Auth\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| API Routes
+| API routes
 |--------------------------------------------------------------------------
+| New work goes under /api/v1 and is registered by each module
+| (app/Modules/<Name>/Routes/api.php) — see docs/api/.
+|
+| Below are the unversioned legacy routes the two shipped Flutter builds still
+| call (both use baseUrl ".../api" plus "/auth/login"). Auth now points at the
+| module controller, so there is one implementation and one envelope; the
+| `register` endpoint is gone, since only an admin creates accounts. These
+| routes go away once both apps move to /api/v1.
 */
 
-Route::prefix('auth')->group(function () {
-    Route::post('/login', [ApiAuthController::class, 'login']);
-    Route::post('/register', [ApiAuthController::class, 'register']);
-    Route::post('/logout', [ApiAuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('/me', [ApiAuthController::class, 'user'])->middleware('auth:sanctum');
+Route::prefix('auth')->name('api.legacy.auth.')->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:10,1')
+        ->name('login');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::get('/me', [AuthController::class, 'me'])->name('me');
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -3,7 +3,8 @@
 Legend: ✅ exists in MySQL now · ⬜ planned (phase in brackets)
 
 ## Live tables
-`users` ✅ (name, email, password — gains mobile/role/region_id/is_active [P1])
+`users` ✅ (name, email, password, **mobile** uniq, **role** `admin|mr|telecaller`
+  nullable, **region_id** nullable (FK added with `regions` [P2]), **is_active**)
 `personal_access_tokens` ✅ (Sanctum)
 `roles` `permissions` `model_has_roles` `model_has_permissions`
 `role_has_permissions` ✅ (spatie)

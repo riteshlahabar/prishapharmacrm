@@ -6,7 +6,7 @@ Decisions taken: customers → persons (products/orders dropped);
 | # | Phase | Scope | Status |
 |---|---|---|---|
 | 0 | Foundation | composer install, MySQL `.env`, Sanctum + spatie installed & migrated, `app/Core` base classes, 10 module skeletons, `config/modules.php`, docs + CLAUDE.md | ✅ |
-| 1 | Auth, roles, users | admin/telecaller roles + permissions, users gain mobile/role/region/is_active, admin CRUD for MR + telecaller, `auth` on all web routes, permission-scoped sidebar, Sanctum login for apps | ⬜ |
+| 1 | Auth, roles, users | admin/mr/telecaller roles + 30 permissions, users gain mobile/role/region_id/is_active, admin CRUD for MR + telecaller, `auth` on all web routes, permission-scoped sidebar, Sanctum login for apps | ✅ |
 | 2 | Masters | regions CRUD; persons CRUD (doctor/hospital/medical) with region + MR + telecaller assignment; Cuba datatables, filters | ⬜ |
 | 3 | MR backend | attendance check-in/out with geo; visits (person, purpose, in/out time, geo, fetched-at); admin lists + reports | ⬜ |
 | 4 | Telecaller backend | region-scoped person list; call logs with status + notes + follow-up; telecaller panel honouring permissions | ⬜ |
@@ -18,8 +18,8 @@ Decisions taken: customers → persons (products/orders dropped);
 | 10 | Telecaller app | ProKit UI, region person list, call + status/notes, send-to-MR | ⬜ |
 
 ## Blockers
-- ProKit design not yet attached (>30 MB). Options in `CLAUDE.md`. Phases 9–10
-  can start on structure but not final styling.
+- ProKit received and stored in the MR app repo under `design/`; Phases 9–10
+  can start. Harvest the design, not its MobX state layer.
 
 ## Dropped from scope
 `products`, `orders` (code + tables) — removed in Phase 1/2 cleanup.

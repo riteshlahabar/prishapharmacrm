@@ -47,15 +47,22 @@
                         <i class="fa-regular fa-moon"></i>
                     </div>
                 </li>
+                {{--
+                    Cuba 5 styles this block through `.profile-media .flex-grow-1`
+                    and sizes the avatar with `.img-30`. Bootstrap 4's `.media` /
+                    `.media-body` do not exist in Bootstrap 5 and carry no rules
+                    here, which left the header 124px tall against the 80px
+                    `.page-body` margin-top — hiding the top of every page.
+                --}}
                 <li class="profile-nav onhover-dropdown pe-0 py-0">
-                    <div class="media profile-media">
-                        <img class="b-r-10"
+                    <div class="d-flex profile-media align-items-center">
+                        <img class="b-r-10 img-30"
                              src="{{ asset('assets/images/dashboard/profile.png') }}"
                              alt="{{ auth()->user()->name ?? 'User' }}">
-                        <div class="media-body">
+                        <div class="flex-grow-1">
                             <span>{{ auth()->user()->name ?? 'Guest' }}</span>
                             <p class="mb-0 font-roboto">
-                                {{ auth()->user()->email ?? '' }}
+                                {{ auth()->user()?->roleLabel() ?? '' }}
                                 <i class="middle fa-solid fa-angle-down"></i>
                             </p>
                         </div>

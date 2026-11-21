@@ -13,9 +13,9 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 ## CRM modules — `app/Modules/<Name>/`
 | Module | Status | Doc | Owns |
 |---|---|---|---|
-| Access | ⬜ | `modules/access.md` | roles, permissions, telecaller scoping |
-| Auth | ⬜ | `modules/auth.md` | panel login, Sanctum tokens for apps |
-| Users | ⬜ | `modules/users.md` | admin creates MR + telecaller |
+| Access | ✅ | `modules/access.md` | roles, permissions, telecaller scoping |
+| Auth | ✅ | `modules/auth.md` | panel login, Sanctum tokens for apps |
+| Users | ✅ | `modules/users.md` | admin creates MR + telecaller |
 | Regions | ⬜ | `modules/regions.md` | region master, assignment |
 | Persons | ⬜ | `modules/persons.md` | doctor / hospital / medical |
 | Attendance | ⬜ | `modules/attendance.md` | MR check-in / check-out + geo |
@@ -31,9 +31,11 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Table columns, relations | `schema.md` |
 | SOLID / module rules, API envelope | `conventions.md` |
 | Cuba markup contract, broken layout | `ui-cuba.md` |
+| Stylesheet / script load order, logos | `ui-assets.md` |
 | App login endpoint | `api/v1-auth.md` |
 | MR app endpoints | `api/v1-mr.md` |
 | Telecaller app endpoints | `api/v1-telecaller.md` |
+| Permission names, who may grant | `modules/access.md` → `Access/Support/PermissionCatalog.php` |
 | Shared base classes | `app/Core/` (repo, service, ApiResponse) |
 | Module registry | `config/modules.php` |
 | Older session log | `history/` |

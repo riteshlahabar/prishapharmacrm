@@ -11,7 +11,8 @@ searching the codebase. Phases live in `docs/roadmap.md`.
 - Laravel 13.43 · PHP 8.3 · MySQL (MariaDB 10.11 in-container for dev)
 - Cuba admin theme, committed at `public/assets` (144 MB, tracked)
 - Auth: session for the panel, Sanctum bearer tokens for the two Flutter apps
-- Roles: `spatie/laravel-permission` 8.5 — roles `admin`, `telecaller`
+- Roles: `spatie/laravel-permission` 8.5 — `admin`, `mr`, `telecaller`
+  (`mr` is app-only; `admin` + `telecaller` reach the panel)
 - Modular monolith: `app/Modules/<Name>/`, registered in `config/modules.php`
 - Shared base classes in `app/Core/` (repository, API envelope, module provider)
 - Full rules in `docs/conventions.md`. Follow SOLID: controller → service →
@@ -24,32 +25,37 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phase 0 (foundation) ✅ complete. **Phase 1 next:** auth, roles, users.
+Phase 0 ✅ · Phase 1 (auth, roles, users) ✅. **Phase 2 next:** masters.
 
 ## Session log
-`2026-11-21` Audited all 3 repos; found generic customers/products/orders CRM,
-  no pharma domain; Sanctum missing though routes used it; web routes unguarded.
-`2026-11-21` Decisions: customers→persons, drop products/orders; spatie
-  permissions; MySQL; docs on the code branch.
-`2026-11-21` Cuba layout fix: panel markup never had `.page-wrapper` /
-  `.page-body-wrapper` / `.page-header`, so ~2900 CSS rules and sidebar JS were
-  dead; 42 `asset()` calls missed the `assets/` prefix. Rewrote master/header/
-  sidebar, remapped 14 views, fixed feather path. Contract in `docs/ui-cuba.md`.
-`2026-11-21` Phase 0: composer install, Sanctum 4.5 + spatie 8.5 installed and
-  migrated, MySQL `.env`, `app/Core` base classes, 10 module skeletons,
-  `config/modules.php`, `docs/` tree + `check-docs.sh`. Details in
-  `docs/history/2026-11.md`.
+`2026-11-21` Phase 0 foundation + Cuba layout fix. See
+  `docs/history/2026-11-phase0.md`.
+`2026-11-21` Phase 1: users columns (mobile/role/region_id/is_active), User
+  model into the Users module, 3 roles + 30 permissions from one catalog,
+  shared MR/telecaller CRUD, per-telecaller grant UI, every web route behind
+  `auth`, permission-scoped sidebar, Sanctum login for both apps.
+  45-check smoke run green. Details in `docs/history/2026-11-phase1.md`.
+`2026-11-21` Found while verifying Phase 1 screens, both pre-existing:
+  `vendors/bootstrap.css` was never linked, and the header used Bootstrap 4
+  `.media`, making it 124px against the 80px `.page-body` offset. Both fixed;
+  rules now in `docs/ui-assets.md`.
 
 ## Next step
-Phase 1: users migration (mobile, role, region_id, is_active) → role +
-permission seeders → admin CRUD for MR and telecaller → `auth` middleware on
-every web route → permission-scoped sidebar → Sanctum login endpoint.
+Phase 2 (masters): regions CRUD → `telecaller_region` pivot → `customers`
+becomes `persons` (doctor/hospital/medical) with region + MR + telecaller
+assignment → add the users.region_id FK → region picker on the user form →
+drop products/orders and their legacy controllers, routes and sidebar entries.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
   primary `#1157FA`, built on nb_utils + MobX (we use Riverpod — harvest the
   design, not the state layer). Persisted in the MR app repo under `design/`.
-- Cuba needs no upload: its CSS was always complete. See `docs/ui-cuba.md`.
+- Cuba needs no upload: its CSS was always complete. Markup contract in
+  `docs/ui-cuba.md`, load order and logos in `docs/ui-assets.md`.
+- Logos are still stock Cuba artwork. Dropping Prisha files over
+  `public/assets/images/logo/*.png` rebrands panel + login; no markup change.
+- First admin comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (`.env.example`
+  defaults are dev-only). Change them before seeding production.
 - cPanel MySQL deliberately **not** connected: ephemeral container IP, port
   3306 blocked by the egress proxy, and production data at risk. Dev runs on
   in-container MariaDB; `.env.example` is cPanel-shaped for deploy.
@@ -57,7 +63,8 @@ every web route → permission-scoped sidebar → Sanctum login endpoint.
   installed — `boost:install` would overwrite this file and break the
   100-line session-log requirement. Ask before installing.
 - Legacy flat controllers in `app/Http/Controllers` still serve the old
-  customers/products/orders routes; they move into modules in Phases 1–2.
+  customers/products/orders routes, now behind `auth` and admin-only in the
+  sidebar. Auth already moved into its module; the rest go in Phase 2.
 
 ## Working rules
 - Dev branch: `claude/happy-ramanujan-zthjt1` (all three repos). Never push

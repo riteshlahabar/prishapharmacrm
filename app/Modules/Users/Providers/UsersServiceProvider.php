@@ -3,6 +3,10 @@
 namespace App\Modules\Users\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Users\Repositories\Contracts\UserRepositoryInterface;
+use App\Modules\Users\Repositories\EloquentUserRepository;
+use App\Modules\Users\Services\Contracts\UserServiceInterface;
+use App\Modules\Users\Services\UserService;
 
 class UsersServiceProvider extends ModuleServiceProvider
 {
@@ -12,11 +16,13 @@ class UsersServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Contract => implementation. Populated as the module is built; see
-     * docs/modules/users.md for current status.
+     * Contract => implementation; see docs/modules/users.md for status.
      */
     protected function bindings(): array
     {
-        return [];
+        return [
+            UserRepositoryInterface::class => EloquentUserRepository::class,
+            UserServiceInterface::class => UserService::class,
+        ];
     }
 }

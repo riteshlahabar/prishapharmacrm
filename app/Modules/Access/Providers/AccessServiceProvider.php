@@ -3,6 +3,8 @@
 namespace App\Modules\Access\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Access\Services\Contracts\PermissionServiceInterface;
+use App\Modules\Access\Services\PermissionService;
 
 class AccessServiceProvider extends ModuleServiceProvider
 {
@@ -12,11 +14,12 @@ class AccessServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Contract => implementation. Populated as the module is built; see
-     * docs/modules/access.md for current status.
+     * Contract => implementation; see docs/modules/access.md for status.
      */
     protected function bindings(): array
     {
-        return [];
+        return [
+            PermissionServiceInterface::class => PermissionService::class,
+        ];
     }
 }
