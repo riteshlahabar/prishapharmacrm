@@ -3,6 +3,7 @@
 namespace App\Modules\Users\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Users\Console\SetAdminCommand;
 use App\Modules\Users\Repositories\Contracts\UserRepositoryInterface;
 use App\Modules\Users\Repositories\EloquentUserRepository;
 use App\Modules\Users\Services\Contracts\UserServiceInterface;
@@ -24,5 +25,14 @@ class UsersServiceProvider extends ModuleServiceProvider
             UserRepositoryInterface::class => EloquentUserRepository::class,
             UserServiceInterface::class => UserService::class,
         ];
+    }
+
+    public function boot(): void
+    {
+        parent::boot();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SetAdminCommand::class]);
+        }
     }
 }

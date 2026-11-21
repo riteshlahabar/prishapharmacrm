@@ -9,6 +9,7 @@ Paths: `app/Modules/Users/` · Tables: `users`
 | admin CRUD for telecaller | `Http/Controllers/Web/TelecallerController.php` | ✅ |
 | password set/reset by admin | `Services/UserService.php` | ✅ |
 | activate / deactivate | `Services/UserService.php` | ✅ |
+| create / reset the panel admin | `Console/SetAdminCommand.php` | ✅ |
 
 ## Notes
 `App\Modules\Users\Models\User` is the auth model (`config/auth.php`).
@@ -19,6 +20,11 @@ and wording, and the views are shared. Routes name the parameter `user`.
 `findOfRoleOrFail` 404s on a cross-role id, so `/mrs/{telecallerId}` misses.
 Disabling an account deletes its Sanctum tokens.
 `region_id` is written but not pickable until `regions` exists [P2].
+
+`php artisan users:set-admin <email>` creates an admin or resets one's
+password (prompts when `--password` is omitted) and drops its app tokens.
+`AdminUserSeeder` never overwrites an existing password, so this is the only
+way to change one.
 
 ## Next
 Phase 2: region picker on the form, telecaller↔region pivot.

@@ -35,6 +35,8 @@ Phase 0 ✅ · Phase 1 (auth, roles, users) ✅. **Phase 2 next:** masters.
   shared MR/telecaller CRUD, per-telecaller grant UI, every web route behind
   `auth`, permission-scoped sidebar, Sanctum login for both apps.
   45-check smoke run green. Details in `docs/history/2026-11-phase1.md`.
+`2026-11-21` Admin login moved to the `ADMIN_*` env values; added
+  `users:set-admin`, since the seeder never overwrites a password.
 `2026-11-21` Found while verifying Phase 1 screens, both pre-existing:
   `vendors/bootstrap.css` was never linked, and the header used Bootstrap 4
   `.media`, making it 124px against the 80px `.page-body` offset. Both fixed;
@@ -54,8 +56,10 @@ drop products/orders and their legacy controllers, routes and sidebar entries.
   `docs/ui-cuba.md`, load order and logos in `docs/ui-assets.md`.
 - Logos are still stock Cuba artwork. Dropping Prisha files over
   `public/assets/images/logo/*.png` rebrands panel + login; no markup change.
-- First admin comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD` (`.env.example`
-  defaults are dev-only). Change them before seeding production.
+- Panel admin comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. The `.env.example`
+  values are deliberately weak dev defaults so local setup is one command.
+  **Change them before anything is internet-reachable**; reset an existing
+  admin with `php artisan users:set-admin <email>` (the seeder will not).
 - cPanel MySQL deliberately **not** connected: ephemeral container IP, port
   3306 blocked by the egress proxy, and production data at risk. Dev runs on
   in-container MariaDB; `.env.example` is cPanel-shaped for deploy.
