@@ -25,28 +25,29 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phase 0 ✅ · Phase 1 (auth, roles, users) ✅. **Phase 2 next:** masters.
+Phases 0–2 ✅ (foundation · auth/roles/users · masters). **Phase 3 next:**
+MR backend — attendance and visits.
 
 ## Session log
 `2026-11-21` Phase 0 foundation + Cuba layout fix. See
   `docs/history/2026-11-phase0.md`.
-`2026-11-21` Phase 1: users columns (mobile/role/region_id/is_active), User
-  model into the Users module, 3 roles + 30 permissions from one catalog,
-  shared MR/telecaller CRUD, per-telecaller grant UI, every web route behind
-  `auth`, permission-scoped sidebar, Sanctum login for both apps.
-  45-check smoke run green. Details in `docs/history/2026-11-phase1.md`.
+`2026-11-21` Phase 1: roles + 30 permissions, MR/telecaller CRUD, grant UI,
+  every web route behind `auth`, Sanctum login. Also fixed two pre-existing
+  theme bugs (unlinked `vendors/bootstrap.css`, Bootstrap 4 header markup) —
+  see `docs/ui-assets.md`. Details in `docs/history/2026-11-phase1.md`.
 `2026-11-21` Admin login moved to the `ADMIN_*` env values; added
   `users:set-admin`, since the seeder never overwrites a password.
-`2026-11-21` Found while verifying Phase 1 screens, both pre-existing:
-  `vendors/bootstrap.css` was never linked, and the header used Bootstrap 4
-  `.media`, making it 124px against the 80px `.page-body` offset. Both fixed;
-  rules now in `docs/ui-assets.md`.
+`2026-11-21` Phase 2: regions + `telecaller_region`, `customers` renamed to
+  `persons` with data kept, region/MR/telecaller assignment and filters,
+  region picker on the user form, products/orders and every legacy
+  controller dropped. 67-check smoke run green.
+  Details in `docs/history/2026-11-phase2.md`.
 
 ## Next step
-Phase 2 (masters): regions CRUD → `telecaller_region` pivot → `customers`
-becomes `persons` (doctor/hospital/medical) with region + MR + telecaller
-assignment → add the users.region_id FK → region picker on the user form →
-drop products/orders and their legacy controllers, routes and sidebar entries.
+Phase 3 (MR backend): `attendances` (check-in/out, geo, one row per MR per
+day) → `visits` (person, purpose, in/out time, geo, fetched-at) → admin lists
+and reports for both → the Attendance and Visits modules behind their own
+permissions.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
@@ -66,9 +67,10 @@ drop products/orders and their legacy controllers, routes and sidebar entries.
 - `AGENTS.md` still holds the Laravel Boost bootstrap stub. Boost was **not**
   installed — `boost:install` would overwrite this file and break the
   100-line session-log requirement. Ask before installing.
-- Legacy flat controllers in `app/Http/Controllers` still serve the old
-  customers/products/orders routes, now behind `auth` and admin-only in the
-  sidebar. Auth already moved into its module; the rest go in Phase 2.
+- `app/Http/Controllers` now holds only the placeholder `DashboardController`;
+  Phase 7 moves it into the Dashboard module.
+- A `customers` table converted from a live deployment arrives with every row
+  typed `doctor`. Re-type hospitals and medical stores by hand after deploy.
 
 ## Working rules
 - Dev branch: `claude/happy-ramanujan-zthjt1` (all three repos). Never push

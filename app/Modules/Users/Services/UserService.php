@@ -2,6 +2,7 @@
 
 namespace App\Modules\Users\Services;
 
+use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Enums\UserRole;
 use App\Modules\Users\Models\User;
 use App\Modules\Users\Repositories\Contracts\UserRepositoryInterface;
@@ -14,10 +15,17 @@ use Illuminate\Support\Facades\DB;
  * `users.role` column (used by the apps and by list filters) and the spatie
  * role assignment (used by every permission check). Nothing else in the app
  * writes a role.
+ *
+ * Region coverage is delegated to the Regions module through its service
+ * contract, so this class never has to know that an MR stores one region on
+ * the row while a telecaller stores many in a pivot.
  */
 class UserService implements UserServiceInterface
 {
-    public function __construct(private readonly UserRepositoryInterface $users) {}
+    public function __construct(
+        private readonly UserRepositoryInterface $users,
+        private readonly RegionAssignmentServiceInterface $regions,
+    ) {}
 
     public function paginateForRole(UserRole $role, array $filters = [], int $perPage = 20): LengthAwarePaginator
     {
@@ -38,8 +46,9 @@ class UserService implements UserServiceInterface
             ]);
 
             $user->syncRoles([$role->value]);
+            $this->regions->assign($user, $data['region_ids'] ?? []);
 
-            return $user;
+            return $user->refresh();
         });
     }
 
@@ -56,6 +65,7 @@ class UserService implements UserServiceInterface
 
             $user->fill($attributes)->save();
             $user->syncRoles([$role->value]);
+            $this->regions->assign($user, $data['region_ids'] ?? []);
 
             return $user->refresh();
         });
@@ -85,7 +95,9 @@ class UserService implements UserServiceInterface
 
     /**
      * Whitelist of writable columns. The role always comes from the caller's
-     * route, never from the request body.
+     * route, never from the request body, and `region_id` is left out: region
+     * coverage goes through RegionAssignmentService, which knows the shape
+     * each role uses.
      */
     private function attributes(array $data, UserRole $role): array
     {
@@ -93,7 +105,6 @@ class UserService implements UserServiceInterface
             'name' => $data['name'],
             'email' => $data['email'],
             'mobile' => $data['mobile'] ?? null,
-            'region_id' => $data['region_id'] ?? null,
             'is_active' => (bool) ($data['is_active'] ?? true),
             'role' => $role,
         ];

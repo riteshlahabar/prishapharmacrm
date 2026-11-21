@@ -11,9 +11,9 @@
     of its entries survives, otherwise the sidebar shows empty headings.
 --}}
 @php
+    $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view']) ?? false;
     $canUsers = auth()->user()?->canAny(['mrs.view', 'telecallers.view']) ?? false;
     $canAccess = auth()->user()?->can('access.manage') ?? false;
-    $isAdmin = auth()->user()?->isAdmin() ?? false;
 @endphp
 
 <div class="sidebar-wrapper">
@@ -65,6 +65,42 @@
                 </li>
                 @endcan
 
+                @if($canMasters)
+                <li class="sidebar-main-title">
+                    <div><h6>Masters</h6></div>
+                </li>
+                @endif
+
+                @can('regions.view')
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('regions.*') ? 'active' : '' }}" href="#">
+                        <i data-feather="map-pin"></i><span>Regions</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('regions.index') }}">All Regions</a></li>
+                        @can('regions.create')
+                        <li><a href="{{ route('regions.create') }}">Add Region</a></li>
+                        @endcan
+                    </ul>
+                </li>
+                @endcan
+
+                @can('persons.view')
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('persons.*') ? 'active' : '' }}" href="#">
+                        <i data-feather="users"></i><span>Persons</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('persons.index') }}">All Persons</a></li>
+                        @can('persons.create')
+                        <li><a href="{{ route('persons.create') }}">Add Person</a></li>
+                        @endcan
+                    </ul>
+                </li>
+                @endcan
+
                 @if($canUsers || $canAccess)
                 <li class="sidebar-main-title">
                     <div><h6>People</h6></div>
@@ -111,60 +147,6 @@
                 </li>
                 @endcan
 
-                {{--
-                    Legacy generic-CRM screens. Admin-only and unlabelled in the
-                    permission catalog on purpose: Phase 2 replaces customers
-                    with persons and drops products and orders entirely.
-                --}}
-                @if($isAdmin)
-                <li class="sidebar-main-title">
-                    <div><h6>Legacy (retiring in Phase 2)</h6></div>
-                </li>
-
-                <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('customers.*') ? 'active' : '' }}" href="#">
-                        <i data-feather="users"></i><span>Customers</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('customers.index') }}">All Customers</a></li>
-                        <li><a href="{{ route('customers.create') }}">Add Customer</a></li>
-                    </ul>
-                </li>
-
-                <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('products.*') ? 'active' : '' }}" href="#">
-                        <i data-feather="package"></i><span>Products</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('products.index') }}">All Products</a></li>
-                        <li><a href="{{ route('products.create') }}">Add Product</a></li>
-                    </ul>
-                </li>
-
-                <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('orders.*') ? 'active' : '' }}" href="#">
-                        <i data-feather="shopping-cart"></i><span>Orders</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('orders.index') }}">All Orders</a></li>
-                        <li><a href="{{ route('orders.create') }}">New Order</a></li>
-                    </ul>
-                </li>
-
-                <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="#">
-                        <i data-feather="bar-chart-2"></i><span>Reports</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('reports.sales') }}">Sales Report</a></li>
-                        <li><a href="{{ route('reports.inventory') }}">Inventory Report</a></li>
-                    </ul>
-                </li>
-                @endif
             </ul>
         </div>
 

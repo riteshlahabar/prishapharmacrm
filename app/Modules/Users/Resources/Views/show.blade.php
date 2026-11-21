@@ -24,7 +24,7 @@
 
         <div class="row">
             <div class="col-xl-8">
-                @include('users::partials.flash')
+                @include('partials.flash')
 
                 <div class="card">
                     <div class="card-header">
@@ -58,7 +58,16 @@
                                             </span>
                                         </td>
                                     </tr>
-                                    <tr><th>Region</th><td>{{ $user->region_id ?? 'Not assigned' }}</td></tr>
+                                    <tr>
+                                        <th>{{ $user->isTelecaller() ? 'Regions covered' : 'Region' }}</th>
+                                        <td>
+                                            @forelse($regions as $region)
+                                                <span class="badge badge-light-primary me-1">{{ $region->label() }}</span>
+                                            @empty
+                                                Not assigned
+                                            @endforelse
+                                        </td>
+                                    </tr>
                                     <tr><th>Active app tokens</th><td>{{ $user->tokens()->count() }}</td></tr>
                                     <tr><th>Created</th><td>{{ $user->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
                                 </tbody>

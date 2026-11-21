@@ -24,7 +24,7 @@
 
         <div class="row">
             <div class="col-sm-12">
-                @include('users::partials.flash')
+                @include('partials.flash')
 
                 <div class="card">
                     <div class="card-header">

@@ -26,7 +26,10 @@ class StoreUserRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'mobile' => ['required', 'string', 'max:20', 'regex:/^[0-9+\- ]{7,20}$/', 'unique:users,mobile'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)],
-            'region_id' => ['nullable', 'integer', 'min:1'],
+            // One id for an MR, many for a telecaller; the Regions module
+            // decides which shape applies to the role being saved.
+            'region_ids' => ['nullable', 'array'],
+            'region_ids.*' => ['integer', 'exists:regions,id'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }
@@ -46,7 +49,7 @@ class StoreUserRequest extends FormRequest
             'email' => $this->string('email')->trim()->lower()->value(),
             'mobile' => $this->string('mobile')->trim()->value(),
             'password' => $this->string('password')->value(),
-            'region_id' => $this->input('region_id') ?: null,
+            'region_ids' => array_values(array_filter((array) $this->input('region_ids', []))),
             'is_active' => $this->boolean('is_active'),
         ];
     }

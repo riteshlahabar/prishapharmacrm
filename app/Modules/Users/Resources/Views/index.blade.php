@@ -29,7 +29,7 @@
 
         <div class="row">
             <div class="col-sm-12">
-                @include('users::partials.flash')
+                @include('partials.flash')
 
                 <div class="card">
                     <div class="card-header">
@@ -78,6 +78,7 @@
                                         <th>Name</th>
                                         <th>Email</th>
                                         <th>Mobile</th>
+                                        <th>{{ $role === \App\Modules\Users\Enums\UserRole::Telecaller ? 'Regions' : 'Region' }}</th>
                                         <th>Status</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
@@ -95,6 +96,13 @@
                                         </td>
                                         <td>{{ $row->email }}</td>
                                         <td>{{ $row->mobile ?? '—' }}</td>
+                                        <td>
+                                            @forelse($row->coveredRegions as $region)
+                                                <span class="badge badge-light-primary me-1">{{ $region->code }}</span>
+                                            @empty
+                                                <span class="f-light">—</span>
+                                            @endforelse
+                                        </td>
                                         <td>
                                             <span class="badge {{ $row->is_active ? 'badge-light-success' : 'badge-light-danger' }}">
                                                 {{ $row->is_active ? 'Active' : 'Disabled' }}
@@ -132,7 +140,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td class="text-center py-4" colspan="6">
+                                        <td class="text-center py-4" colspan="7">
                                             No {{ strtolower($titles['plural']) }} found.
                                         </td>
                                     </tr>

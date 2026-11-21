@@ -3,6 +3,10 @@
 namespace App\Modules\Persons\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Persons\Repositories\Contracts\PersonRepositoryInterface;
+use App\Modules\Persons\Repositories\EloquentPersonRepository;
+use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
+use App\Modules\Persons\Services\PersonService;
 
 class PersonsServiceProvider extends ModuleServiceProvider
 {
@@ -12,11 +16,13 @@ class PersonsServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Contract => implementation. Populated as the module is built; see
-     * docs/modules/persons.md for current status.
+     * Contract => implementation; see docs/modules/persons.md for status.
      */
     protected function bindings(): array
     {
-        return [];
+        return [
+            PersonRepositoryInterface::class => EloquentPersonRepository::class,
+            PersonServiceInterface::class => PersonService::class,
+        ];
     }
 }

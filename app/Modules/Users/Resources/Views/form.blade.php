@@ -32,7 +32,7 @@
 
         <div class="row">
             <div class="col-xl-8">
-                @include('users::partials.flash')
+                @include('partials.flash')
 
                 <div class="card">
                     <div class="card-header">
@@ -97,8 +97,42 @@
                                        @unless($editing) required @endunless>
                             </div>
 
-                            {{-- Regions arrive in Phase 2; until then region_id is carried but not pickable. --}}
-                            <input type="hidden" name="region_id" value="{{ old('region_id', $user->region_id ?? '') }}">
+                            {{--
+                                One territory for an MR, several for a telecaller — the
+                                same field name either way, so the controller and the
+                                Regions module decide the shape, not this template.
+                            --}}
+                            <div class="col-12">
+                                <label class="form-label" for="region_ids">
+                                    {{ $multipleRegions ? 'Regions covered' : 'Region' }}
+                                </label>
+                                @php $chosen = old('region_ids', $selectedRegions); @endphp
+                                <select class="form-select @error('region_ids') is-invalid @enderror"
+                                        id="region_ids" name="region_ids[]"
+                                        @if($multipleRegions) multiple size="{{ min(max($regionOptions->count(), 3), 6) }}" @endif>
+                                    @unless($multipleRegions)
+                                        <option value="">— No region assigned —</option>
+                                    @endunless
+                                    @forelse($regionOptions as $option)
+                                        <option value="{{ $option->id }}"
+                                            @selected(in_array((int) $option->id, array_map('intval', (array) $chosen), true))>
+                                            {{ $option->name }} ({{ $option->code }})
+                                        </option>
+                                    @empty
+                                        <option value="" disabled>No active regions — create one first</option>
+                                    @endforelse
+                                </select>
+                                @error('region_ids')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                @error('region_ids.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                <div class="form-text">
+                                    {{ $multipleRegions
+                                        ? 'Ctrl/Cmd-click to pick several. A telecaller sees only persons in these regions.'
+                                        : 'The territory this medical rep covers.' }}
+                                    @if($regionOptions->isEmpty())
+                                        <a href="{{ route('regions.create') }}">Add a region</a>.
+                                    @endif
+                                </div>
+                            </div>
 
                             <div class="col-12">
                                 <div class="form-check form-switch">

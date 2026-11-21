@@ -16,8 +16,8 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Access | ✅ | `modules/access.md` | roles, permissions, telecaller scoping |
 | Auth | ✅ | `modules/auth.md` | panel login, Sanctum tokens for apps |
 | Users | ✅ | `modules/users.md` | admin creates MR + telecaller |
-| Regions | ⬜ | `modules/regions.md` | region master, assignment |
-| Persons | ⬜ | `modules/persons.md` | doctor / hospital / medical |
+| Regions | ✅ | `modules/regions.md` | region master, assignment |
+| Persons | 🟡 | `modules/persons.md` | doctor / hospital / medical |
 | Attendance | ⬜ | `modules/attendance.md` | MR check-in / check-out + geo |
 | Visits | ⬜ | `modules/visits.md` | visit entry, in/out time, geo |
 | Calls | ⬜ | `modules/calls.md` | call status + notes |

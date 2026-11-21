@@ -1,10 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\CustomerController as ApiCustomerController;
-use App\Http\Controllers\Api\DashboardController as ApiDashboardController;
-use App\Http\Controllers\Api\OrderController as ApiOrderController;
-use App\Http\Controllers\Api\ProductController as ApiProductController;
-use App\Http\Controllers\Api\ReportController as ApiReportController;
 use App\Modules\Auth\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,11 +10,13 @@ use Illuminate\Support\Facades\Route;
 | New work goes under /api/v1 and is registered by each module
 | (app/Modules/<Name>/Routes/api.php) — see docs/api/.
 |
-| Below are the unversioned legacy routes the two shipped Flutter builds still
-| call (both use baseUrl ".../api" plus "/auth/login"). Auth now points at the
-| module controller, so there is one implementation and one envelope; the
-| `register` endpoint is gone, since only an admin creates accounts. These
-| routes go away once both apps move to /api/v1.
+| What remains here are the unversioned legacy auth routes the two shipped
+| Flutter builds still call (both use baseUrl ".../api" plus "/auth/login").
+| They reach the module controller, so there is one implementation and one
+| envelope, and they go away once both apps move to /api/v1.
+|
+| The legacy customers, products, orders, reports and dashboard endpoints
+| went with the tables behind them in Phase 2.
 */
 
 Route::prefix('auth')->name('api.legacy.auth.')->group(function () {
@@ -30,38 +27,5 @@ Route::prefix('auth')->name('api.legacy.auth.')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/me', [AuthController::class, 'me'])->name('me');
-    });
-});
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/dashboard', [ApiDashboardController::class, 'index']);
-
-    Route::prefix('customers')->group(function () {
-        Route::get('/', [ApiCustomerController::class, 'index']);
-        Route::get('/search', [ApiCustomerController::class, 'search']);
-        Route::get('/{id}', [ApiCustomerController::class, 'show']);
-        Route::post('/', [ApiCustomerController::class, 'store']);
-        Route::put('/{id}', [ApiCustomerController::class, 'update']);
-    });
-
-    Route::prefix('products')->group(function () {
-        Route::get('/', [ApiProductController::class, 'index']);
-        Route::get('/search', [ApiProductController::class, 'search']);
-        Route::get('/{id}', [ApiProductController::class, 'show']);
-        Route::post('/', [ApiProductController::class, 'store']);
-        Route::put('/{id}', [ApiProductController::class, 'update']);
-    });
-
-    Route::prefix('orders')->group(function () {
-        Route::get('/', [ApiOrderController::class, 'index']);
-        Route::get('/{id}', [ApiOrderController::class, 'show']);
-        Route::post('/', [ApiOrderController::class, 'store']);
-        Route::put('/{id}', [ApiOrderController::class, 'update']);
-        Route::delete('/{id}', [ApiOrderController::class, 'destroy']);
-    });
-
-    Route::prefix('reports')->group(function () {
-        Route::get('/sales', [ApiReportController::class, 'salesReport']);
-        Route::get('/inventory', [ApiReportController::class, 'inventoryReport']);
     });
 });

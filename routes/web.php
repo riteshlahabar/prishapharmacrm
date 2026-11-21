@@ -1,38 +1,24 @@
 <?php
 
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
 | Panel routes
 |--------------------------------------------------------------------------
-| Sign-in itself lives in the Auth module (app/Modules/Auth/Routes/web.php);
-| everything here is behind `auth`, as required by docs/conventions.md.
+| Sign-in lives in the Auth module; everything else is registered by the
+| module that owns it, through config/modules.php. What is left here is the
+| dashboard — the one screen that belongs to no single module until Phase 7
+| gives it one.
 |
-| MR and telecaller administration live in the Users module, and the permission
-| grant screens in the Access module — both register their own routes through
-| config/modules.php.
-|
-| The customers / products / orders / reports resources below are the legacy
-| generic-CRM screens. They keep working behind `auth` until Phase 2 replaces
-| customers with persons and drops products and orders, which is also when they
-| gain permission middleware.
+| Phase 2 retired the generic-CRM resources: customers became persons in the
+| Persons module, and products, orders and their reports were dropped from
+| scope (docs/roadmap.md).
 */
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])
         ->middleware('permission:dashboard.view')
         ->name('dashboard');
-
-    Route::resource('customers', CustomerController::class);
-    Route::resource('products', ProductController::class);
-    Route::resource('orders', OrderController::class);
-
-    Route::get('/reports/sales', [ReportController::class, 'salesReport'])->name('reports.sales');
-    Route::get('/reports/inventory', [ReportController::class, 'inventoryReport'])->name('reports.inventory');
 });

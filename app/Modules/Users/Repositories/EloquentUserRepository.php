@@ -51,7 +51,13 @@ class EloquentUserRepository extends EloquentRepository implements UserRepositor
 
     public function paginateByRole(UserRole $role, int $perPage = 20, array $filters = []): LengthAwarePaginator
     {
-        return $this->paginate($perPage, array_merge($filters, ['role' => $role]));
+        // Both region shapes are eager-loaded: the list renders whichever one
+        // the role uses, and without this each row would query for it.
+        return $this->applyFilters($this->query(), array_merge($filters, ['role' => $role]))
+            ->with(['region', 'regions'])
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function findOfRoleOrFail(UserRole $role, int|string $id): User

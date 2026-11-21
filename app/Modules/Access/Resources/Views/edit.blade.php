@@ -28,7 +28,7 @@
 
         <div class="row">
             <div class="col-xl-10">
-                @include('users::partials.flash')
+                @include('partials.flash')
 
                 <form method="POST" action="{{ route('access.permissions.update', $user->id) }}">
                     @csrf

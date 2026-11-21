@@ -3,6 +3,8 @@
 namespace App\Modules\Users\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
+use App\Modules\Regions\Services\Contracts\RegionServiceInterface;
 use App\Modules\Users\Enums\UserRole;
 use App\Modules\Users\Http\Requests\StoreUserRequest;
 use App\Modules\Users\Http\Requests\UpdateUserRequest;
@@ -22,7 +24,11 @@ use Illuminate\View\View;
  */
 abstract class UserCrudController extends Controller
 {
-    public function __construct(protected readonly UserServiceInterface $users) {}
+    public function __construct(
+        protected readonly UserServiceInterface $users,
+        protected readonly RegionServiceInterface $regions,
+        protected readonly RegionAssignmentServiceInterface $assignment,
+    ) {}
 
     /** Which role this controller administers. */
     abstract protected function role(): UserRole;
@@ -50,6 +56,8 @@ abstract class UserCrudController extends Controller
     {
         return view('users::form', $this->viewData([
             'user' => null,
+            'regionOptions' => $this->regions->activeOptions(),
+            'selectedRegions' => [],
         ]));
     }
 
@@ -64,15 +72,22 @@ abstract class UserCrudController extends Controller
 
     public function show(int|string $user): View
     {
+        $model = $this->users->findForRole($this->role(), $user);
+
         return view('users::show', $this->viewData([
-            'user' => $this->users->findForRole($this->role(), $user),
+            'user' => $model,
+            'regions' => $this->assignment->regionsFor($model),
         ]));
     }
 
     public function edit(int|string $user): View
     {
+        $model = $this->users->findForRole($this->role(), $user);
+
         return view('users::form', $this->viewData([
-            'user' => $this->users->findForRole($this->role(), $user),
+            'user' => $model,
+            'regionOptions' => $this->regions->activeOptions(),
+            'selectedRegions' => $this->assignment->idsFor($model),
         ]));
     }
 
@@ -111,6 +126,8 @@ abstract class UserCrudController extends Controller
             'role' => $this->role(),
             'routeName' => $this->routeName(),
             'titles' => $this->titles(),
+            // An MR travels one territory, a telecaller works several.
+            'multipleRegions' => $this->role() === UserRole::Telecaller,
         ];
     }
 }
