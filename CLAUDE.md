@@ -31,6 +31,10 @@ Phase 0 (foundation) ✅ complete. **Phase 1 next:** auth, roles, users.
   no pharma domain; Sanctum missing though routes used it; web routes unguarded.
 `2026-11-21` Decisions: customers→persons, drop products/orders; spatie
   permissions; MySQL; docs on the code branch.
+`2026-11-21` Cuba layout fix: panel markup never had `.page-wrapper` /
+  `.page-body-wrapper` / `.page-header`, so ~2900 CSS rules and sidebar JS were
+  dead; 42 `asset()` calls missed the `assets/` prefix. Rewrote master/header/
+  sidebar, remapped 14 views, fixed feather path. Contract in `docs/ui-cuba.md`.
 `2026-11-21` Phase 0: composer install, Sanctum 4.5 + spatie 8.5 installed and
   migrated, MySQL `.env`, `app/Core` base classes, 10 module skeletons,
   `config/modules.php`, `docs/` tree + `check-docs.sh`. Details in
@@ -42,9 +46,10 @@ permission seeders → admin CRUD for MR and telecaller → `auth` middleware on
 every web route → permission-scoped sidebar → Sanctum login endpoint.
 
 ## Open items
-- **ProKit design not attached** (>30 MB, chat cap). Preferred route: push it to
-  a private repo (e.g. `prishapharmadesign`) and tell me the name — I attach it
-  with `add_repo`. Cuba is already in this repo, nothing needed.
+- ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
+  primary `#1157FA`, built on nb_utils + MobX (we use Riverpod — harvest the
+  design, not the state layer). Persisted in the MR app repo under `design/`.
+- Cuba needs no upload: its CSS was always complete. See `docs/ui-cuba.md`.
 - cPanel MySQL deliberately **not** connected: ephemeral container IP, port
   3306 blocked by the egress proxy, and production data at risk. Dev runs on
   in-container MariaDB; `.env.example` is cPanel-shaped for deploy.

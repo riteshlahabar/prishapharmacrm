@@ -3,14 +3,14 @@
 @section('title', 'Product Details')
 
 @section('css')
-<link rel="stylesheet" type="text/css" href="{{ asset('css/icons/feather-icon/feather.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
 @endsection
 
 @section('content')
-<div class="inner-body">
-    <div class="inner-body-wrap">
-        <div class="page-bar">
-            <div class="page-title-bottom">
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="page-title-wrap">
+            <div class="page-title">
                 <div class="row">
                     <div class="col">
                         <div class="page-title-right">
@@ -73,6 +73,6 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/icons/feather-icon/feather.min.js') }}"></script>
-<script src="{{ asset('js/icons/feather-icon/feather-icon.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
 @endsection

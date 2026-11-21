@@ -14,14 +14,34 @@
     </div>
     <!-- loader ends-->
 
-    @include('layouts.header')
-    @include('layouts.sidebar')
+    <!-- tap on top starts-->
+    <div class="tap-top"><i class="fa-solid fa-angle-up"></i></div>
+    <!-- tap on top ends-->
 
-    @yield('content')
+    {{--
+        Cuba requires this exact nesting: .page-wrapper.<layout> > .page-header
+        + .page-body-wrapper > .sidebar-wrapper + .page-body + footer.
+        style.css nests ~1800 rules under .page-wrapper and ~1100 under
+        .page-body-wrapper, and sidebar-menu.js queries #pageWrapper, so
+        dropping any of these wrappers silently disables the whole theme.
+        Views supply their own <div class="page-body"> inside @section('content').
+    --}}
+    <div class="page-wrapper compact-wrapper" id="pageWrapper">
 
-    @include('layouts.footer')
+        @include('layouts.header')
+
+        <div class="page-body-wrapper">
+
+            @include('layouts.sidebar')
+
+            @yield('content')
+
+            @include('layouts.footer')
+
+        </div>
+    </div>
+
     @include('layouts.scripts')
-
     @stack('scripts')
 </body>
 </html>

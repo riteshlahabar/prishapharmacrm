@@ -3,17 +3,17 @@
 @section('title', 'Edit Customer')
 
 @section('css')
-<link rel="stylesheet" type="text/css" href="{{ asset('css/icons/feather-icon/feather.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
 @endsection
 
 @section('content')
 <!-- Inner body start -->
-<div class="inner-body">
+<div class="page-body">
     <!-- Inner body wrapper start -->
-    <div class="inner-body-wrap">
+    <div class="container-fluid">
         <!-- Page bar start -->
-        <div class="page-bar">
-            <div class="page-title-bottom">
+        <div class="page-title-wrap">
+            <div class="page-title">
                 <div class="row">
                     <div class="col">
                         <div class="page-title-right">
@@ -129,6 +129,6 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/icons/feather-icon/feather.min.js') }}"></script>
-<script src="{{ asset('js/icons/feather-icon/feather-icon.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather.min.js') }}"></script>
+<script src="{{ asset('assets/js/icons/feather-icon/feather-icon.js') }}"></script>
 @endsection

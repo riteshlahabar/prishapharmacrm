@@ -30,6 +30,7 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Phases, what's next | `roadmap.md` |
 | Table columns, relations | `schema.md` |
 | SOLID / module rules, API envelope | `conventions.md` |
+| Cuba markup contract, broken layout | `ui-cuba.md` |
 | App login endpoint | `api/v1-auth.md` |
 | MR app endpoints | `api/v1-mr.md` |
 | Telecaller app endpoints | `api/v1-telecaller.md` |
