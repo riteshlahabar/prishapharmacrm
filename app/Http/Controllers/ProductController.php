@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -18,21 +19,9 @@ class ProductController extends Controller
         return view('products.create');
     }
 
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $validated = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:100|unique:products,product_code',
-            'generic_name' => 'nullable|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'manufacturer' => 'nullable|string|max:255',
-            'mrp' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-        ]);
-
-        Product::create($validated);
+        Product::create($request->validated());
 
         return redirect()->route('products.index')
             ->with('success', 'Product created successfully.');
@@ -48,21 +37,9 @@ class ProductController extends Controller
         return view('products.edit', compact('product'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        $validated = $request->validate([
-            'product_name' => 'required|string|max:255',
-            'product_code' => 'required|string|max:100|unique:products,product_code,' . $product->id,
-            'generic_name' => 'nullable|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'manufacturer' => 'nullable|string|max:255',
-            'mrp' => 'required|numeric|min:0',
-            'selling_price' => 'required|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
-            'description' => 'nullable|string',
-        ]);
-
-        $product->update($validated);
+        $product->update($request->validated());
 
         return redirect()->route('products.index')
             ->with('success', 'Product updated successfully.');

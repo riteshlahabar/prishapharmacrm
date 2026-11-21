@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use App\Models\Customer;
 use App\Models\Product;
@@ -24,25 +25,14 @@ class OrderController extends Controller
         return view('orders.create', compact('customers', 'products'));
     }
 
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
-        $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
-            'product_id' => 'nullable|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'total_price' => 'required|numeric|min:0',
-            'order_date' => 'required|date',
-            'status' => 'required|in:pending,confirmed,delivered,cancelled',
-            'notes' => 'nullable|string',
-        ]);
-
         $orderNo = 'ORD-' . date('Ymd') . '-' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
         while (Order::where('order_no', $orderNo)->exists()) {
             $orderNo = 'ORD-' . date('Ymd') . '-' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
         }
 
-        Order::create(array_merge($validated, ['order_no' => $orderNo]));
+        Order::create(array_merge($request->validated(), ['order_no' => $orderNo]));
 
         return redirect()->route('orders.index')
             ->with('success', 'Order created successfully.');
@@ -61,20 +51,9 @@ class OrderController extends Controller
         return view('orders.edit', compact('order', 'customers', 'products'));
     }
 
-    public function update(Request $request, Order $order)
+    public function update(OrderRequest $request, Order $order)
     {
-        $validated = $request->validate([
-            'customer_id' => 'nullable|exists:customers,id',
-            'product_id' => 'nullable|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'unit_price' => 'required|numeric|min:0',
-            'total_price' => 'required|numeric|min:0',
-            'order_date' => 'required|date',
-            'status' => 'required|in:pending,confirmed,delivered,cancelled',
-            'notes' => 'nullable|string',
-        ]);
-
-        $order->update($validated);
+        $order->update($request->validated());
 
         return redirect()->route('orders.index')
             ->with('success', 'Order updated successfully.');

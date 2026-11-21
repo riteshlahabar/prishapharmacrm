@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 
@@ -18,20 +19,8 @@ class CustomerController extends Controller
         return view('customers.create');
     }
 
-    public function store(Request $request)
+    public function store(CustomerRequest $request)
     {
-        $request->validate([
-            'customer_name'     => 'required|string|max:255',
-            'customer_email'    => 'required|email|max:255|unique:customers',
-            'customer_phone'    => 'required|string|max:20',
-            'customer_address'  => 'nullable|string',
-            'customer_city'     => 'nullable|string|max:255',
-            'customer_state'    => 'nullable|string|max:255',
-            'customer_zip'      => 'nullable|string|max:20',
-            'customer_country'  => 'nullable|string|max:255',
-            'customer_website'  => 'nullable|url|max:255',
-        ]);
-
         Customer::create($request->all());
 
         return redirect()->route('customers.index')->with('success', 'Customer created successfully.');
@@ -47,20 +36,8 @@ class CustomerController extends Controller
         return view('customers.edit', compact('customer'));
     }
 
-    public function update(Request $request, Customer $customer)
+    public function update(CustomerRequest $request, Customer $customer)
     {
-        $request->validate([
-            'customer_name'     => 'required|string|max:255',
-            'customer_email'    => 'required|email|max:255|unique:customers,customer_email,' . $customer->id,
-            'customer_phone'    => 'required|string|max:20',
-            'customer_address'  => 'nullable|string',
-            'customer_city'     => 'nullable|string|max:255',
-            'customer_state'    => 'nullable|string|max:255',
-            'customer_zip'      => 'nullable|string|max:20',
-            'customer_country'  => 'nullable|string|max:255',
-            'customer_website'  => 'nullable|url|max:255',
-        ]);
-
         $customer->update($request->all());
 
         return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
