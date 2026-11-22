@@ -37,4 +37,13 @@ interface VisitServiceInterface
 
     /** The same counters, clamped to the regions a non-admin covers. */
     public function summaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * Visits per day, `YYYY-MM-DD => count`, clamped to this user's regions.
+     * Days with no rows are absent — the caller fills the range.
+     */
+    public function trendForUser(User $user, array $filters = []): array;
+
+    /** Busiest reps first, `mr name => count`, clamped to this user. */
+    public function countsByMrForUser(User $user, array $filters = [], int $limit = 10): array;
 }

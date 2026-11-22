@@ -49,6 +49,12 @@ interface CallLogServiceInterface
     public function summaryForUser(User $user, array $filters = []): array;
 
     /**
+     * Calls per day, `YYYY-MM-DD => count`, clamped to this caller (or every
+     * call, for an admin). Days with no rows are absent.
+     */
+    public function trendForUser(User $user, array $filters = []): array;
+
+    /**
      * Last outcome per person, keyed by person id — what a call queue shows
      * next to each name. Scoped to this user's own calls unless they are an
      * admin, so one telecaller's notes do not surface in another's queue.

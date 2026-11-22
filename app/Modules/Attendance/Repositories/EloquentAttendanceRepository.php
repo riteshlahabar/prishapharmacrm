@@ -38,6 +38,16 @@ class EloquentAttendanceRepository extends EloquentRepository implements Attenda
             $query->whereHas('mr', fn (Builder $q) => $q->where('region_id', $filters['region_id']));
         }
 
+        // The territory clamp a scoped viewer gets. An empty list means "no
+        // regions yet", which must return nothing rather than everything —
+        // the same contract as the Visits and Persons repositories.
+        if (array_key_exists('region_scope', $filters)) {
+            $scope = (array) $filters['region_scope'];
+            $scope === []
+                ? $query->whereRaw('1 = 0')
+                : $query->whereHas('mr', fn (Builder $q) => $q->whereIn('region_id', $scope));
+        }
+
         if (($status = $filters['status'] ?? null) !== null && $status !== '') {
             match ($status) {
                 'on_duty' => $query->whereNotNull('check_in_at')->whereNull('check_out_at'),
@@ -75,6 +85,22 @@ class EloquentAttendanceRepository extends EloquentRepository implements Attenda
             ->orderBy('mr_id')
             ->paginate($perPage)
             ->withQueryString();
+    }
+
+    /**
+     * Reps present per day, as `YYYY-MM-DD => count`. Counts distinct reps
+     * with a check-in, not rows: presence is the metric, and a day with no
+     * check-in is absence however the row got there.
+     */
+    public function trend(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->whereNotNull('check_in_at')
+            ->selectRaw('DATE(date) as day, count(distinct mr_id) as total')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('total', 'day')
+            ->all();
     }
 
     public function summary(array $filters): array

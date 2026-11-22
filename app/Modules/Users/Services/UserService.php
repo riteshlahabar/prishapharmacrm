@@ -94,6 +94,15 @@ class UserService implements UserServiceInterface
         return $user->is_active;
     }
 
+    /**
+     * Headcount of active users in a role; an empty region list counts every
+     * region. The dashboard uses it to turn "3 on duty" into "3 of 8".
+     */
+    public function countActiveInRole(UserRole $role, array $regionIds = []): int
+    {
+        return $this->users->countActiveInRole($role, $regionIds);
+    }
+
     public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection
     {
         return $this->users->activeOfRoleInRegions($role, $regionIds);

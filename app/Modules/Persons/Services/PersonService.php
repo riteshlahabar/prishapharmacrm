@@ -36,6 +36,19 @@ class PersonService implements PersonServiceInterface
         return $this->paginate($filters, $perPage);
     }
 
+    /**
+     * How many persons this user may see. Same clamp as the list, so a tile
+     * and the screen it links to can never disagree.
+     */
+    public function countForUser(User $user, array $filters = []): int
+    {
+        if (! $user->isAdmin()) {
+            $filters['region_scope'] = $this->assignment->idsFor($user);
+        }
+
+        return $this->persons->countMatching($filters);
+    }
+
     public function find(int|string $id): Person
     {
         /** @var Person */

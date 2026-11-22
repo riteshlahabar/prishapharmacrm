@@ -10,6 +10,7 @@ Paths: `app/Modules/Visits/` · Tables: `visits`
 | admin visit report + detail | `Http/Controllers/Web/VisitController.php` | ✅ |
 | app endpoints | `Http/Controllers/Api/VisitController.php` | ✅ |
 | policy (territory scope) | `Policies/VisitPolicy.php` | ✅ |
+| trend + per-rep counts | `Repositories/EloquentVisitRepository.php` | ✅ |
 
 ## Notes
 MR fills: person, purpose (`VisitPurpose` enum), in-time, out-time. On save the
@@ -25,5 +26,5 @@ not 403, since a 403 would confirm it exists. `destroy` resolves through the
 same check.
 
 ## Next
-Phase 7 charts visits per MR, and moves the panel's own checks onto
-`VisitPolicy` (Phase 6 wired it for the API path only).
+Phase 8 hardening. `trendForUser` and `countsByMrForUser` feed the dashboard;
+only the clamped forms are exposed, so a caller cannot forget to scope one.

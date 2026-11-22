@@ -25,19 +25,14 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–6 ✅ (foundation · auth/roles/users · masters · MR backend ·
-telecaller backend · messaging · mobile API v1). **Phase 7 next:** dashboards.
+Phases 0–7 ✅ (foundation · auth/roles/users · masters · MR backend ·
+telecaller backend · messaging · mobile API v1 · dashboards).
+**Phase 8 next:** hardening — feature tests, demo seeders, docs refresh.
 
 ## Session log
-Phases 0–3 (foundation, auth/roles/users, masters, MR backend) are rotated
-  out — see `docs/history/2026-11.md` for the index and one file per phase.
-  Admin login comes from `ADMIN_*`; `users:set-admin` resets it.
-`2026-11-22` Phase 4: `call_logs` + `CallStatus`, call-back queue with an
-  explicit `follow_up_done_at`, six telecaller endpoints, admin call report.
-  `/api/v1/persons` shipped early (role-scoped) so the app has a queue; each
-  row carries `last_call` via the Calls contract. Calls scope on the caller,
-  not the region — unlike visits. 76 smoke + 35 panel checks green.
-  Details in `docs/history/2026-11-phase4.md`.
+Phases 0–4 (foundation, auth/roles/users, masters, MR and telecaller
+  backends) are rotated out — see `docs/history/2026-11.md` for the index and
+  one file per phase. Admin login is `ADMIN_*`; `users:set-admin` resets it.
 `2026-11-22` Phase 5: `messages` telecaller → MR, no Firebase. Read state is
   `read_at` alone (planned `is_read` dropped, derived in the API); the poll is
   one indexed COUNT; marking is idempotent and recipient-only. Recipients are
@@ -54,12 +49,22 @@ Phases 0–3 (foundation, auth/roles/users, masters, MR backend) are rotated
   services delegate row checks, so one rule reads 403 in the panel and 404 on
   the API. 102 smoke checks green — `tests/smoke/phase6-api.sh`.
   Details in `docs/history/2026-11-phase6.md`.
+`2026-11-22` Phase 7: dashboards. One template for every role — the service
+  asks each module's policy `viewAny` which cards the viewer gets (admin six
+  tiles/four charts, telecaller four/two), so no role test in the controller
+  or Blade. Reads only `…ForUser` methods on sibling contracts, so the clamp
+  stays with the module; found attendance had no `region_scope`, which would
+  have charted every rep to a scoped viewer. Added daily trends, visits per
+  rep and two counts. ApexCharts 3.46.0 (already committed; Cuba's demo
+  `chart-custom.js` not loaded). The dashboard moved into its module, so
+  `routes/web.php` is route-free. 56 panel checks green.
+  Details in `docs/history/2026-11-phase7.md`.
 
 ## Next step
-Phase 7 (dashboards): admin charts for visits, attendance, calls and
-conversion, plus a region-scoped telecaller dashboard — reading through
-service contracts only, and moving the panel's own checks onto the Phase 6
-policies. `app/Http/Controllers/DashboardController` moves into the module.
+Phase 8 (hardening): feature tests per module — the two smoke scripts under
+`tests/smoke/` cover the contract end-to-end but `tests/Feature` is still
+Laravel's stock example, which fails because `/` sits behind `auth`. Then
+demo seeders, a Pint pass and a docs refresh.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
@@ -79,8 +84,6 @@ policies. `app/Http/Controllers/DashboardController` moves into the module.
 - `AGENTS.md` still holds the Laravel Boost bootstrap stub. Boost was **not**
   installed — `boost:install` would overwrite this file and break the
   100-line session-log requirement. Ask before installing.
-- `app/Http/Controllers` now holds only the placeholder `DashboardController`;
-  Phase 7 moves it into the Dashboard module.
 - A `customers` table converted from a live deployment arrives with every row
   typed `doctor`. Re-type hospitals and medical stores by hand after deploy.
 

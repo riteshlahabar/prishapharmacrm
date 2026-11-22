@@ -139,6 +139,15 @@ class CallLogService implements CallLogServiceInterface
         return $this->calls->summary($filters);
     }
 
+    /**
+     * Calls per day for whatever this user may see — their own calls unless
+     * they are an admin. Only the clamped form is exposed, as with visits.
+     */
+    public function trendForUser(User $user, array $filters = []): array
+    {
+        return $this->calls->trend($this->clampToOwn($user, $filters));
+    }
+
     public function summaryForUser(User $user, array $filters = []): array
     {
         return $this->summary($this->clampToOwn($user, $filters));

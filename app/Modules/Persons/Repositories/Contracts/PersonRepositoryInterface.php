@@ -16,5 +16,8 @@ interface PersonRepositoryInterface extends RepositoryInterface
     public function paginateWithRelations(int $perPage = 20, array $filters = []): LengthAwarePaginator;
 
     /** How many persons sit in each of these regions, keyed by region id. */
+    /** How many rows match, without pulling a page of them. */
+    public function countMatching(array $filters): int;
+
     public function countsByRegion(array $regionIds): array;
 }

@@ -7,6 +7,7 @@ Paths: `app/Modules/Calls/` · Tables: `call_logs`
 | migration + `CallStatus` enum | `Database/Migrations/`, `Enums/CallStatus.php` | ✅ |
 | log a call (status + notes) | `Services/CallLogService.php::logFor` | ✅ |
 | policy (caller-owned rows) | `Policies/CallLogPolicy.php` | ✅ |
+| daily trend for the chart | `Repositories/EloquentCallLogRepository.php` | ✅ |
 | region-scoped person queue | `Persons` API + `lastCallsFor` | ✅ |
 | follow-up list | `Http/Controllers/Api/CallLogController.php` | ✅ |
 | admin call report + detail | `Http/Controllers/Web/CallLogController.php` | ✅ |
@@ -30,5 +31,5 @@ notes are their own working record, so `paginateForUser`, `summaryForUser` and
 `findForUser` clamp to `telecaller_id`, and a colleague's call reads as 404.
 
 ## Next
-Phase 7 charts conversion rate and moves the panel onto `CallLogPolicy`,
-whose `update` is owner-only: an admin reads a call but does not rewrite it.
+Phase 8 hardening. Conversion and the status donut are on the dashboard;
+`CallLogPolicy::update` stays owner-only — an admin reads but does not rewrite.

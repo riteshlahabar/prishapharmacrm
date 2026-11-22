@@ -3,6 +3,8 @@
 namespace App\Modules\Dashboard\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Dashboard\Services\Contracts\DashboardServiceInterface;
+use App\Modules\Dashboard\Services\DashboardService;
 
 class DashboardServiceProvider extends ModuleServiceProvider
 {
@@ -12,11 +14,13 @@ class DashboardServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Contract => implementation. Populated as the module is built; see
-     * docs/modules/dashboard.md for current status.
+     * Contract => implementation; see docs/modules/dashboard.md for status.
+     * The module owns no repository: it reads other modules' services.
      */
     protected function bindings(): array
     {
-        return [];
+        return [
+            DashboardServiceInterface::class => DashboardService::class,
+        ];
     }
 }

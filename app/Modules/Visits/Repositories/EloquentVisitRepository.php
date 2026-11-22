@@ -73,6 +73,42 @@ class EloquentVisitRepository extends EloquentRepository implements VisitReposit
             ->withQueryString();
     }
 
+    /**
+     * Visits per day, as `YYYY-MM-DD => count`. Only days that have rows come
+     * back; the Dashboard zero-fills the range, which is a presentation
+     * decision and not this layer's business.
+     *
+     * `DATE()` with an explicit alias, because `visit_date` is cast to a date
+     * and plucking the column itself would key the array by a Carbon-rendered
+     * value rather than the plain day the chart needs.
+     */
+    public function trend(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->selectRaw('DATE(visit_date) as day, count(*) as total')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('total', 'day')
+            ->all();
+    }
+
+    /**
+     * Busiest reps first, as `mr name => count`. Grouped by name, not id: the
+     * result is keyed by name, so grouping by id would let two reps sharing a
+     * name overwrite each other and quietly lose one from the chart.
+     */
+    public function countsByMr(array $filters, int $limit = 10): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->join('users', 'users.id', '=', 'visits.mr_id')
+            ->selectRaw('users.name as mr, count(*) as total')
+            ->groupBy('users.name')
+            ->orderByDesc('total')
+            ->limit($limit)
+            ->pluck('total', 'mr')
+            ->all();
+    }
+
     public function summary(array $filters): array
     {
         $base = fn () => $this->applyFilters($this->query(), $filters);

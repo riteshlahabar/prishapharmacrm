@@ -1,18 +1,33 @@
-# Module: Dashboard        Status: ⬜ pending (0/3) — Phase 7
+# Module: Dashboard        Status: ✅ done (2/2) — Phase 7
 Paths: `app/Modules/Dashboard/` · Tables: none (reads others)
 
 ## Functions
 | Function | File | Status |
 |---|---|---|
-| admin dashboard (Cuba charts) | `Http/Controllers/Web/DashboardController.php` | ⬜ |
-| telecaller dashboard (scoped) | same, permission-gated | ⬜ |
-| app dashboard summary API | `Http/Controllers/Api/DashboardController.php` | ⬜ |
+| read model for the screen | `Services/DashboardService.php` | ✅ |
+| one route, one view, every role | `Http/Controllers/Web/DashboardController.php` | ✅ |
 
 ## Notes
-Reads through other modules' **service contracts** only — no direct queries
-into their tables. Metrics: today's attendance, visits/period, calls by status,
-conversion rate, per-region breakdown.
-Legacy `App\Http\Controllers\DashboardController` to be replaced here.
+Owns no table and no repository: every number comes from another module's
+**service contract**, through a `…ForUser` method, so the scope is clamped
+where the rule lives and a tile always matches the screen it links to.
+
+One template serves admin and telecaller. The service asks each module's
+**policy** (`viewAny`) which cards the viewer may have, so there is no role
+test in the controller or the Blade — a telecaller gets persons, calls,
+conversion and messages; an admin also gets attendance and visits. A card
+nobody may see costs no queries. (It names sibling *models* only as the
+subject of a Gate check, never to read from.)
+
+Charts are ApexCharts 3.46.0, already committed under
+`public/assets/js/chart/apex-chart/`. Cuba's `chart-custom.js` beside it is
+demo data bound to demo element ids and is deliberately not loaded. Donut
+colours come from `CallStatus::badge()`, so a slice matches the badge the
+same status wears on the call report.
+
+`?days` takes 7, 30 or 90 and falls back to 30; the range is zero-filled so a
+quiet week reads as zeros rather than closing up.
 
 ## Next
-Wait for Phases 3–5 data, then build read models.
+Phase 8 hardening. A mobile summary endpoint is **not** built: neither app
+asks for one — the MR app opens on check-in, the telecaller app on its queue.

@@ -90,6 +90,25 @@ class EloquentUserRepository extends EloquentRepository implements UserRepositor
             ->get();
     }
 
+    /**
+     * Headcount of active users in a role. An empty region list means "do not
+     * filter by region" — unlike activeOfRoleInRegions, where it means "no
+     * regions, so nobody". The dashboard needs both readings: an admin counts
+     * every rep, a scoped viewer only those in their territory.
+     */
+    public function countActiveInRole(UserRole $role, array $regionIds = []): int
+    {
+        $query = $this->query()
+            ->where('role', $role->value)
+            ->where('is_active', true);
+
+        if ($regionIds !== []) {
+            $query->whereIn('region_id', $regionIds);
+        }
+
+        return $query->count();
+    }
+
     public function findByEmail(string $email): ?User
     {
         return $this->query()->where('email', $email)->first();

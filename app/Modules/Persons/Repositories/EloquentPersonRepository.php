@@ -69,6 +69,12 @@ class EloquentPersonRepository extends EloquentRepository implements PersonRepos
             ->withQueryString();
     }
 
+    /** How many rows match, without pulling a page of them. */
+    public function countMatching(array $filters): int
+    {
+        return $this->applyFilters($this->query(), $filters)->count();
+    }
+
     public function countsByRegion(array $regionIds): array
     {
         if ($regionIds === []) {

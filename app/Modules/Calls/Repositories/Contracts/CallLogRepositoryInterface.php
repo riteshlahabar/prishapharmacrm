@@ -17,6 +17,9 @@ interface CallLogRepositoryInterface extends RepositoryInterface
     /** Totals for the report header, plus a breakdown by status. */
     public function summary(array $filters): array;
 
+    /** Calls per day, `YYYY-MM-DD => count`, days with rows only. */
+    public function trend(array $filters): array;
+
     /**
      * The most recent call on each of these persons, keyed by person id.
      * One query, so a person list can show "last outcome" without N+1.

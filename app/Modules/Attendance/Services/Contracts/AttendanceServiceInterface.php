@@ -26,6 +26,15 @@ interface AttendanceServiceInterface
 
     public function summary(array $filters = []): array;
 
+    /** Totals clamped to the regions this user covers. */
+    public function summaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * Reps present per day, `YYYY-MM-DD => count`, clamped to this user.
+     * Days with no check-in are absent — the caller fills the range.
+     */
+    public function trendForUser(User $user, array $filters = []): array;
+
     /** Own history for the MR app. */
     public function historyFor(User $mr, array $filters = [], int $perPage = 20): LengthAwarePaginator;
 }

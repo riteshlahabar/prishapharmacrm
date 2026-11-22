@@ -31,5 +31,11 @@ interface UserRepositoryInterface extends RepositoryInterface
      */
     public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection;
 
+    /**
+     * Headcount of active users in a role. An empty region list here means
+     * "every region", not "none" — see the implementation's note.
+     */
+    public function countActiveInRole(UserRole $role, array $regionIds = []): int;
+
     public function findByEmail(string $email): ?User;
 }

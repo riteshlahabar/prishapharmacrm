@@ -6,6 +6,7 @@ use App\Modules\Attendance\Exceptions\AttendanceConflict;
 use App\Modules\Attendance\Models\Attendance;
 use App\Modules\Attendance\Repositories\Contracts\AttendanceRepositoryInterface;
 use App\Modules\Attendance\Services\Contracts\AttendanceServiceInterface;
+use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\UniqueConstraintViolationException;
@@ -20,7 +21,10 @@ use Illuminate\Database\UniqueConstraintViolationException;
  */
 class AttendanceService implements AttendanceServiceInterface
 {
-    public function __construct(private readonly AttendanceRepositoryInterface $attendances) {}
+    public function __construct(
+        private readonly AttendanceRepositoryInterface $attendances,
+        private readonly RegionAssignmentServiceInterface $assignment,
+    ) {}
 
     public function checkIn(User $mr, ?float $lat, ?float $lng): Attendance
     {
@@ -87,9 +91,39 @@ class AttendanceService implements AttendanceServiceInterface
         return $this->attendances->summary($filters);
     }
 
+    /** Totals for whatever territory this user covers. */
+    public function summaryForUser(User $user, array $filters = []): array
+    {
+        return $this->summary($this->clampToTerritory($user, $filters));
+    }
+
+    /**
+     * Reps present per day, clamped to this user. Only the clamped form is
+     * exposed, so a dashboard cannot accidentally chart every rep in the
+     * company for a viewer who covers two regions.
+     */
+    public function trendForUser(User $user, array $filters = []): array
+    {
+        return $this->attendances->trend($this->clampToTerritory($user, $filters));
+    }
+
     public function historyFor(User $mr, array $filters = [], int $perPage = 20): LengthAwarePaginator
     {
         return $this->paginate(array_merge($filters, ['mr_id' => $mr->id]), $perPage);
+    }
+
+    /**
+     * An admin sees every rep; anyone else is pinned to the regions they
+     * cover. An empty list stays empty on purpose — the repository turns that
+     * into "no rows", the right answer for a viewer who covers nothing yet.
+     */
+    private function clampToTerritory(User $user, array $filters): array
+    {
+        if (! $user->isAdmin()) {
+            $filters['region_scope'] = $this->assignment->idsFor($user);
+        }
+
+        return $filters;
     }
 
     /**

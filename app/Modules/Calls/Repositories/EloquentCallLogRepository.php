@@ -80,6 +80,21 @@ class EloquentCallLogRepository extends EloquentRepository implements CallLogRep
             ->withQueryString();
     }
 
+    /**
+     * Calls per day, as `YYYY-MM-DD => count`, days with rows only — the
+     * Dashboard zero-fills the range. `DATE()` because `called_at` is a
+     * timestamp and the chart plots days.
+     */
+    public function trend(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->selectRaw('DATE(called_at) as day, count(*) as total')
+            ->groupBy('day')
+            ->orderBy('day')
+            ->pluck('total', 'day')
+            ->all();
+    }
+
     public function summary(array $filters): array
     {
         // A fresh builder per count: reusing one would stack the constraints.

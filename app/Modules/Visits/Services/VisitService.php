@@ -96,6 +96,22 @@ class VisitService implements VisitServiceInterface
         return $this->visits->summary($filters);
     }
 
+    /**
+     * Visits per day for whatever this user may see. Only the clamped form is
+     * exposed: a dashboard always renders for somebody, and an unclamped
+     * trend is the kind of thing a caller forgets to scope.
+     */
+    public function trendForUser(User $user, array $filters = []): array
+    {
+        return $this->visits->trend($this->clampToTerritory($user, $filters));
+    }
+
+    /** Busiest reps first, within what this user may see. */
+    public function countsByMrForUser(User $user, array $filters = [], int $limit = 10): array
+    {
+        return $this->visits->countsByMr($this->clampToTerritory($user, $filters), $limit);
+    }
+
     public function summaryForUser(User $user, array $filters = []): array
     {
         return $this->summary($this->clampToTerritory($user, $filters));

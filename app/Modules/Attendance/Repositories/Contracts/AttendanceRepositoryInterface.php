@@ -24,4 +24,7 @@ interface AttendanceRepositoryInterface extends RepositoryInterface
 
     /** Totals for the report header: present, on duty, completed. */
     public function summary(array $filters): array;
+
+    /** Reps present per day, `YYYY-MM-DD => count`, days with rows only. */
+    public function trend(array $filters): array;
 }

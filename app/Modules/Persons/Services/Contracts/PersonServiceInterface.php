@@ -17,6 +17,9 @@ interface PersonServiceInterface
     /** Same list, clamped to the regions this user covers (telecaller side). */
     public function paginateForUser(User $user, array $filters = [], int $perPage = 20): LengthAwarePaginator;
 
+    /** How many persons this user may see, clamped like the list. */
+    public function countForUser(User $user, array $filters = []): int;
+
     public function find(int|string $id): Person;
 
     public function create(array $data): Person;

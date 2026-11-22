@@ -36,4 +36,10 @@ interface UserServiceInterface
      * @return Collection<int, User>
      */
     public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection;
+
+    /**
+     * Headcount of active users in a role. An empty region list counts every
+     * region — "3 of 8 reps checked in" needs the 8.
+     */
+    public function countActiveInRole(UserRole $role, array $regionIds = []): int;
 }
