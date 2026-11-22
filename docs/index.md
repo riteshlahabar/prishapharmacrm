@@ -7,7 +7,7 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Code | Project | Repo | Stack |
 |---|---|---|---|
 | CRM | Admin panel + mobile API | `prishapharmacrm` | Laravel 13, MySQL, Cuba theme |
-| MR | Medical Rep app | `prishapharmamrapp` | Flutter, Riverpod, ProKit |
+| MR | Medical Rep app ✅ | `prishapharmamrapp` | Flutter, Riverpod, ProKit |
 | TC | Telecaller app | `prishapharmatellecallerapp` | Flutter, Riverpod, ProKit |
 
 ## CRM modules — `app/Modules/<Name>/`

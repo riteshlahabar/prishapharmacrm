@@ -25,20 +25,15 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–7 ✅ (foundation · auth/roles/users · masters · MR backend ·
-telecaller backend · messaging · mobile API v1 · dashboards).
-**Phase 8 next:** hardening — feature tests, demo seeders, docs refresh.
+Phases 0–7 ✅ plus **Phase 9 ✅** (the MR Flutter app). **Next:** Phase 10,
+the telecaller app — or Phase 8 hardening first, if you want tests before a
+second app lands.
 
 ## Session log
-Phases 0–4 (foundation, auth/roles/users, masters, MR and telecaller
-  backends) are rotated out — see `docs/history/2026-11.md` for the index and
-  one file per phase. Admin login is `ADMIN_*`; `users:set-admin` resets it.
-`2026-11-22` Phase 5: `messages` telecaller → MR, no Firebase. Read state is
-  `read_at` alone (planned `is_read` dropped, derived in the API); the poll is
-  one indexed COUNT; marking is idempotent and recipient-only. Recipients are
-  MRs in your regions plus the named person's own rep. Panel scope is either
-  party. 72 smoke checks green.
-  Details in `docs/history/2026-11-phase5.md`.
+Phases 0–5 (foundation, auth/roles/users, masters, MR and telecaller
+  backends, messaging) are rotated out — see `docs/history/2026-11.md` for the
+  index and one file per phase. Admin login is `ADMIN_*`; `users:set-admin`
+  resets it.
 `2026-11-22` Phase 6: one API contract. `ApiExceptionRenderer` puts every
   thrown failure in the envelope with a stable `errors.reason` (401/422 had
   Laravel's own shape, 404 leaked the model class, 404/405 a stack trace).
@@ -59,12 +54,23 @@ Phases 0–4 (foundation, auth/roles/users, masters, MR and telecaller
   `chart-custom.js` not loaded). The dashboard moved into its module, so
   `routes/web.php` is route-free. 56 panel checks green.
   Details in `docs/history/2026-11-phase7.md`.
+`2026-11-22` Phase 9: MR app rebuilt on the API v1 contract. What was there
+  was a generic-CRM scaffold (customers/orders/products) on endpoints deleted
+  in Phase 2, and it did not compile — 4,548 analyzer issues. Now four
+  screens: login, geo check-in/out, visit form + history, inbox. `ApiClient`
+  decodes the envelope once and throws a typed `ApiFailure`; screens switch
+  on `errors.reason`. Flutter moved Material out of the SDK, so lib/ imports
+  `package:material_ui` and the UI deps are on migrated versions. Fixed three
+  device bugs: INTERNET was debug-manifest only (release could not reach the
+  API), no location permissions, no iOS usage string. Analyze clean, 40
+  tests, fixtures captured live. `docs/history/2026-11-phase9.md`.
 
 ## Next step
-Phase 8 (hardening): feature tests per module — the two smoke scripts under
-`tests/smoke/` cover the contract end-to-end but `tests/Feature` is still
-Laravel's stock example, which fails because `/` sits behind `auth`. Then
-demo seeders, a Pint pass and a docs refresh.
+Phase 10 (telecaller app): same shape as the MR app — reuse its core/api and
+theme, then the queue, call logging and send-to-MR. Phase 8 hardening is
+still open: `tests/smoke/` covers the contract end-to-end, but
+`tests/Feature` is Laravel's stock example and fails because `/` is behind
+`auth`.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
@@ -79,8 +85,7 @@ demo seeders, a Pint pass and a docs refresh.
   **Change them before anything is internet-reachable**; reset an existing
   admin with `php artisan users:set-admin <email>` (the seeder will not).
 - cPanel MySQL deliberately **not** connected: ephemeral container IP, port
-  3306 blocked by the egress proxy, and production data at risk. Dev runs on
-  in-container MariaDB; `.env.example` is cPanel-shaped for deploy.
+  3306 blocked, production data at risk. Dev runs on in-container MariaDB.
 - `AGENTS.md` still holds the Laravel Boost bootstrap stub. Boost was **not**
   installed — `boost:install` would overwrite this file and break the
   100-line session-log requirement. Ask before installing.
