@@ -18,8 +18,8 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Users | ✅ | `modules/users.md` | admin creates MR + telecaller |
 | Regions | ✅ | `modules/regions.md` | region master, assignment |
 | Persons | 🟡 | `modules/persons.md` | doctor / hospital / medical |
-| Attendance | ⬜ | `modules/attendance.md` | MR check-in / check-out + geo |
-| Visits | ⬜ | `modules/visits.md` | visit entry, in/out time, geo |
+| Attendance | ✅ | `modules/attendance.md` | MR check-in / check-out + geo |
+| Visits | ✅ | `modules/visits.md` | visit entry, in/out time, geo |
 | Calls | ⬜ | `modules/calls.md` | call status + notes |
 | Messages | ⬜ | `modules/messages.md` | telecaller → MR in-app msg |
 | Dashboard | ⬜ | `modules/dashboard.md` | admin + telecaller dashboards |
@@ -32,10 +32,11 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | SOLID / module rules, API envelope | `conventions.md` |
 | Cuba markup contract, broken layout | `ui-cuba.md` |
 | Stylesheet / script load order, logos | `ui-assets.md` |
+| What we changed in a theme file | `ui-theme-patches.md` |
 | App login endpoint | `api/v1-auth.md` |
 | MR app endpoints | `api/v1-mr.md` |
 | Telecaller app endpoints | `api/v1-telecaller.md` |
-| Permission names, who may grant | `modules/access.md` → `Access/Support/PermissionCatalog.php` |
+| Permission names, who may grant | `modules/access.md` |
 | Shared base classes | `app/Core/` (repo, service, ApiResponse) |
 | Module registry | `config/modules.php` |
 | Older session log | `history/` |

@@ -3,6 +3,10 @@
 namespace App\Modules\Visits\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
+use App\Modules\Visits\Repositories\EloquentVisitRepository;
+use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
+use App\Modules\Visits\Services\VisitService;
 
 class VisitsServiceProvider extends ModuleServiceProvider
 {
@@ -12,11 +16,13 @@ class VisitsServiceProvider extends ModuleServiceProvider
     }
 
     /**
-     * Contract => implementation. Populated as the module is built; see
-     * docs/modules/visits.md for current status.
+     * Contract => implementation; see docs/modules/visits.md for status.
      */
     protected function bindings(): array
     {
-        return [];
+        return [
+            VisitRepositoryInterface::class => EloquentVisitRepository::class,
+            VisitServiceInterface::class => VisitService::class,
+        ];
     }
 }

@@ -13,6 +13,7 @@
 @php
     $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view']) ?? false;
     $canUsers = auth()->user()?->canAny(['mrs.view', 'telecallers.view']) ?? false;
+    $canField = auth()->user()?->canAny(['attendance.view', 'visits.view']) ?? false;
     $canAccess = auth()->user()?->can('access.manage') ?? false;
 @endphp
 
@@ -98,6 +99,32 @@
                         <li><a href="{{ route('persons.create') }}">Add Person</a></li>
                         @endcan
                     </ul>
+                </li>
+                @endcan
+
+                @if($canField)
+                <li class="sidebar-main-title">
+                    <div><h6>Field</h6></div>
+                </li>
+                @endif
+
+                @can('attendance.view')
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
+                       href="{{ route('attendance.index') }}">
+                        <i data-feather="clock"></i><span>Attendance</span>
+                    </a>
+                </li>
+                @endcan
+
+                @can('visits.view')
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('visits.*') ? 'active' : '' }}"
+                       href="{{ route('visits.index') }}">
+                        <i data-feather="briefcase"></i><span>Visits</span>
+                    </a>
                 </li>
                 @endcan
 

@@ -8,7 +8,7 @@ Decisions taken: customers → persons (products/orders dropped);
 | 0 | Foundation | composer install, MySQL `.env`, Sanctum + spatie installed & migrated, `app/Core` base classes, 10 module skeletons, `config/modules.php`, docs + CLAUDE.md | ✅ |
 | 1 | Auth, roles, users | admin/mr/telecaller roles + 30 permissions, users gain mobile/role/region_id/is_active, admin CRUD for MR + telecaller, `auth` on all web routes, permission-scoped sidebar, Sanctum login for apps | ✅ |
 | 2 | Masters | regions CRUD + telecaller_region pivot; `customers`→`persons` with region + MR + telecaller assignment and filters; region picker on the user form; products/orders dropped | ✅ |
-| 3 | MR backend | attendance check-in/out with geo; visits (person, purpose, in/out time, geo, fetched-at); admin lists + reports | ⬜ |
+| 3 | MR backend | attendance check-in/out with geo; visits (person, purpose, in/out time, geo, fetched-at); admin lists + reports | ✅ |
 | 4 | Telecaller backend | region-scoped person list; call logs with status + notes + follow-up; telecaller panel honouring permissions | ⬜ |
 | 5 | Messaging | `messages` telecaller → MR (no Firebase): unread count, list, mark-read; polling-friendly; admin view | ⬜ |
 | 6 | Mobile API v1 | versioned endpoints, API Resources, policies, uniform envelope, documented in `api/` | ⬜ |

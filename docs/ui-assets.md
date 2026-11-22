@@ -28,6 +28,9 @@ renders nothing.
 name Laravel validation accepts, so the login view ships its own four-line
 show/hide handler against `#password` instead.
 
+## Patched theme files
+`js/sidebar-menu.js` carries three fixes — see `ui-theme-patches.md`.
+
 ## Paths
 `asset('assets/...')` — the `assets/` prefix is required; 42 calls were once
 missing it. Feather CSS is at `assets/css/vendors/feather-icon.css`.

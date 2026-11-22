@@ -32,6 +32,8 @@ and the header grows past 80px and hides the top of every page.
   compact-small, modern-type, material-type, advance-layout, box-layout.
 - `data-sidebar-layout` accepts only `fill-svg` or `stroke-svg`.
 - Logos: `logo.png`, `logo_dark.png`, `logo-icon.png`. No `logo-white.png`.
+- A direct `span` child of `.card-header` renders as a block subtitle: fine
+  for `.f-light`, but a badge there stretches. Wrap it in a `div`.
 - Before inventing a class, check it exists:
   `grep -c -F ".my-class" public/assets/css/style.css`
 

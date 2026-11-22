@@ -16,12 +16,13 @@ Legend: ✅ exists in MySQL now · ⬜ planned (phase in brackets)
   specialization, region_id, assigned_mr_id, assigned_telecaller_id,
   is_active) — renamed from `customers` in P2
 `products` `orders` — **dropped** in P2, out of scope
+`attendances` ✅ (mr_id→users cascade, date, check_in_at/lat/lng,
+  check_out_at/lat/lng) — unique `(mr_id, date)`
+`visits` ✅ (mr_id→users cascade, person_id→persons **restrict**, visit_date,
+  purpose, in_time, out_time, latitude, longitude, location_fetched_at,
+  notes) — indexes on `(mr_id, visit_date)` and `(person_id, visit_date)`
 
 ## Planned
-`attendances` [P3] — id, mr_id→users, date, check_in_at, check_in_lat,
-  check_in_lng, check_out_at, check_out_lat, check_out_lng
-`visits` [P3] — id, mr_id→users, person_id→persons, visit_date, purpose,
-  in_time, out_time, latitude, longitude, location_fetched_at, notes
 `call_logs` [P4] — id, telecaller_id→users, person_id→persons, called_at,
   status(enum), notes, follow_up_at
 `messages` [P5] — id, from_user_id→users, to_user_id→users, person_id?,
@@ -29,5 +30,5 @@ Legend: ✅ exists in MySQL now · ⬜ planned (phase in brackets)
 
 ## Rules
 Geo: `decimal(10,7)` nullable. Timestamps UTC; server-set for attendance and
-visit receipt. Every FK indexed; `visits(mr_id, visit_date)` and
-`attendances(mr_id, date)` get composite indexes (unique on the latter).
+visit receipt. Every FK indexed. A person is `restrictOnDelete` from `visits`:
+losing a person must not erase the history of having called on them.

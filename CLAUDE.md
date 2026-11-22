@@ -25,8 +25,8 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–2 ✅ (foundation · auth/roles/users · masters). **Phase 3 next:**
-MR backend — attendance and visits.
+Phases 0–3 ✅ (foundation · auth/roles/users · masters · MR backend).
+**Phase 4 next:** telecaller backend — call logs.
 
 ## Session log
 `2026-11-21` Phase 0 foundation + Cuba layout fix. See
@@ -42,12 +42,18 @@ MR backend — attendance and visits.
   region picker on the user form, products/orders and every legacy
   controller dropped. 67-check smoke run green.
   Details in `docs/history/2026-11-phase2.md`.
+`2026-11-22` Phase 3: `attendances` + `visits` with server-set times, 409
+  sequence guards, four MR endpoints behind `ability:role:mr`, admin reports.
+  Closed a scoping hole: visit summary/show/destroy now clamp to the caller's
+  regions. Fixed three Cuba JS bugs that threw on every detail page — see
+  `docs/ui-theme-patches.md`. 62-check smoke run green.
+  Details in `docs/history/2026-11-phase3.md`.
 
 ## Next step
-Phase 3 (MR backend): `attendances` (check-in/out, geo, one row per MR per
-day) → `visits` (person, purpose, in/out time, geo, fetched-at) → admin lists
-and reports for both → the Attendance and Visits modules behind their own
-permissions.
+Phase 4 (telecaller backend): `call_logs` (telecaller, person, status enum,
+notes, follow-up) → region-scoped person list for the telecaller panel →
+the Calls module behind its own permissions. Scope every list, counter and
+detail through the service, as Visits does.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,

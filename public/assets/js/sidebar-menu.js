@@ -5,10 +5,12 @@
   $(".mobile-back").click(function () {
     $("#sidebar-links .nav-menu").css("left", "-410px");
   });
-  $(".page-wrapper").attr("class", "page-wrapper " + localStorage.getItem("page-wrapper-cuba"));
-  if (localStorage.getItem("page-wrapper-cuba") === null) {
-    $(".page-wrapper").addClass("compact-wrapper");
-  }
+  // Prisha patch (see docs/ui-theme-patches.md): the stock lines interpolated the
+  // stored layout straight into the class attribute, so a first visit -- with
+  // nothing in localStorage -- rendered class="page-wrapper null" and then
+  // appended the default. Same result, without the junk class in the DOM.
+  var savedLayout = localStorage.getItem("page-wrapper-cuba");
+  $(".page-wrapper").attr("class", "page-wrapper " + (savedLayout || "compact-wrapper"));
 
   // left sidebar and vertical menu
   if ($("#pageWrapper").hasClass("compact-wrapper")) {
@@ -260,25 +262,31 @@
   });
 
   // page active
+  // Prisha patch (see docs/ui-theme-patches.md): the stock theme cleared every
+  // .active class before looking for a match, and only an href equal to the
+  // current path counts as one. On a detail or form page -- /visits/5,
+  // /persons/3/edit -- nothing matches, so the section link rendered active by
+  // Blade lost its highlight and the scroll-into-view below was left with no
+  // target. Now the takeover only happens when a link really does match.
   if ($("#pageWrapper").hasClass("compact-wrapper")) {
-    $(".sidebar-wrapper nav").find("a").removeClass("active");
-    $(".sidebar-wrapper nav").find("li").removeClass("active");
-
     var current = window.location.pathname;
-    $(".sidebar-wrapper nav ul li a").filter(function () {
-      var link = $(this).attr("href");
-      if (link) {
-        var linkPath = new URL(link, window.location.origin).pathname;
-        if (current === linkPath) {
-          $(this).parents().children("a").addClass("active");
-          $(this).parents().parents().children("ul").css("display", "block");
-          $(this).addClass("active");
-          $(this).parent().parent().parent().children("a").find("div").replaceWith('<div class="according-menu"><i class="fa-solid fa-angle-down"></i></div>');
-          $(this).parent().parent().parent().parent().parent().children("a").find("div").replaceWith('<div class="according-menu"><i class="fa-solid fa-angle-down"></i></div>');
-          return false;
-        }
-      }
-    });
+    var exactLink = $(".sidebar-wrapper nav ul li a")
+      .filter(function () {
+        var link = $(this).attr("href");
+        return link ? new URL(link, window.location.origin).pathname === current : false;
+      })
+      .first();
+
+    if (exactLink.length) {
+      $(".sidebar-wrapper nav").find("a").removeClass("active");
+      $(".sidebar-wrapper nav").find("li").removeClass("active");
+
+      exactLink.parents().children("a").addClass("active");
+      exactLink.parents().parents().children("ul").css("display", "block");
+      exactLink.addClass("active");
+      exactLink.parent().parent().parent().children("a").find("div").replaceWith('<div class="according-menu"><i class="fa-solid fa-angle-down"></i></div>');
+      exactLink.parent().parent().parent().parent().parent().children("a").find("div").replaceWith('<div class="according-menu"><i class="fa-solid fa-angle-down"></i></div>');
+    }
   }
 
   $(".left-header .mega-menu .nav-link").on("click", function (event) {
@@ -342,10 +350,16 @@
   }
 
   // active link
-  if ($(".simplebar-wrapper .simplebar-content-wrapper") && $("#pageWrapper").hasClass("compact-wrapper")) {
+  // Prisha patch (see docs/ui-theme-patches.md): the stock guard tested a jQuery
+  // object, which is truthy even when it matched nothing, then read .offset()
+  // off an empty set. With no active link in the scroller -- any page whose
+  // URL is not a sidebar href -- that threw "Cannot read properties of
+  // undefined (reading 'top')" on every load. Test the link we actually need.
+  var activeSidebarLink = $(".simplebar-wrapper .simplebar-content-wrapper a.active");
+  if (activeSidebarLink.length && $("#pageWrapper").hasClass("compact-wrapper")) {
     $(".simplebar-wrapper .simplebar-content-wrapper").animate(
       {
-        scrollTop: $(".simplebar-wrapper .simplebar-content-wrapper a.active").offset().top - 400,
+        scrollTop: activeSidebarLink.offset().top - 400,
       },
       1000
     );

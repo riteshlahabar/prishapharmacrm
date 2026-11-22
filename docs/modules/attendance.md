@@ -1,19 +1,29 @@
-# Module: Attendance        Status: ⬜ pending (0/4) — Phase 3
+# Module: Attendance        Status: ✅ done (4/4) — Phase 3
 Paths: `app/Modules/Attendance/` · Tables: `attendances`
 
 ## Functions
 | Function | File | Status |
 |---|---|---|
-| migration + model | `Database/Migrations/`, `Models/Attendance.php` | ⬜ |
-| check-in (geo + server time) | `Services/AttendanceService.php::checkIn` | ⬜ |
-| check-out (geo + server time) | `Services/AttendanceService.php::checkOut` | ⬜ |
-| admin daily presence report | `Http/Controllers/Web/AttendanceController.php` | ⬜ |
+| migration + model | `Database/Migrations/`, `Models/Attendance.php` | ✅ |
+| check-in (geo + server time) | `Services/AttendanceService.php::checkIn` | ✅ |
+| check-out (geo + server time) | `Services/AttendanceService.php::checkOut` | ✅ |
+| admin daily presence report | `Http/Controllers/Web/AttendanceController.php` | ✅ |
+| app endpoints | `Http/Controllers/Api/AttendanceController.php` | ✅ |
 
 ## Notes
-Drives the MR app home screen buttons. One row per MR per date.
-Stores `check_in_at/lat/lng`, `check_out_at/lat/lng`. **Server** sets the
-timestamp; the device sends only coordinates, so the clock can't be faked.
-Re-check-in on the same day updates nothing — guard in the service.
+Drives the MR app home screen buttons. One row per MR per date, with a unique
+`(mr_id, date)` index behind the service guard. Stores `check_in_at/lat/lng`
+and `check_out_at/lat/lng`. The **server** sets every timestamp; the device
+sends only coordinates, so the clock cannot be faked.
+
+Sequence is enforced in the service and answered as **409**, not 422: check in
+once, check out once, in that order. A racing second request loses on the
+unique index and gets the same conflict. `GET today` returns `can_check_in` /
+`can_check_out` so a reinstall cannot guess wrong.
+
+The panel report is read-only (no create or edit) and defaults to today.
+It is **not** region-scoped: presence is MR-wide, and only `attendance.view`
+reaches it.
 
 ## Next
-Migration + service contract, then the two API endpoints.
+Nothing for Phase 3. Phase 7 charts the same rows on the admin dashboard.
