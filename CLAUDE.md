@@ -49,8 +49,14 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   and follow-up reports clamp by *caller*, so a telecaller sees one row.
   Streamed CSV (no dependency), `ReportDefinition` drives head, sort and file
   together, `=+-@` quoted against Excel formula injection. New `reports.view`
-  / `reports.export`, only `view` a telecaller default. 366 tests green.
+  / `reports.export`, only `view` a telecaller default. 373 tests green.
   `docs/history/2026-11-phase11.md`.
+`2026-11-22` Fix: the Reports menu was invisible on any database seeded
+  before Phase 11 — the new permission rows did not exist, and `RoleSeeder`
+  *skipped* an existing non-admin role, so `reports.view` reached fresh
+  installs only. It now **tops up** a role with the defaults it lacks (adds,
+  never syncs; per-user grants are direct on the user, so nothing is
+  disturbed). Re-run `php artisan db:seed` after any catalogue change.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real

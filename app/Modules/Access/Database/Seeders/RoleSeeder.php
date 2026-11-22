@@ -12,9 +12,16 @@ use Spatie\Permission\PermissionRegistrar;
  * Creates the three roles and gives each its default permissions.
  *
  * Admin is re-synced to the full catalog on every run so a new capability is
- * never invisible to the admin. Telecaller is only *seeded* with defaults —
- * syncing would wipe the per-user grants an admin made in the panel, so the
- * role's own permissions are left alone once it exists.
+ * never invisible to the admin.
+ *
+ * Other roles are **topped up, never synced**. Syncing would drop whatever a
+ * role has gained since; skipping an existing role entirely — which this did
+ * until Phase 11 — meant a newly added baseline permission reached fresh
+ * installs only, so `reports.view` was a telecaller "default" that no
+ * existing telecaller ever got. Adding only what is missing is safe: the
+ * per-user grants the Access screen manages are *direct permissions on the
+ * user* (PermissionService::syncDirect), not on the role, so nothing here
+ * can disturb them.
  */
 class RoleSeeder extends Seeder
 {
@@ -22,8 +29,9 @@ class RoleSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
+        $added = [];
+
         foreach (UserRole::cases() as $case) {
-            $existed = Role::where(['name' => $case->value, 'guard_name' => 'web'])->exists();
             $role = Role::findOrCreate($case->value, 'web');
 
             if ($case === UserRole::Admin) {
@@ -32,11 +40,25 @@ class RoleSeeder extends Seeder
                 continue;
             }
 
-            if (! $existed) {
-                $role->syncPermissions(PermissionCatalog::defaultsFor($case));
+            // Only what the role is missing, so a re-run adds a new baseline
+            // capability without touching anything already granted.
+            $missing = array_values(array_diff(
+                PermissionCatalog::defaultsFor($case),
+                $role->permissions->pluck('name')->all(),
+            ));
+
+            if ($missing !== []) {
+                $role->givePermissionTo($missing);
+                $added[$case->value] = $missing;
             }
         }
 
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
         $this->command?->info('Roles seeded: '.implode(', ', UserRole::values()));
+
+        foreach ($added as $role => $names) {
+            $this->command?->info("  {$role} gained: ".implode(', ', $names));
+        }
     }
 }
