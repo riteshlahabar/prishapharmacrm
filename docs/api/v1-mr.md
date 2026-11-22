@@ -24,7 +24,7 @@ answers, even on a day with no row, so the two buttons never guess:
 `already_checked_out` when the day's sequence forbids the call.
 
 ## Visits
-`mr_id` is taken from the token and rejected if sent. `purpose` is one of the
+`mr_id` is taken from the token and never read from the body. `purpose` is one of the
 `VisitPurpose` values. `out_time` must be ≥ `in_time`, `visit_date` cannot be
 in the future, and lat/lng must arrive together → otherwise **422**.
 `location_fetched_at` (when the device read the GPS) is stored next to

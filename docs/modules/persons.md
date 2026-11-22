@@ -1,4 +1,4 @@
-# Module: Persons        Status: 🟡 4/5 — Phase 2 (API in Phase 6)
+# Module: Persons        Status: ✅ 5/5 — Phase 2, API in Phase 4
 Paths: `app/Modules/Persons/` · Tables: `persons` (was `customers`)
 
 ## Functions
@@ -8,7 +8,7 @@ Paths: `app/Modules/Persons/` · Tables: `persons` (was `customers`)
 | admin CRUD | `Http/Controllers/Web/PersonController.php` | ✅ |
 | assign MR + telecaller | `Services/PersonService.php` | ✅ |
 | filter by type / region / assignee | `Repositories/EloquentPersonRepository::applyFilters` | ✅ |
-| API list for both apps | `Http/Controllers/Api/PersonController.php` | ⬜ P6 |
+| API list for both apps | `Http/Controllers/Api/PersonController.php` | ✅ |
 
 ## Notes
 Fields: name, type, mobile, email, address, city, region_id, specialization,
@@ -26,5 +26,11 @@ The Phase 2 migration *renames* `customers` and its columns rather than
 recreating them, so a live deployment keeps its rows. Converted rows land as
 `type=doctor` and need re-typing by hand.
 
+`/api/v1/persons` landed with Phase 4, since the telecaller app needs a call
+queue. It reuses `paginateForUser` and adds the role split: a telecaller gets
+their regions, an MR only the persons assigned to them. Active rows only. The
+telecaller view carries `last_call` per row, fetched through the **Calls
+service contract** so this module never touches `call_logs`.
+
 ## Next
-Phase 6: `/api/v1/persons` for both apps, reusing `paginateForUser`.
+Phase 6 revisits it for policies and the shared API polish.

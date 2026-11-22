@@ -21,10 +21,12 @@ Legend: ✅ exists in MySQL now · ⬜ planned (phase in brackets)
 `visits` ✅ (mr_id→users cascade, person_id→persons **restrict**, visit_date,
   purpose, in_time, out_time, latitude, longitude, location_fetched_at,
   notes) — indexes on `(mr_id, visit_date)` and `(person_id, visit_date)`
+`call_logs` ✅ (telecaller_id→users cascade, person_id→persons **restrict**,
+  called_at, status, notes, follow_up_at, **follow_up_done_at**) — indexes on
+  `(telecaller_id, called_at)`, `(person_id, called_at)` and
+  `(telecaller_id, follow_up_at)` for the call-back queue
 
 ## Planned
-`call_logs` [P4] — id, telecaller_id→users, person_id→persons, called_at,
-  status(enum), notes, follow_up_at
 `messages` [P5] — id, from_user_id→users, to_user_id→users, person_id?,
   call_log_id?, subject, body, is_read, read_at
 

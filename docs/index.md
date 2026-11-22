@@ -20,7 +20,7 @@ one doc it points at. Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blo
 | Persons | 🟡 | `modules/persons.md` | doctor / hospital / medical |
 | Attendance | ✅ | `modules/attendance.md` | MR check-in / check-out + geo |
 | Visits | ✅ | `modules/visits.md` | visit entry, in/out time, geo |
-| Calls | ⬜ | `modules/calls.md` | call status + notes |
+| Calls | ✅ | `modules/calls.md` | call status + notes |
 | Messages | ⬜ | `modules/messages.md` | telecaller → MR in-app msg |
 | Dashboard | ⬜ | `modules/dashboard.md` | admin + telecaller dashboards |
 

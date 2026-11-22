@@ -25,8 +25,8 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–3 ✅ (foundation · auth/roles/users · masters · MR backend).
-**Phase 4 next:** telecaller backend — call logs.
+Phases 0–4 ✅ (foundation · auth/roles/users · masters · MR backend ·
+telecaller backend). **Phase 5 next:** messaging, telecaller → MR.
 
 ## Session log
 `2026-11-21` Phase 0 foundation + Cuba layout fix. See
@@ -48,12 +48,18 @@ Phases 0–3 ✅ (foundation · auth/roles/users · masters · MR backend).
   regions. Fixed three Cuba JS bugs that threw on every detail page — see
   `docs/ui-theme-patches.md`. 62-check smoke run green.
   Details in `docs/history/2026-11-phase3.md`.
+`2026-11-22` Phase 4: `call_logs` + `CallStatus`, call-back queue with an
+  explicit `follow_up_done_at`, six telecaller endpoints, admin call report.
+  `/api/v1/persons` shipped early (role-scoped) so the app has a queue; each
+  row carries `last_call` via the Calls contract. Calls scope on the caller,
+  not the region — unlike visits. 76 smoke + 35 panel checks green.
+  Details in `docs/history/2026-11-phase4.md`.
 
 ## Next step
-Phase 4 (telecaller backend): `call_logs` (telecaller, person, status enum,
-notes, follow-up) → region-scoped person list for the telecaller panel →
-the Calls module behind its own permissions. Scope every list, counter and
-detail through the service, as Visits does.
+Phase 5 (messaging, no Firebase): `messages` telecaller → MR with
+`is_read`/`read_at` → unread count, list and mark-read endpoints the app can
+poll → `GET /mrs` for the recipient picker → admin view. Scope through the
+service, and decide early whether a message is per-person or free-standing.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
