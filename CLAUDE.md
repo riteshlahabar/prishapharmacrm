@@ -25,25 +25,14 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–7 ✅ plus **Phase 9 ✅** (the MR Flutter app). **Next:** Phase 10,
-the telecaller app — or Phase 8 hardening first, if you want tests before a
-second app lands.
+Phases 0–7, 9 and 10 ✅ — backend, panel, both Flutter apps.
+**Only Phase 8 (hardening) is left.**
 
 ## Session log
-Phases 0–5 (foundation, auth/roles/users, masters, MR and telecaller
-  backends, messaging) are rotated out — see `docs/history/2026-11.md` for the
-  index and one file per phase. Admin login is `ADMIN_*`; `users:set-admin`
-  resets it.
-`2026-11-22` Phase 6: one API contract. `ApiExceptionRenderer` puts every
-  thrown failure in the envelope with a stable `errors.reason` (401/422 had
-  Laravel's own shape, 404 leaked the model class, 404/405 a stack trace).
-  `PerPage` clamps page size 1–100 — `per_page=-5` was a 500 from raw SQL,
-  `100000` was honoured. Filled `user.regions[]`, `[]` since Phase 2. Tokens
-  now die with their account (`api.auth`): deactivating an MR used to leave
-  theirs filing visits. Policies per module via a `policies()` provider hook;
-  services delegate row checks, so one rule reads 403 in the panel and 404 on
-  the API. 102 smoke checks green — `tests/smoke/phase6-api.sh`.
-  Details in `docs/history/2026-11-phase6.md`.
+Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
+  see `docs/history/2026-11.md` for the index and one file per phase. Admin
+  login is `ADMIN_*`; `users:set-admin` resets it. The API contract itself is
+  `docs/api/v1-common.md`.
 `2026-11-22` Phase 7: dashboards. One template for every role — the service
   asks each module's policy `viewAny` which cards the viewer gets (admin six
   tiles/four charts, telecaller four/two), so no role test in the controller
@@ -64,18 +53,27 @@ Phases 0–5 (foundation, auth/roles/users, masters, MR and telecaller
   device bugs: INTERNET was debug-manifest only (release could not reach the
   API), no location permissions, no iOS usage string. Analyze clean, 40
   tests, fixtures captured live. `docs/history/2026-11-phase9.md`.
+`2026-11-22` Phase 10: telecaller app, same shape as the MR one. Its
+  scaffold was dead *and* would not install (`flutter_riverpod: ^2.61.0`
+  never existed). Queue, log-a-call, call-backs, sent. The queue is one
+  request: `/persons` is region-scoped and each row carries `last_call`.
+  `CallStatus.needsFollowUp` mirrors the server's one awkward rule —
+  `follow_up_at` required on `callback`, refused otherwise — and the
+  repository tests assert the body. Package ids are real now:
+  `com.prishapharma.mr` / `.telecaller`. Analyze clean, 34 tests (MR still
+  40). `docs/history/2026-11-phase10.md`.
 
 ## Next step
-Phase 10 (telecaller app): same shape as the MR app — reuse its core/api and
-theme, then the queue, call logging and send-to-MR. Phase 8 hardening is
-still open: `tests/smoke/` covers the contract end-to-end, but
-`tests/Feature` is Laravel's stock example and fails because `/` is behind
-`auth`.
+Phase 8 (hardening) is all that remains: `tests/smoke/` covers the contract
+end-to-end, but `tests/Feature` is Laravel's stock example and fails because
+`/` is behind `auth`. Then demo seeders and a docs refresh. Before any
+release, neither app has run on real hardware and both keep their token in
+`SharedPreferences` — see each app's README.
 
 ## Open items
-- ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,
-  primary `#1157FA`, built on nb_utils + MobX (we use Riverpod — harvest the
-  design, not the state layer). Persisted in the MR app repo under `design/`.
+- ProKit (Medilab) lives in the MR app repo under `design/`, excluded from
+  analysis. Its palette (`#1157FA`) and card shapes are in both apps' themes;
+  its nb_utils + MobX code is not — we took the design, not the state layer.
 - Cuba needs no upload: its CSS was always complete. Markup contract in
   `docs/ui-cuba.md`, load order and logos in `docs/ui-assets.md`.
 - Logos are still stock Cuba artwork. Dropping Prisha files over

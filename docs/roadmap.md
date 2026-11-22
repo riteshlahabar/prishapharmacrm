@@ -15,7 +15,7 @@ Decisions taken: customers → persons (products/orders dropped);
 | 7 | Dashboards | admin charts (visits, attendance, calls, conversion); scoped telecaller dashboard | ✅ |
 | 8 | Hardening | feature tests per module, demo seeders, Pint, docs refresh | ⬜ |
 | 9 | MR app | ProKit UI, check-in/out home screen, visit form + geolocator, message inbox | ✅ |
-| 10 | Telecaller app | ProKit UI, region person list, call + status/notes, send-to-MR | ⬜ |
+| 10 | Telecaller app | ProKit UI, region person list, call + status/notes, send-to-MR | ✅ |
 
 ## Blockers
 - No device or emulator in the build container: the Flutter apps are verified
