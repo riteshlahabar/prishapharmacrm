@@ -10,6 +10,7 @@ use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * What a telecaller did, and what they promised to do next.
@@ -99,8 +100,9 @@ class CallLogService implements CallLogServiceInterface
     {
         $call = $this->find($id);
 
-        if (! $user->isAdmin() && (int) $call->telecaller_id !== (int) $user->id) {
-            // Missing, not forbidden: a 403 would confirm the row exists.
+        // CallLogPolicy holds the rule; this layer only chooses how a denial
+        // reads. Missing, not forbidden: a 403 would confirm the row exists.
+        if (! Gate::forUser($user)->allows('view', $call)) {
             throw new ModelNotFoundException;
         }
 
@@ -168,7 +170,9 @@ class CallLogService implements CallLogServiceInterface
     {
         $call = $this->find($id);
 
-        if ((int) $call->telecaller_id !== (int) $telecaller->id) {
+        // `update` on CallLogPolicy is owner-only, with no admin bypass: an
+        // admin reads a call for reporting but does not rewrite the notes.
+        if (! Gate::forUser($telecaller)->allows('update', $call)) {
             throw new ModelNotFoundException;
         }
 

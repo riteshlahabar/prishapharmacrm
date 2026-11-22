@@ -1,4 +1,4 @@
-# Module: Messages        Status: ✅ done (5/5) — Phase 5
+# Module: Messages        Status: ✅ done (6/6) — Phases 5, 6
 Paths: `app/Modules/Messages/` · Tables: `messages`
 
 ## Functions
@@ -6,6 +6,7 @@ Paths: `app/Modules/Messages/` · Tables: `messages`
 |---|---|---|
 | migration + model | `Database/Migrations/`, `Models/Message.php` | ✅ |
 | telecaller sends to MR | `Services/MessageService.php::sendAs` | ✅ |
+| policy (either party; read own) | `Policies/MessagePolicy.php` | ✅ |
 | MR inbox list | `Http/Controllers/Api/MessageController.php::index` | ✅ |
 | unread count (polling) | `…::unreadCount` | ✅ |
 | mark read | `…::markRead`, `…::markAllRead` | ✅ |
@@ -33,3 +34,4 @@ context must not delete what someone said. The panel scope is **either party**
 
 ## Next
 Phase 7 counts unread per MR on the dashboard. Replies are not in scope.
+`MessagePolicy::markRead` is recipient-only — not the sender, not an admin.

@@ -3,6 +3,7 @@
 namespace App\Modules\Calls\Http\Controllers\Api;
 
 use App\Core\Http\ApiResponse;
+use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Calls\Http\Requests\StoreCallLogRequest;
 use App\Modules\Calls\Http\Requests\UpdateCallLogRequest;
@@ -40,7 +41,7 @@ class CallLogController extends Controller
             'date_to' => $request->input('date_to'),
             'person_id' => $request->input('person_id'),
             'status' => $request->input('status'),
-        ], (int) $request->integer('per_page', 20));
+        ], PerPage::from($request));
 
         return $this->page($page, 'Call history loaded.');
     }
@@ -54,7 +55,7 @@ class CallLogController extends Controller
         $page = $this->calls->followUpsFor(
             $request->user(),
             $request->boolean('due', true),
-            (int) $request->integer('per_page', 20),
+            PerPage::from($request),
         );
 
         return $this->page($page, 'Follow-ups loaded.');

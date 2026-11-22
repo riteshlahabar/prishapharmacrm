@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | swallowed by the parameter.
 */
 
-Route::middleware(['auth:sanctum', 'ability:role:telecaller'])
+Route::middleware(['api.auth', 'ability:role:telecaller'])
     ->prefix('call-logs')
     ->name('api.v1.call-logs.')
     ->group(function () {

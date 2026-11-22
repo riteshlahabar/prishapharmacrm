@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 | though it authenticates fine. Attendance belongs to field reps.
 */
 
-Route::middleware(['auth:sanctum', 'ability:role:mr'])
+Route::middleware(['api.auth', 'ability:role:mr'])
     ->prefix('attendance')
     ->name('api.v1.attendance.')
     ->group(function () {

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | by the parameter.
 */
 
-Route::middleware('auth:sanctum')->prefix('messages')->name('api.v1.messages.')->group(function () {
+Route::middleware('api.auth')->prefix('messages')->name('api.v1.messages.')->group(function () {
     // MR: the inbox and the poll.
     Route::middleware('ability:role:mr')->group(function () {
         Route::get('unread-count', [MessageController::class, 'unreadCount'])->name('unread-count');
@@ -32,6 +32,6 @@ Route::middleware('auth:sanctum')->prefix('messages')->name('api.v1.messages.')-
 
 // The recipient picker sits outside the `messages` prefix: the telecaller app
 // asks "which MRs?", which is a question about people, not about a message.
-Route::middleware(['auth:sanctum', 'ability:role:telecaller'])
+Route::middleware(['api.auth', 'ability:role:telecaller'])
     ->get('mrs', [MessageController::class, 'recipients'])
     ->name('api.v1.mrs.index');

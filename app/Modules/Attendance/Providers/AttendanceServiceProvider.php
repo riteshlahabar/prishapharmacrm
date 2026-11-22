@@ -3,6 +3,8 @@
 namespace App\Modules\Attendance\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Attendance\Models\Attendance;
+use App\Modules\Attendance\Policies\AttendancePolicy;
 use App\Modules\Attendance\Repositories\Contracts\AttendanceRepositoryInterface;
 use App\Modules\Attendance\Repositories\EloquentAttendanceRepository;
 use App\Modules\Attendance\Services\AttendanceService;
@@ -23,6 +25,14 @@ class AttendanceServiceProvider extends ModuleServiceProvider
         return [
             AttendanceRepositoryInterface::class => EloquentAttendanceRepository::class,
             AttendanceServiceInterface::class => AttendanceService::class,
+        ];
+    }
+
+    /** @return array<class-string, class-string> */
+    protected function policies(): array
+    {
+        return [
+            Attendance::class => AttendancePolicy::class,
         ];
     }
 }

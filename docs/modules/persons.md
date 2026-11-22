@@ -1,4 +1,4 @@
-# Module: Persons        Status: ✅ 5/5 — Phase 2, API in Phase 4
+# Module: Persons        Status: ✅ 6/6 — Phase 2, API 4, policy 6
 Paths: `app/Modules/Persons/` · Tables: `persons` (was `customers`)
 
 ## Functions
@@ -6,6 +6,7 @@ Paths: `app/Modules/Persons/` · Tables: `persons` (was `customers`)
 |---|---|---|
 | migration + `PersonType` enum | `Database/Migrations/`, `Enums/PersonType.php` | ✅ |
 | admin CRUD | `Http/Controllers/Web/PersonController.php` | ✅ |
+| policy (territory scope) | `Policies/PersonPolicy.php` | ✅ |
 | assign MR + telecaller | `Services/PersonService.php` | ✅ |
 | filter by type / region / assignee | `Repositories/EloquentPersonRepository::applyFilters` | ✅ |
 | API list for both apps | `Http/Controllers/Api/PersonController.php` | ✅ |
@@ -33,4 +34,5 @@ telecaller view carries `last_call` per row, fetched through the **Calls
 service contract** so this module never touches `call_logs`.
 
 ## Next
-Phase 6 revisits it for policies and the shared API polish.
+Policy and API polish landed in Phase 6. Phase 7 reads the list through
+the service contract for the dashboards.

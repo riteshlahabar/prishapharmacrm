@@ -2,6 +2,7 @@
 
 namespace App\Core\Providers;
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,6 +22,18 @@ abstract class ModuleServiceProvider extends ServiceProvider
         return [];
     }
 
+    /**
+     * Model => policy for this module, registered on boot. Keeping these
+     * beside the bindings means authorization arrives with the module and the
+     * application still only knows config/modules.php.
+     *
+     * @return array<class-string, class-string>
+     */
+    protected function policies(): array
+    {
+        return [];
+    }
+
     public function register(): void
     {
         foreach ($this->bindings() as $abstract => $concrete) {
@@ -30,6 +43,10 @@ abstract class ModuleServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        foreach ($this->policies() as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
+
         $path = $this->modulePath();
 
         if (is_dir("{$path}/Database/Migrations")) {

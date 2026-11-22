@@ -3,6 +3,7 @@
 namespace App\Modules\Attendance\Http\Controllers\Api;
 
 use App\Core\Http\ApiResponse;
+use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Attendance\Exceptions\AttendanceConflict;
 use App\Modules\Attendance\Http\Requests\GeoPunchRequest;
@@ -74,7 +75,7 @@ class AttendanceController extends Controller
         $page = $this->attendance->historyFor($request->user(), [
             'date_from' => $request->input('date_from'),
             'date_to' => $request->input('date_to'),
-        ], (int) $request->integer('per_page', 20));
+        ], PerPage::from($request));
 
         return ApiResponse::paginated(
             $page->through(fn ($row) => (new AttendanceResource($row))->resolve()),

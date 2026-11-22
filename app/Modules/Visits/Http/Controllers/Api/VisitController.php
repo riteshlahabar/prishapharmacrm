@@ -3,6 +3,7 @@
 namespace App\Modules\Visits\Http\Controllers\Api;
 
 use App\Core\Http\ApiResponse;
+use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Visits\Http\Requests\StoreVisitRequest;
 use App\Modules\Visits\Http\Resources\VisitResource;
@@ -38,7 +39,7 @@ class VisitController extends Controller
             'date_to' => $request->input('date_to'),
             'person_id' => $request->input('person_id'),
             'purpose' => $request->input('purpose'),
-        ], (int) $request->integer('per_page', 20));
+        ], PerPage::from($request));
 
         // Through the resource, so a list item is the same shape as a single
         // one and no column leaks just because it is in a list.

@@ -3,6 +3,7 @@
 namespace App\Modules\Persons\Http\Controllers\Api;
 
 use App\Core\Http\ApiResponse;
+use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Calls\Http\Resources\CallLogResource;
 use App\Modules\Calls\Services\Contracts\CallLogServiceInterface;
@@ -47,7 +48,7 @@ class PersonController extends Controller
             $filters['assigned_mr_id'] = $user->id;
         }
 
-        $page = $this->persons->paginateForUser($user, $filters, (int) $request->integer('per_page', 20));
+        $page = $this->persons->paginateForUser($user, $filters, PerPage::from($request));
 
         $lastCalls = $user->isTelecaller()
             ? $this->calls->lastCallsFor($user, collect($page->items())->pluck('id')->all())

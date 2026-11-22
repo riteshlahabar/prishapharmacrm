@@ -3,6 +3,8 @@
 namespace App\Modules\Visits\Providers;
 
 use App\Core\Providers\ModuleServiceProvider;
+use App\Modules\Visits\Models\Visit;
+use App\Modules\Visits\Policies\VisitPolicy;
 use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
 use App\Modules\Visits\Repositories\EloquentVisitRepository;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
@@ -23,6 +25,14 @@ class VisitsServiceProvider extends ModuleServiceProvider
         return [
             VisitRepositoryInterface::class => EloquentVisitRepository::class,
             VisitServiceInterface::class => VisitService::class,
+        ];
+    }
+
+    /** @return array<class-string, class-string> */
+    protected function policies(): array
+    {
+        return [
+            Visit::class => VisitPolicy::class,
         ];
     }
 }

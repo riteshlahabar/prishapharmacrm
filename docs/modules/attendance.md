@@ -1,4 +1,4 @@
-# Module: Attendance        Status: ✅ done (4/4) — Phase 3
+# Module: Attendance        Status: ✅ done (5/5) — Phases 3, 6
 Paths: `app/Modules/Attendance/` · Tables: `attendances`
 
 ## Functions
@@ -6,6 +6,7 @@ Paths: `app/Modules/Attendance/` · Tables: `attendances`
 |---|---|---|
 | migration + model | `Database/Migrations/`, `Models/Attendance.php` | ✅ |
 | check-in (geo + server time) | `Services/AttendanceService.php::checkIn` | ✅ |
+| policy (own rows; no edits) | `Policies/AttendancePolicy.php` | ✅ |
 | check-out (geo + server time) | `Services/AttendanceService.php::checkOut` | ✅ |
 | admin daily presence report | `Http/Controllers/Web/AttendanceController.php` | ✅ |
 | app endpoints | `Http/Controllers/Api/AttendanceController.php` | ✅ |
@@ -26,4 +27,5 @@ It is **not** region-scoped: presence is MR-wide, and only `attendance.view`
 reaches it.
 
 ## Next
-Nothing for Phase 3. Phase 7 charts the same rows on the admin dashboard.
+Phase 7 charts the same rows on the admin dashboard. Nobody edits a punch —
+the policy has no `update`, since the times are the record's evidence.

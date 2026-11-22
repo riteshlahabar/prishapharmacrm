@@ -38,8 +38,16 @@ final class ApiResponse
             'meta' => [
                 'current_page' => $paginator->currentPage(),
                 'last_page' => $paginator->lastPage(),
+                // The size actually used, which is how an app sees that its
+                // `per_page` was clamped (App\Core\Http\PerPage).
                 'per_page' => $paginator->perPage(),
                 'total' => $paginator->total(),
+                // Row span of this page, 1-based; null on an empty page.
+                'from' => $paginator->firstItem(),
+                'to' => $paginator->lastItem(),
+                // Saves the apps comparing page numbers to decide whether to
+                // keep scrolling.
+                'has_more' => $paginator->hasMorePages(),
             ],
         ]);
     }

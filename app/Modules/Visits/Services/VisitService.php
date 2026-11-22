@@ -10,6 +10,7 @@ use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 class VisitService implements VisitServiceInterface
 {
@@ -61,13 +62,9 @@ class VisitService implements VisitServiceInterface
     {
         $visit = $this->find($id);
 
-        if ($user->isAdmin()) {
-            return $visit;
-        }
-
-        $regionId = $visit->person?->region_id;
-
-        if ($regionId === null || ! in_array($regionId, $this->assignment->idsFor($user), false)) {
+        // The rule itself lives in VisitPolicy, so the panel and the API
+        // cannot drift apart; what differs is only how a denial is reported.
+        if (! Gate::forUser($user)->allows('view', $visit)) {
             throw new ModelNotFoundException;
         }
 

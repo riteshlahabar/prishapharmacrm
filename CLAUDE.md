@@ -25,19 +25,13 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–5 ✅ (foundation · auth/roles/users · masters · MR backend ·
-telecaller backend · messaging). **Phase 6 next:** mobile API v1 polish.
+Phases 0–6 ✅ (foundation · auth/roles/users · masters · MR backend ·
+telecaller backend · messaging · mobile API v1). **Phase 7 next:** dashboards.
 
 ## Session log
-Phases 0–2 (foundation, auth/roles/users, masters) are rotated out — see
-  `docs/history/2026-11.md` for the index and one file per phase. Admin login
-  comes from `ADMIN_*`; `users:set-admin` resets it.
-`2026-11-22` Phase 3: `attendances` + `visits` with server-set times, 409
-  sequence guards, four MR endpoints behind `ability:role:mr`, admin reports.
-  Closed a scoping hole: visit summary/show/destroy now clamp to the caller's
-  regions. Fixed three Cuba JS bugs that threw on every detail page — see
-  `docs/ui-theme-patches.md`. 62-check smoke run green.
-  Details in `docs/history/2026-11-phase3.md`.
+Phases 0–3 (foundation, auth/roles/users, masters, MR backend) are rotated
+  out — see `docs/history/2026-11.md` for the index and one file per phase.
+  Admin login comes from `ADMIN_*`; `users:set-admin` resets it.
 `2026-11-22` Phase 4: `call_logs` + `CallStatus`, call-back queue with an
   explicit `follow_up_done_at`, six telecaller endpoints, admin call report.
   `/api/v1/persons` shipped early (role-scoped) so the app has a queue; each
@@ -50,12 +44,22 @@ Phases 0–2 (foundation, auth/roles/users, masters) are rotated out — see
   MRs in your regions plus the named person's own rep. Panel scope is either
   party. 72 smoke checks green.
   Details in `docs/history/2026-11-phase5.md`.
+`2026-11-22` Phase 6: one API contract. `ApiExceptionRenderer` puts every
+  thrown failure in the envelope with a stable `errors.reason` (401/422 had
+  Laravel's own shape, 404 leaked the model class, 404/405 a stack trace).
+  `PerPage` clamps page size 1–100 — `per_page=-5` was a 500 from raw SQL,
+  `100000` was honoured. Filled `user.regions[]`, `[]` since Phase 2. Tokens
+  now die with their account (`api.auth`): deactivating an MR used to leave
+  theirs filing visits. Policies per module via a `policies()` provider hook;
+  services delegate row checks, so one rule reads 403 in the panel and 404 on
+  the API. 102 smoke checks green — `tests/smoke/phase6-api.sh`.
+  Details in `docs/history/2026-11-phase6.md`.
 
 ## Next step
-Phase 6 (mobile API v1): the endpoints exist — this pass adds policies, a
-check that every list is scoped and paginated the same way, consistent 404 vs
-403, and the `api/` docs as the contract the two Flutter apps build against.
-Then Phase 7 dashboards, which read through service contracts only.
+Phase 7 (dashboards): admin charts for visits, attendance, calls and
+conversion, plus a region-scoped telecaller dashboard — reading through
+service contracts only, and moving the panel's own checks onto the Phase 6
+policies. `app/Http/Controllers/DashboardController` moves into the module.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,

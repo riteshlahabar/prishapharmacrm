@@ -1,4 +1,4 @@
-# Module: Auth        Status: ✅ done (4/4) — Phase 1
+# Module: Auth        Status: ✅ done (5/5) — Phases 1, 6
 Paths: `app/Modules/Auth/` · Tables: `users`, `personal_access_tokens`
 
 ## Functions
@@ -6,6 +6,7 @@ Paths: `app/Modules/Auth/` · Tables: `users`, `personal_access_tokens`
 |---|---|---|
 | panel session login (Cuba view) | `Http/Controllers/Web/LoginController.php` | ✅ |
 | app login → Sanctum token | `Http/Controllers/Api/AuthController.php` | ✅ |
+| re-check account per request | `app/Core/Http/Middleware/EnsureActiveApiUser.php` | ✅ |
 | logout (panel + token revoke) | both controllers | ✅ |
 | `me` / profile endpoint | `Http/Controllers/Api/AuthController.php` | ✅ |
 
@@ -20,4 +21,6 @@ server refuse a user from the other app. Login is throttled (6/min panel,
 10/min API). No registration endpoint. Legacy `/api/auth/*` points here too.
 
 ## Next
-Phase 6: move both apps onto `/api/v1`, then delete the legacy routes.
+Both apps still call the legacy unversioned routes; delete those once they
+move to `/api/v1`. Phase 6 filled `user.regions[]`, empty since Phase 2, and
+made a token die with its account (`account_inactive`, `role_changed`).

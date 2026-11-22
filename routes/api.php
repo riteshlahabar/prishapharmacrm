@@ -24,7 +24,7 @@ Route::prefix('auth')->name('api.legacy.auth.')->group(function () {
         ->middleware('throttle:10,1')
         ->name('login');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('api.auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/me', [AuthController::class, 'me'])->name('me');
     });

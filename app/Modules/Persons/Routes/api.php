@@ -11,6 +11,6 @@ use Illuminate\Support\Facades\Route;
 | a single role: the controller scopes the rows by the caller's role.
 */
 
-Route::middleware(['auth:sanctum', 'abilities:role:mr,role:telecaller'])
+Route::middleware(['api.auth', 'abilities:role:mr,role:telecaller'])
     ->get('persons', [PersonController::class, 'index'])
     ->name('api.v1.persons.index');

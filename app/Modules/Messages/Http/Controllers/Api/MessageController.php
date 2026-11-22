@@ -3,6 +3,7 @@
 namespace App\Modules\Messages\Http\Controllers\Api;
 
 use App\Core\Http\ApiResponse;
+use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Messages\Http\Requests\SendMessageRequest;
 use App\Modules\Messages\Http\Resources\MessageResource;
@@ -31,7 +32,7 @@ class MessageController extends Controller
         $page = $this->messages->inboxFor($request->user(), [
             'read' => $request->boolean('unread') ? 'unread' : null,
             'person_id' => $request->input('person_id'),
-        ], (int) $request->integer('per_page', 20));
+        ], PerPage::from($request));
 
         return ApiResponse::paginated(
             $page->through(fn ($message) => (new MessageResource(
@@ -97,7 +98,7 @@ class MessageController extends Controller
         $page = $this->messages->paginate([
             'from_user_id' => $request->user()->id,
             'person_id' => $request->input('person_id'),
-        ], (int) $request->integer('per_page', 20));
+        ], PerPage::from($request));
 
         return ApiResponse::paginated(
             $page->through(fn ($message) => (new MessageResource(

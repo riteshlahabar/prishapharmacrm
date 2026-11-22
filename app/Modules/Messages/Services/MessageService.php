@@ -13,6 +13,7 @@ use App\Modules\Users\Services\Contracts\UserServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Who may tell whom what.
@@ -94,8 +95,9 @@ class MessageService implements MessageServiceInterface
     {
         $message = $this->find($id);
 
-        if ((int) $message->to_user_id !== (int) $recipient->id) {
-            // Only the recipient reads it. Missing, not forbidden.
+        // Only the addressee marks it read — not the sender, not an admin.
+        // Missing, not forbidden (MessagePolicy::markRead).
+        if (! Gate::forUser($recipient)->allows('markRead', $message)) {
             throw new ModelNotFoundException;
         }
 
@@ -125,10 +127,9 @@ class MessageService implements MessageServiceInterface
     {
         $message = $this->find($id);
 
-        $isParty = (int) $message->from_user_id === (int) $user->id
-            || (int) $message->to_user_id === (int) $user->id;
-
-        if (! $user->isAdmin() && ! $isParty) {
+        // Either party, or an admin — the rule is MessagePolicy's; this layer
+        // only chooses that a denial reads as missing rather than forbidden.
+        if (! Gate::forUser($user)->allows('view', $message)) {
             throw new ModelNotFoundException;
         }
 
