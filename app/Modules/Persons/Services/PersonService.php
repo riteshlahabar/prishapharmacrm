@@ -9,6 +9,8 @@ use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Gate;
 
 class PersonService implements PersonServiceInterface
 {
@@ -53,6 +55,19 @@ class PersonService implements PersonServiceInterface
     {
         /** @var Person */
         return $this->persons->findOrFail($id);
+    }
+
+    public function findForUser(User $user, int|string $id): Person
+    {
+        $person = $this->find($id);
+
+        // The rule itself lives in PersonPolicy, so the panel and the API
+        // cannot drift apart; what differs is only how a denial is reported.
+        if (! Gate::forUser($user)->allows('view', $person)) {
+            throw new ModelNotFoundException;
+        }
+
+        return $person;
     }
 
     public function create(array $data): Person

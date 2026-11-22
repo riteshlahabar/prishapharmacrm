@@ -24,10 +24,10 @@ unique index and gets the same conflict. `GET today` returns `can_check_in` /
 `can_check_out` so a reinstall cannot guess wrong.
 
 The panel report is read-only (no create or edit) and defaults to today.
-It is **not** region-scoped: presence is MR-wide, and only `attendance.view`
-reaches it.
+Phase 8: it now goes through `paginateForUser` / `summaryForUser`, so a
+telecaller granted `attendance.view` sees only reps in the regions they
+cover — it was the one panel list still reading company-wide.
 
 ## Next
-Phase 8 hardening. The dashboard charts these rows. Nobody edits a punch —
-the policy has no `update`, since the times are the record's evidence.
-Phase 7 added `region_scope`, which the filters had been missing.
+Done. The dashboard charts these rows. Nobody edits a punch — the policy has
+no `update`, since the times are the record's evidence.

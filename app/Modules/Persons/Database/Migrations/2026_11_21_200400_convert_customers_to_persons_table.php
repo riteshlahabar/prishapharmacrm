@@ -95,8 +95,14 @@ return new class extends Migration
             $table->dropForeign(['region_id']);
         });
 
+        // Every index on a column being dropped has to go first. MySQL tends
+        // to tidy these up itself; sqlite refuses the column drop while an
+        // index still names it, so a down() that skipped them only worked on
+        // one engine.
         Schema::table('persons', function (Blueprint $table) {
             $table->dropIndex(['region_id', 'type']);
+            $table->dropIndex(['type']);
+            $table->dropIndex(['is_active']);
         });
 
         Schema::table('persons', function (Blueprint $table) {

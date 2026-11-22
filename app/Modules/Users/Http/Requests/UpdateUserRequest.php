@@ -20,6 +20,23 @@ class UpdateUserRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Lower-case the email *before* validating, not only in `payload()`.
+     *
+     * The column stores the lower-cased form, so validating the raw input left
+     * `unique` checking a different string than the one that gets inserted: on
+     * a case-sensitive collation "TAKEN@Example.com" passed the rule and then
+     * hit the unique index as "taken@example.com" — a 500 instead of a field
+     * error. (Padding needs no handling here: Laravel's TrimStrings middleware
+     * has already trimmed every input by this point.)
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('email')) {
+            $this->merge(['email' => $this->string('email')->trim()->lower()->value()]);
+        }
+    }
+
     public function rules(): array
     {
         $id = $this->route('user');

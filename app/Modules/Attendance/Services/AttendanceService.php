@@ -91,6 +91,12 @@ class AttendanceService implements AttendanceServiceInterface
         return $this->attendances->summary($filters);
     }
 
+    /** The panel report for whatever territory this user covers. */
+    public function paginateForUser(User $user, array $filters = [], int $perPage = 20): LengthAwarePaginator
+    {
+        return $this->paginate($this->clampToTerritory($user, $filters), $perPage);
+    }
+
     /** Totals for whatever territory this user covers. */
     public function summaryForUser(User $user, array $filters = []): array
     {

@@ -26,6 +26,14 @@ interface AttendanceServiceInterface
 
     public function summary(array $filters = []): array;
 
+    /**
+     * The panel report, clamped to the regions this user covers. The panel
+     * calls this rather than `paginate()` so a telecaller granted
+     * `attendance.view` cannot read every rep in the company — the same
+     * contract the Visits, Calls, Messages and Persons modules keep.
+     */
+    public function paginateForUser(User $user, array $filters = [], int $perPage = 20): LengthAwarePaginator;
+
     /** Totals clamped to the regions this user covers. */
     public function summaryForUser(User $user, array $filters = []): array;
 

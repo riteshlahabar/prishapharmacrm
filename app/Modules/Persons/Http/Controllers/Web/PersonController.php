@@ -59,14 +59,18 @@ class PersonController extends Controller
             ->with('success', "{$person->name} added.");
     }
 
-    public function show(int|string $person): View
+    public function show(Request $request, int|string $person): View
     {
-        return view('persons::show', ['person' => $this->persons->find($person)]);
+        return view('persons::show', [
+            'person' => $this->persons->findForUser($request->user(), $person),
+        ]);
     }
 
-    public function edit(int|string $person): View
+    public function edit(Request $request, int|string $person): View
     {
-        return view('persons::form', ['person' => $this->persons->find($person)] + $this->pickers());
+        return view('persons::form', [
+            'person' => $this->persons->findForUser($request->user(), $person),
+        ] + $this->pickers());
     }
 
     public function update(StorePersonRequest $request, int|string $person): RedirectResponse

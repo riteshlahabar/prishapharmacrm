@@ -2,10 +2,13 @@
 
 namespace App\Modules\Persons\Models;
 
+use App\Modules\Persons\Database\Factories\PersonFactory;
 use App\Modules\Persons\Enums\PersonType;
 use App\Modules\Regions\Models\Region;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,8 +22,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'name', 'type', 'email', 'mobile', 'address', 'city', 'specialization',
     'region_id', 'assigned_mr_id', 'assigned_telecaller_id', 'is_active',
 ])]
+#[UseFactory(PersonFactory::class)]
 class Person extends Model
 {
+    /** @use HasFactory<PersonFactory> */
+    use HasFactory;
+
     protected $table = 'persons';
 
     protected function casts(): array

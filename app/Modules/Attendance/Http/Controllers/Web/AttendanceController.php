@@ -13,6 +13,10 @@ use Illuminate\View\View;
 /**
  * Admin daily presence report. Read-only: attendance is created by the app,
  * never typed into the panel, so there is nothing to edit here.
+ *
+ * The rows and the counters both go through the *ForUser methods, so a
+ * telecaller granted `attendance.view` sees only reps in the regions they
+ * cover — as the visits, calls and messages reports already did.
  */
 class AttendanceController extends Controller
 {
@@ -35,8 +39,8 @@ class AttendanceController extends Controller
         ];
 
         return view('attendance::index', [
-            'rows' => $this->attendance->paginate($filters, 25),
-            'summary' => $this->attendance->summary($filters),
+            'rows' => $this->attendance->paginateForUser($request->user(), $filters, 25),
+            'summary' => $this->attendance->summaryForUser($request->user(), $filters),
             'filters' => $filters,
             'regionOptions' => $this->regions->activeOptions(),
             'mrOptions' => $this->users->activeOfRole(UserRole::Mr),

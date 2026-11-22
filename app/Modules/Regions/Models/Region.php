@@ -2,8 +2,11 @@
 
 namespace App\Modules\Regions\Models;
 
+use App\Modules\Regions\Database\Factories\RegionFactory;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,8 +16,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * App\Modules\Regions\Repositories (docs/conventions.md).
  */
 #[Fillable(['name', 'code', 'is_active'])]
+#[UseFactory(RegionFactory::class)]
 class Region extends Model
 {
+    /** @use HasFactory<RegionFactory> */
+    use HasFactory;
+
     protected $table = 'regions';
 
     protected function casts(): array

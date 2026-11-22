@@ -22,6 +22,14 @@ interface PersonServiceInterface
 
     public function find(int|string $id): Person;
 
+    /**
+     * One person, but only if this user may see them. PersonPolicy::view holds
+     * the rule (admin, or the person's region is one the user covers); a
+     * denial reads as missing rather than forbidden, so the panel cannot be
+     * used to confirm that a person outside your territory exists.
+     */
+    public function findForUser(User $user, int|string $id): Person;
+
     public function create(array $data): Person;
 
     public function update(int|string $id, array $data): Person;

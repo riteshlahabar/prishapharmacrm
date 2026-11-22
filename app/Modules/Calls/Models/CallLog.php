@@ -2,10 +2,13 @@
 
 namespace App\Modules\Calls\Models;
 
+use App\Modules\Calls\Database\Factories\CallLogFactory;
 use App\Modules\Calls\Enums\CallStatus;
 use App\Modules\Persons\Models\Person;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,8 +19,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'telecaller_id', 'person_id', 'called_at', 'status', 'notes',
     'follow_up_at', 'follow_up_done_at',
 ])]
+#[UseFactory(CallLogFactory::class)]
 class CallLog extends Model
 {
+    /** @use HasFactory<CallLogFactory> */
+    use HasFactory;
+
     protected $table = 'call_logs';
 
     protected function casts(): array

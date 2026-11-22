@@ -3,8 +3,8 @@
 namespace App\Modules\Users\Models;
 
 use App\Modules\Regions\Models\Region;
+use App\Modules\Users\Database\Factories\UserFactory;
 use App\Modules\Users\Enums\UserRole;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;

@@ -22,5 +22,9 @@ Deleting a region that MRs, telecallers or persons point at is refused
 `regions` are `nullOnDelete`, as a backstop for anyone going in via SQL.
 `code` is stored uppercase and is unique.
 
+`code` is upper-cased in `prepareForValidation`, not just on save, so
+`unique` tests the string that is actually stored (Phase 8 — on a
+case-sensitive collation "dup" slipped past the rule and hit the index).
+
 ## Next
-Phase 3+: scope attendance, visit and call reporting by region.
+Done. Attendance, visits and calls all report by region.

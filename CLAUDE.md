@@ -25,50 +25,37 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–7, 9 and 10 ✅ — backend, panel, both Flutter apps.
-**Only Phase 8 (hardening) is left.**
+**All phases 0–10 ✅** — backend, panel, both Flutter apps, hardening.
+Gate before any commit: `bash tests/smoke/phase8-suite.sh`.
 
 ## Session log
 Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   see `docs/history/2026-11.md` for the index and one file per phase. Admin
   login is `ADMIN_*`; `users:set-admin` resets it. The API contract itself is
   `docs/api/v1-common.md`.
-`2026-11-22` Phase 7: dashboards. One template for every role — the service
-  asks each module's policy `viewAny` which cards the viewer gets (admin six
-  tiles/four charts, telecaller four/two), so no role test in the controller
-  or Blade. Reads only `…ForUser` methods on sibling contracts, so the clamp
-  stays with the module; found attendance had no `region_scope`, which would
-  have charted every rep to a scoped viewer. Added daily trends, visits per
-  rep and two counts. ApexCharts 3.46.0 (already committed; Cuba's demo
-  `chart-custom.js` not loaded). The dashboard moved into its module, so
-  `routes/web.php` is route-free. 56 panel checks green.
-  Details in `docs/history/2026-11-phase7.md`.
-`2026-11-22` Phase 9: MR app rebuilt on the API v1 contract. What was there
-  was a generic-CRM scaffold (customers/orders/products) on endpoints deleted
-  in Phase 2, and it did not compile — 4,548 analyzer issues. Now four
-  screens: login, geo check-in/out, visit form + history, inbox. `ApiClient`
-  decodes the envelope once and throws a typed `ApiFailure`; screens switch
-  on `errors.reason`. Flutter moved Material out of the SDK, so lib/ imports
-  `package:material_ui` and the UI deps are on migrated versions. Fixed three
-  device bugs: INTERNET was debug-manifest only (release could not reach the
-  API), no location permissions, no iOS usage string. Analyze clean, 40
-  tests, fixtures captured live. `docs/history/2026-11-phase9.md`.
-`2026-11-22` Phase 10: telecaller app, same shape as the MR one. Its
-  scaffold was dead *and* would not install (`flutter_riverpod: ^2.61.0`
-  never existed). Queue, log-a-call, call-backs, sent. The queue is one
-  request: `/persons` is region-scoped and each row carries `last_call`.
-  `CallStatus.needsFollowUp` mirrors the server's one awkward rule —
-  `follow_up_at` required on `callback`, refused otherwise — and the
-  repository tests assert the body. Package ids are real now:
-  `com.prishapharma.mr` / `.telecaller`. Analyze clean, 34 tests (MR still
-  40). `docs/history/2026-11-phase10.md`.
+`2026-11-22` Phases 7, 9 and 10 (dashboards, MR app, telecaller app) are
+  rotated out — see `docs/history/2026-11-phase{7,9,10}.md`.
+`2026-11-22` Phase 8: hardening. 284 feature tests replace Laravel's stock
+  example (which failed, since `/` is behind `auth`): one file per module
+  surface, plus `ApiContractTest` for what every list shares. Module-owned
+  factories wired by `#[UseFactory]`; `Tests\TestCase` seeds the Access
+  seeders, since the panel gates on permissions. Found and fixed three real
+  holes: the **attendance** panel report was the only list not clamped, so a
+  telecaller granted `attendance.view` read every rep in the company;
+  **persons** `show`/`edit` never asked `PersonPolicy::view`, making the
+  list's region clamp cosmetic; region `code` and user `email` were
+  normalised *after* validating, so `unique` tested a different string than
+  the one stored (a 500 on a case-sensitive collation). Also fixed the
+  persons `down()`, which only rolled back on MySQL. `DemoSeeder` builds a
+  demo world and refuses to run in production. Pint clean.
+  Details in `docs/testing.md`.
 
 ## Next step
-Phase 8 (hardening) is all that remains: `tests/smoke/` covers the contract
-end-to-end, but `tests/Feature` is Laravel's stock example and fails because
-`/` is behind `auth`. Then demo seeders and a docs refresh. Before any
-release, neither app has run on real hardware and both keep their token in
-`SharedPreferences` — see each app's README.
+Feature work is done. Before a release: neither Flutter app has run on real
+hardware, and both keep their token in `SharedPreferences` — see each app's
+README. Panel filter dropdowns (MR/region pickers on every report) list all
+options regardless of the viewer's territory; the rows are clamped, so this
+is a name-only leak to a scoped telecaller, left as-is deliberately.
 
 ## Open items
 - ProKit (Medilab) lives in the MR app repo under `design/`, excluded from

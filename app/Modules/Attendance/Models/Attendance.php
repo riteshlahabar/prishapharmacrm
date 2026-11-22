@@ -2,8 +2,11 @@
 
 namespace App\Modules\Attendance\Models;
 
+use App\Modules\Attendance\Database\Factories\AttendanceFactory;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -15,8 +18,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'check_in_at', 'check_in_lat', 'check_in_lng',
     'check_out_at', 'check_out_lat', 'check_out_lng',
 ])]
+#[UseFactory(AttendanceFactory::class)]
 class Attendance extends Model
 {
+    /** @use HasFactory<AttendanceFactory> */
+    use HasFactory;
+
     protected $table = 'attendances';
 
     protected function casts(): array

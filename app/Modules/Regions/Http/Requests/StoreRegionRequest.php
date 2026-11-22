@@ -18,6 +18,22 @@ class StoreRegionRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Upper-case the code *before* validating, not only in `payload()`.
+     *
+     * The column stores the upper-cased form, so validating the raw input left
+     * `unique` checking a different string than the one that gets inserted:
+     * on a case-sensitive collation "dup" passed the rule and then hit the
+     * unique index as "DUP" — a 500 instead of a field error. MySQL's default
+     * collation hid it; the test suite's sqlite did not.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('code')) {
+            $this->merge(['code' => $this->string('code')->trim()->upper()->value()]);
+        }
+    }
+
     public function rules(): array
     {
         return [

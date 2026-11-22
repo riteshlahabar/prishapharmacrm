@@ -4,8 +4,11 @@ namespace App\Modules\Visits\Models;
 
 use App\Modules\Persons\Models\Person;
 use App\Modules\Users\Models\User;
+use App\Modules\Visits\Database\Factories\VisitFactory;
 use App\Modules\Visits\Enums\VisitPurpose;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -16,8 +19,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'mr_id', 'person_id', 'visit_date', 'purpose', 'in_time', 'out_time',
     'latitude', 'longitude', 'location_fetched_at', 'notes',
 ])]
+#[UseFactory(VisitFactory::class)]
 class Visit extends Model
 {
+    /** @use HasFactory<VisitFactory> */
+    use HasFactory;
+
     protected $table = 'visits';
 
     protected function casts(): array
