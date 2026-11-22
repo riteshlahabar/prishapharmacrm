@@ -8,6 +8,7 @@ use App\Modules\Users\Models\User;
 use App\Modules\Users\Repositories\Contracts\UserRepositoryInterface;
 use App\Modules\Users\Services\Contracts\UserServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -91,6 +92,11 @@ class UserService implements UserServiceInterface
         }
 
         return $user->is_active;
+    }
+
+    public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection
+    {
+        return $this->users->activeOfRoleInRegions($role, $regionIds);
     }
 
     /**

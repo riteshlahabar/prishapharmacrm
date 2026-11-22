@@ -36,6 +36,7 @@ show/hide handler against `#password` instead.
 missing it. Feather CSS is at `assets/css/vendors/feather-icon.css`.
 
 ## Branding
+Exactly three logos exist — no `logo-white.png`.
 `images/logo/logo.png`, `logo_dark.png` and `logo-icon.png` are still the
 stock Cuba artwork. Replacing them with Prisha artwork rebrands the panel and
 the login page at once; no markup changes.

@@ -13,7 +13,7 @@
 @php
     $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view']) ?? false;
     $canUsers = auth()->user()?->canAny(['mrs.view', 'telecallers.view']) ?? false;
-    $canField = auth()->user()?->canAny(['attendance.view', 'visits.view', 'calls.view']) ?? false;
+    $canField = auth()->user()?->canAny(['attendance.view', 'visits.view', 'calls.view', 'messages.view']) ?? false;
     $canAccess = auth()->user()?->can('access.manage') ?? false;
 @endphp
 
@@ -134,6 +134,16 @@
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('calls.*') ? 'active' : '' }}"
                        href="{{ route('calls.index') }}">
                         <i data-feather="phone-call"></i><span>Calls</span>
+                    </a>
+                </li>
+                @endcan
+
+                @can('messages.view')
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('messages.*') ? 'active' : '' }}"
+                       href="{{ route('messages.index') }}">
+                        <i data-feather="message-square"></i><span>Messages</span>
                     </a>
                 </li>
                 @endcan

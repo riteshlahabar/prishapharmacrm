@@ -22,5 +22,14 @@ interface UserRepositoryInterface extends RepositoryInterface
     /** @return Collection<int, User> */
     public function activeOfRole(UserRole $role): Collection;
 
+    /**
+     * Active users of a role whose own region is one of these. An empty list
+     * means no territory, and so no users — never "all of them".
+     *
+     * @param  array<int, int>  $regionIds
+     * @return Collection<int, User>
+     */
+    public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection;
+
     public function findByEmail(string $email): ?User;
 }

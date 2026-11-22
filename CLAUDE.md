@@ -25,23 +25,13 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-Phases 0–4 ✅ (foundation · auth/roles/users · masters · MR backend ·
-telecaller backend). **Phase 5 next:** messaging, telecaller → MR.
+Phases 0–5 ✅ (foundation · auth/roles/users · masters · MR backend ·
+telecaller backend · messaging). **Phase 6 next:** mobile API v1 polish.
 
 ## Session log
-`2026-11-21` Phase 0 foundation + Cuba layout fix. See
-  `docs/history/2026-11-phase0.md`.
-`2026-11-21` Phase 1: roles + 30 permissions, MR/telecaller CRUD, grant UI,
-  every web route behind `auth`, Sanctum login. Also fixed two pre-existing
-  theme bugs (unlinked `vendors/bootstrap.css`, Bootstrap 4 header markup) —
-  see `docs/ui-assets.md`. Details in `docs/history/2026-11-phase1.md`.
-`2026-11-21` Admin login moved to the `ADMIN_*` env values; added
-  `users:set-admin`, since the seeder never overwrites a password.
-`2026-11-21` Phase 2: regions + `telecaller_region`, `customers` renamed to
-  `persons` with data kept, region/MR/telecaller assignment and filters,
-  region picker on the user form, products/orders and every legacy
-  controller dropped. 67-check smoke run green.
-  Details in `docs/history/2026-11-phase2.md`.
+Phases 0–2 (foundation, auth/roles/users, masters) are rotated out — see
+  `docs/history/2026-11.md` for the index and one file per phase. Admin login
+  comes from `ADMIN_*`; `users:set-admin` resets it.
 `2026-11-22` Phase 3: `attendances` + `visits` with server-set times, 409
   sequence guards, four MR endpoints behind `ability:role:mr`, admin reports.
   Closed a scoping hole: visit summary/show/destroy now clamp to the caller's
@@ -54,12 +44,18 @@ telecaller backend). **Phase 5 next:** messaging, telecaller → MR.
   row carries `last_call` via the Calls contract. Calls scope on the caller,
   not the region — unlike visits. 76 smoke + 35 panel checks green.
   Details in `docs/history/2026-11-phase4.md`.
+`2026-11-22` Phase 5: `messages` telecaller → MR, no Firebase. Read state is
+  `read_at` alone (planned `is_read` dropped, derived in the API); the poll is
+  one indexed COUNT; marking is idempotent and recipient-only. Recipients are
+  MRs in your regions plus the named person's own rep. Panel scope is either
+  party. 72 smoke checks green.
+  Details in `docs/history/2026-11-phase5.md`.
 
 ## Next step
-Phase 5 (messaging, no Firebase): `messages` telecaller → MR with
-`is_read`/`read_at` → unread count, list and mark-read endpoints the app can
-poll → `GET /mrs` for the recipient picker → admin view. Scope through the
-service, and decide early whether a message is per-person or free-standing.
+Phase 6 (mobile API v1): the endpoints exist — this pass adds policies, a
+check that every list is scoped and paginated the same way, consistent 404 vs
+403, and the `api/` docs as the contract the two Flutter apps build against.
+Then Phase 7 dashboards, which read through service contracts only.
 
 ## Open items
 - ProKit (Medilab) **received** as a 2.2 MB zip: 123 dart files + 68 images,

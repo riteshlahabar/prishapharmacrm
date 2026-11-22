@@ -5,6 +5,7 @@ namespace App\Modules\Users\Services\Contracts;
 use App\Modules\Users\Enums\UserRole;
 use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 /**
  * Business rules for accounts: who may exist, with what role, and whether they
@@ -26,4 +27,13 @@ interface UserServiceInterface
 
     /** Flip is_active; returns the new state. */
     public function toggleActive(UserRole $role, int|string $id): bool;
+
+    /**
+     * Active users of a role covering one of these regions — how another
+     * module asks "who works here?" without touching the users table.
+     *
+     * @param  array<int, int>  $regionIds
+     * @return Collection<int, User>
+     */
+    public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection;
 }

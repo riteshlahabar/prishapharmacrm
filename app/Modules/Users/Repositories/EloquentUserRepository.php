@@ -76,6 +76,20 @@ class EloquentUserRepository extends EloquentRepository implements UserRepositor
             ->get();
     }
 
+    public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection
+    {
+        if ($regionIds === []) {
+            return new Collection;
+        }
+
+        return $this->query()
+            ->where('role', $role->value)
+            ->where('is_active', true)
+            ->whereIn('region_id', $regionIds)
+            ->orderBy('name')
+            ->get();
+    }
+
     public function findByEmail(string $email): ?User
     {
         return $this->query()->where('email', $email)->first();
