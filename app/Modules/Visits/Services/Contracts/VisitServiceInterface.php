@@ -5,6 +5,7 @@ namespace App\Modules\Visits\Services\Contracts;
 use App\Modules\Users\Models\User;
 use App\Modules\Visits\Models\Visit;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 /**
  * Visit entry and reporting.
@@ -46,4 +47,28 @@ interface VisitServiceInterface
 
     /** Busiest reps first, `mr name => count`, clamped to this user. */
     public function countsByMrForUser(User $user, array $filters = [], int $limit = 10): array;
+
+    /**
+     * Per-rep visit figures for the range, clamped to this viewer:
+     * `mr_id => {visits, persons, geotagged, active_days}`.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function perMrSummaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * Visits per region, clamped to this viewer: `region_id => count`.
+     *
+     * @return array<int, int>
+     */
+    public function countsByRegionForUser(User $user, array $filters = []): array;
+
+    /**
+     * Newest visit per person, keyed by `person_id`, for an already-scoped
+     * set of person ids.
+     *
+     * @param  array<int, int>  $personIds
+     * @return Collection<int, Visit>
+     */
+    public function lastVisitsFor(array $personIds): Collection;
 }

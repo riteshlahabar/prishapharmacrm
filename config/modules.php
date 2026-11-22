@@ -8,6 +8,7 @@ use App\Modules\Dashboard\Providers\DashboardServiceProvider;
 use App\Modules\Messages\Providers\MessagesServiceProvider;
 use App\Modules\Persons\Providers\PersonsServiceProvider;
 use App\Modules\Regions\Providers\RegionsServiceProvider;
+use App\Modules\Reports\Providers\ReportsServiceProvider;
 use App\Modules\Users\Providers\UsersServiceProvider;
 use App\Modules\Visits\Providers\VisitsServiceProvider;
 
@@ -32,5 +33,7 @@ return [
         CallsServiceProvider::class,
         MessagesServiceProvider::class,
         DashboardServiceProvider::class,
+        // Last: it reads every other module's contracts and owns no table.
+        ReportsServiceProvider::class,
     ],
 ];

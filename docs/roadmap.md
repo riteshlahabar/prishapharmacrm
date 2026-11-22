@@ -8,14 +8,15 @@ Decisions: customers → persons (products/orders dropped);
 | 0 | Foundation | composer install, MySQL `.env`, Sanctum + spatie installed & migrated, `app/Core` base classes, 10 module skeletons, `config/modules.php`, docs + CLAUDE.md | ✅ |
 | 1 | Auth, roles, users | 3 roles + 30 permissions, user columns, admin CRUD for MR + telecaller, `auth` on web routes, scoped sidebar, Sanctum login | ✅ |
 | 2 | Masters | regions CRUD + `telecaller_region`; `customers`→`persons` with region/MR/telecaller assignment + filters; products/orders dropped | ✅ |
-| 3 | MR backend | attendance check-in/out with geo; visits (person, purpose, times, geo); admin lists + reports | ✅ |
+| 3 | MR backend | attendance check-in/out + geo; visits; admin lists | ✅ |
 | 4 | Telecaller backend | region-scoped person list; call logs with status, notes, follow-up; scoped panel | ✅ |
 | 5 | Messaging | `messages` telecaller → MR (no Firebase): unread count, list, mark-read; admin view | ✅ |
 | 6 | Mobile API v1 | versioned endpoints, Resources, policies, one envelope, documented in `api/` | ✅ |
 | 7 | Dashboards | admin charts (visits, attendance, calls, conversion); scoped telecaller dashboard | ✅ |
 | 8 | Hardening | 284 feature tests, demo seeders, Pint, docs; gate: `tests/smoke/phase8-suite.sh` (see `testing.md`) | ✅ |
-| 9 | MR app | ProKit UI, check-in/out home screen, visit form + geolocator, message inbox | ✅ |
+| 9 | MR app | ProKit UI, check-in/out home, visit form + geolocator, inbox | ✅ |
 | 10 | Telecaller app | ProKit UI, region person list, call + status/notes, send-to-MR | ✅ |
+| 11 | Reports | 6 reports (MR, telecaller, coverage, region, register, follow-ups) + CSV; own module, no new tables | ✅ |
 
 ## Blockers
 - No device or emulator in the build container: the Flutter apps are verified

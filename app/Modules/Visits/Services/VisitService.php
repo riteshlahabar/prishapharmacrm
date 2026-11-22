@@ -10,6 +10,7 @@ use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 class VisitService implements VisitServiceInterface
@@ -110,6 +111,27 @@ class VisitService implements VisitServiceInterface
     public function countsByMrForUser(User $user, array $filters = [], int $limit = 10): array
     {
         return $this->visits->countsByMr($this->clampToTerritory($user, $filters), $limit);
+    }
+
+    /** Per-rep visit figures for the Reports module, clamped to this viewer. */
+    public function perMrSummaryForUser(User $user, array $filters = []): array
+    {
+        return $this->visits->perMrSummary($this->clampToTerritory($user, $filters));
+    }
+
+    /** Visits per region, clamped to this viewer. */
+    public function countsByRegionForUser(User $user, array $filters = []): array
+    {
+        return $this->visits->countsByRegion($this->clampToTerritory($user, $filters));
+    }
+
+    /**
+     * Newest visit per person, keyed by `person_id`. The caller has already
+     * had the person list clamped, so the ids coming in are in scope.
+     */
+    public function lastVisitsFor(array $personIds): Collection
+    {
+        return $this->visits->lastVisitPerPerson($personIds);
     }
 
     public function summaryForUser(User $user, array $filters = []): array

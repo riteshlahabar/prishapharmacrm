@@ -3,6 +3,7 @@
 namespace App\Modules\Calls\Repositories;
 
 use App\Core\Repositories\EloquentRepository;
+use App\Modules\Calls\Enums\CallStatus;
 use App\Modules\Calls\Models\CallLog;
 use App\Modules\Calls\Repositories\Contracts\CallLogRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -112,6 +113,102 @@ class EloquentCallLogRepository extends EloquentRepository implements CallLogRep
                 ->pluck('total', 'status')
                 ->all(),
         ];
+    }
+
+    /**
+     * Per-telecaller call figures for the range: `telecaller_id => [...]`.
+     *
+     * `converted` is counted here rather than derived from `by_status` later,
+     * so the rate on the report and the slice on the dashboard cannot drift.
+     *
+     * @return array<int, array{calls: int, persons: int, converted: int, active_days: int}>
+     */
+    public function perTelecallerSummary(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->selectRaw('telecaller_id')
+            ->selectRaw('count(*) as calls')
+            ->selectRaw('count(distinct person_id) as persons')
+            ->selectRaw("count(case when status = 'converted' then 1 end) as converted")
+            ->selectRaw('count(distinct date(called_at)) as active_days')
+            ->groupBy('telecaller_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->telecaller_id => [
+                'calls' => (int) $row->calls,
+                'persons' => (int) $row->persons,
+                'converted' => (int) $row->converted,
+                'active_days' => (int) $row->active_days,
+            ]])
+            ->all();
+    }
+
+    /**
+     * Per-telecaller status mix: `telecaller_id => [status => count]`.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function statusMixByTelecaller(array $filters): array
+    {
+        $out = [];
+
+        $rows = $this->applyFilters($this->query(), $filters)
+            ->selectRaw('telecaller_id, status, count(*) as total')
+            ->groupBy('telecaller_id', 'status')
+            ->get();
+
+        foreach ($rows as $row) {
+            $status = $row->status instanceof CallStatus ? $row->status->value : (string) $row->status;
+            $out[(int) $row->telecaller_id][$status] = (int) $row->total;
+        }
+
+        return $out;
+    }
+
+    /**
+     * Did the promised call-backs actually happen? Per telecaller:
+     * `telecaller_id => {promised, honoured, on_time, overdue_open}`.
+     *
+     * `on_time` compares `follow_up_done_at` to the date promised, which is
+     * the only figure here that says anything about reliability — `honoured`
+     * alone counts a call-back made three weeks late as a success.
+     *
+     * @return array<int, array{promised: int, honoured: int, on_time: int, overdue_open: int}>
+     */
+    public function followUpCompliance(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->whereNotNull('follow_up_at')
+            ->selectRaw('telecaller_id')
+            ->selectRaw('count(*) as promised')
+            ->selectRaw('count(case when follow_up_done_at is not null then 1 end) as honoured')
+            ->selectRaw('count(case when follow_up_done_at is not null and follow_up_done_at <= follow_up_at then 1 end) as on_time')
+            ->selectRaw('count(case when follow_up_done_at is null and follow_up_at < ? then 1 end) as overdue_open', [now()])
+            ->groupBy('telecaller_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->telecaller_id => [
+                'promised' => (int) $row->promised,
+                'honoured' => (int) $row->honoured,
+                'on_time' => (int) $row->on_time,
+                'overdue_open' => (int) $row->overdue_open,
+            ]])
+            ->all();
+    }
+
+    /**
+     * Calls per region, `region_id => count`, read through the person called.
+     *
+     * @return array<int, int>
+     */
+    public function countsByRegion(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->join('persons', 'persons.id', '=', 'call_logs.person_id')
+            ->whereNotNull('persons.region_id')
+            ->selectRaw('persons.region_id as region_id, count(*) as total')
+            ->groupBy('persons.region_id')
+            ->pluck('total', 'region_id')
+            ->map(intval(...))
+            ->all();
     }
 
     public function lastCallPerPerson(array $personIds, ?int $telecallerId = null): Collection

@@ -109,6 +109,15 @@ class UserService implements UserServiceInterface
     }
 
     /**
+     * Every active user in a role, unscoped. Only an admin-level caller should
+     * ask for this; a scoped viewer wants `activeOfRoleInRegions` instead.
+     */
+    public function activeOfRole(UserRole $role): Collection
+    {
+        return $this->users->activeOfRole($role);
+    }
+
+    /**
      * Whitelist of writable columns. The role always comes from the caller's
      * route, never from the request body, and `region_id` is left out: region
      * coverage goes through RegionAssignmentService, which knows the shape

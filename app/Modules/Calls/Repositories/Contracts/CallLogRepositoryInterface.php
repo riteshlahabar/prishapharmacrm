@@ -21,6 +21,35 @@ interface CallLogRepositoryInterface extends RepositoryInterface
     public function trend(array $filters): array;
 
     /**
+     * Per-telecaller call figures, `telecaller_id => {calls, persons,
+     * converted, active_days}`.
+     *
+     * @return array<int, array{calls: int, persons: int, converted: int, active_days: int}>
+     */
+    public function perTelecallerSummary(array $filters): array;
+
+    /**
+     * Per-telecaller status mix, `telecaller_id => [status => count]`.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function statusMixByTelecaller(array $filters): array;
+
+    /**
+     * Promised call-backs against those actually made, per telecaller.
+     *
+     * @return array<int, array{promised: int, honoured: int, on_time: int, overdue_open: int}>
+     */
+    public function followUpCompliance(array $filters): array;
+
+    /**
+     * Calls per region, `region_id => count`, via the person called.
+     *
+     * @return array<int, int>
+     */
+    public function countsByRegion(array $filters): array;
+
+    /**
      * The most recent call on each of these persons, keyed by person id.
      * One query, so a person list can show "last outcome" without N+1.
      *

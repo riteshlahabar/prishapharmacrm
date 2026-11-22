@@ -22,5 +22,12 @@ interface MessageRepositoryInterface extends RepositoryInterface
     public function summary(array $filters): array;
 
     /** Stamp read_at on one recipient's unread messages; returns how many. */
+    /**
+     * Messages sent per sender in the range, `from_user_id => count`.
+     *
+     * @return array<int, int>
+     */
+    public function sentCountsByUser(array $filters = []): array;
+
     public function markRead(int $recipientId, ?int $messageId = null): int;
 }

@@ -30,6 +30,7 @@ final class PermissionCatalog
             'visits' => ['label' => 'Visits', 'abilities' => ['view', 'create', 'update', 'delete']],
             'calls' => ['label' => 'Calls', 'abilities' => ['view', 'create', 'update', 'delete']],
             'messages' => ['label' => 'Messages', 'abilities' => ['view', 'create', 'delete']],
+            'reports' => ['label' => 'Reports', 'abilities' => ['view', 'export']],
             'access' => ['label' => 'Access control', 'abilities' => ['manage']],
         ];
     }
@@ -81,6 +82,10 @@ final class PermissionCatalog
                 'persons.view',
                 'calls.view', 'calls.create', 'calls.update',
                 'messages.view', 'messages.create',
+                // Their own figures, clamped to the regions they cover.
+                // `reports.export` is not a default: downloading the whole
+                // contact book is a decision an admin makes per person.
+                'reports.view',
             ],
             UserRole::Mr => [],
         };

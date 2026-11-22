@@ -51,6 +51,19 @@ class PersonService implements PersonServiceInterface
         return $this->persons->countMatching($filters);
     }
 
+    /**
+     * Active persons assigned to each rep, clamped to this viewer. The
+     * denominator of the MR report's coverage figure.
+     */
+    public function activeCountsByMrForUser(User $user, array $filters = []): array
+    {
+        if (! $user->isAdmin()) {
+            $filters['region_scope'] = $this->assignment->idsFor($user);
+        }
+
+        return $this->persons->activeCountsByMr($filters);
+    }
+
     public function find(int|string $id): Person
     {
         /** @var Person */

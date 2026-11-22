@@ -19,5 +19,13 @@ interface PersonRepositoryInterface extends RepositoryInterface
     /** How many rows match, without pulling a page of them. */
     public function countMatching(array $filters): int;
 
+    /**
+     * Active persons assigned to each rep, `assigned_mr_id => count`: the
+     * denominator of the MR report's coverage figure.
+     *
+     * @return array<int, int>
+     */
+    public function activeCountsByMr(array $filters = []): array;
+
     public function countsByRegion(array $regionIds): array;
 }

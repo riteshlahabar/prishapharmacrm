@@ -38,6 +38,22 @@ interface AttendanceServiceInterface
     public function summaryForUser(User $user, array $filters = []): array;
 
     /**
+     * Per-rep presence for the range, clamped to this viewer:
+     * `mr_id => {days_present, days_completed, days_open, minutes}`.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function perMrSummaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * The attendance register, clamped to this viewer:
+     * `mr_id => ['YYYY-MM-DD' => 'P'|'O'|'A']`.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public function registerForUser(User $user, array $filters = []): array;
+
+    /**
      * Reps present per day, `YYYY-MM-DD => count`, clamped to this user.
      * Days with no check-in are absent — the caller fills the range.
      */

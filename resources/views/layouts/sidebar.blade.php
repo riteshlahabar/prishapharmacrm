@@ -148,6 +148,28 @@
                 </li>
                 @endcan
 
+                @can('reports.view')
+                <li class="sidebar-main-title">
+                    <div><h6>Reports</h6></div>
+                </li>
+
+                <li class="sidebar-list">
+                    <i class="fa-solid fa-thumbtack"></i>
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="#">
+                        <i data-feather="bar-chart-2"></i><span>Reports</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('reports.index') }}">All Reports</a></li>
+                        <li><a href="{{ route('reports.show', 'mr') }}">Medical Reps</a></li>
+                        <li><a href="{{ route('reports.show', 'telecaller') }}">Telecallers</a></li>
+                        <li><a href="{{ route('reports.show', 'coverage') }}">Coverage Gaps</a></li>
+                        <li><a href="{{ route('reports.show', 'region') }}">Regions</a></li>
+                        <li><a href="{{ route('reports.show', 'register') }}">Attendance Register</a></li>
+                        <li><a href="{{ route('reports.show', 'follow-ups') }}">Follow-ups</a></li>
+                    </ul>
+                </li>
+                @endcan
+
                 @if($canUsers || $canAccess)
                 <li class="sidebar-main-title">
                     <div><h6>People</h6></div>

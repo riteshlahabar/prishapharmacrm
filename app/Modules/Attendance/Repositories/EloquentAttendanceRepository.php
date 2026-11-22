@@ -103,6 +103,76 @@ class EloquentAttendanceRepository extends EloquentRepository implements Attenda
             ->all();
     }
 
+    /**
+     * Per-rep presence for the filtered range: `mr_id => [...]`.
+     *
+     * Minutes are summed in PHP rather than SQL on purpose. The two engines
+     * spell the difference between timestamps differently (TIMESTAMPDIFF vs
+     * strftime), and one query returning a few hundred thin rows costs less
+     * than a portability wrapper. The shape is per-rep, so the Reports module
+     * never has to touch this table itself.
+     *
+     * @return array<int, array{days_present: int, days_completed: int, days_open: int, minutes: int}>
+     */
+    public function perMrSummary(array $filters): array
+    {
+        $rows = $this->applyFilters($this->query(), $filters)
+            ->select(['mr_id', 'check_in_at', 'check_out_at'])
+            ->get();
+
+        $out = [];
+
+        foreach ($rows as $row) {
+            $id = (int) $row->mr_id;
+
+            $out[$id] ??= ['days_present' => 0, 'days_completed' => 0, 'days_open' => 0, 'minutes' => 0];
+
+            if (! $row->isCheckedIn()) {
+                continue;
+            }
+
+            $out[$id]['days_present']++;
+
+            if ($row->isCheckedOut()) {
+                $out[$id]['days_completed']++;
+                $out[$id]['minutes'] += (int) $row->workedMinutes();
+            } else {
+                $out[$id]['days_open']++;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * The attendance register: `mr_id => ['YYYY-MM-DD' => 'P'|'O'|'A']`.
+     *
+     * Only days that have a row appear. A day with no row is absence, which
+     * the caller fills in — it knows the range it asked for, and storing a
+     * row per absent day would mean writing rows nobody created.
+     *
+     * @return array<int, array<string, string>>
+     */
+    public function registerGrid(array $filters): array
+    {
+        $rows = $this->applyFilters($this->query(), $filters)
+            ->select(['mr_id', 'date', 'check_in_at', 'check_out_at'])
+            ->orderBy('date')
+            ->get();
+
+        $grid = [];
+
+        foreach ($rows as $row) {
+            $grid[(int) $row->mr_id][$row->date->toDateString()] = match (true) {
+                $row->isCheckedOut() => 'P',
+                $row->isCheckedIn() => 'O',
+                default => 'A',
+            };
+        }
+
+        return $grid;
+    }
+
     public function summary(array $filters): array
     {
         // A fresh builder per count: reusing one would stack the constraints.

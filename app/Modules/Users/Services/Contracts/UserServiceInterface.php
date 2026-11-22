@@ -38,6 +38,15 @@ interface UserServiceInterface
     public function activeOfRoleInRegions(UserRole $role, array $regionIds): Collection;
 
     /**
+     * Every active user in a role, unscoped — for an admin-level caller.
+     * A scoped viewer uses `activeOfRoleInRegions`, where an empty region
+     * list correctly means nobody.
+     *
+     * @return Collection<int, User>
+     */
+    public function activeOfRole(UserRole $role): Collection;
+
+    /**
      * Headcount of active users in a role. An empty region list counts every
      * region — "3 of 8 reps checked in" needs the 8.
      */

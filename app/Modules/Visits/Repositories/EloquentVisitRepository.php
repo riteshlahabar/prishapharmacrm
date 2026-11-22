@@ -8,6 +8,7 @@ use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 /**
  * Every `visits` query in the application lives here.
@@ -107,6 +108,81 @@ class EloquentVisitRepository extends EloquentRepository implements VisitReposit
             ->limit($limit)
             ->pluck('total', 'mr')
             ->all();
+    }
+
+    /**
+     * Per-rep visit figures for the range: `mr_id => [...]`.
+     *
+     * `active_days` counts distinct dates, not rows, so "visits per active
+     * day" divides by days the rep actually worked rather than by the length
+     * of the range — otherwise a rep on leave looks lazy rather than absent.
+     *
+     * @return array<int, array{visits: int, persons: int, geotagged: int, active_days: int}>
+     */
+    public function perMrSummary(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->selectRaw('mr_id')
+            ->selectRaw('count(*) as visits')
+            ->selectRaw('count(distinct person_id) as persons')
+            ->selectRaw('count(distinct case when latitude is not null then id end) as geotagged')
+            ->selectRaw('count(distinct visit_date) as active_days')
+            ->groupBy('mr_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->mr_id => [
+                'visits' => (int) $row->visits,
+                'persons' => (int) $row->persons,
+                'geotagged' => (int) $row->geotagged,
+                'active_days' => (int) $row->active_days,
+            ]])
+            ->all();
+    }
+
+    /**
+     * Visits per region, `region_id => count`, read through the person the
+     * visit was on — a visit has no region of its own.
+     *
+     * @return array<int, int>
+     */
+    public function countsByRegion(array $filters): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->join('persons', 'persons.id', '=', 'visits.person_id')
+            ->whereNotNull('persons.region_id')
+            ->selectRaw('persons.region_id as region_id, count(*) as total')
+            ->groupBy('persons.region_id')
+            ->pluck('total', 'region_id')
+            ->map(intval(...))
+            ->all();
+    }
+
+    /**
+     * The newest visit per person, keyed by `person_id`. Mirrors the Calls
+     * module's `lastCallPerPerson`, and is what the coverage report needs to
+     * tell "never visited" from "visited months ago".
+     *
+     * @param  array<int, int>  $personIds
+     * @return Collection<int, Visit>
+     */
+    public function lastVisitPerPerson(array $personIds): Collection
+    {
+        if ($personIds === []) {
+            return new Collection;
+        }
+
+        // The newest id per person, then the rows for those ids: two small
+        // queries beat a correlated subquery per row.
+        $latestIds = $this->query()
+            ->whereIn('person_id', $personIds)
+            ->groupBy('person_id')
+            ->selectRaw('MAX(id) as id')
+            ->pluck('id')
+            ->all();
+
+        return $this->query()
+            ->whereIn('id', $latestIds)
+            ->get()
+            ->keyBy('person_id');
     }
 
     public function summary(array $filters): array

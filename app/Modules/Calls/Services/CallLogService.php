@@ -6,6 +6,7 @@ use App\Modules\Calls\Enums\CallStatus;
 use App\Modules\Calls\Models\CallLog;
 use App\Modules\Calls\Repositories\Contracts\CallLogRepositoryInterface;
 use App\Modules\Calls\Services\Contracts\CallLogServiceInterface;
+use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,7 +23,12 @@ use Illuminate\Support\Facades\Gate;
  */
 class CallLogService implements CallLogServiceInterface
 {
-    public function __construct(private readonly CallLogRepositoryInterface $calls) {}
+    public function __construct(
+        private readonly CallLogRepositoryInterface $calls,
+        // Only the region report needs this: calls are scoped by caller
+        // everywhere else, so territory is the exception here, not the rule.
+        private readonly RegionAssignmentServiceInterface $assignment,
+    ) {}
 
     public function logFor(User $telecaller, array $data): CallLog
     {
@@ -151,6 +157,43 @@ class CallLogService implements CallLogServiceInterface
     public function summaryForUser(User $user, array $filters = []): array
     {
         return $this->summary($this->clampToOwn($user, $filters));
+    }
+
+    /**
+     * Per-telecaller call figures for the Reports module.
+     *
+     * `clampToOwn` is the right clamp here too: an admin gets every row, and
+     * a telecaller gets one row — their own. A telecaller has no business
+     * reading a peer's conversion rate.
+     */
+    public function perTelecallerSummaryForUser(User $user, array $filters = []): array
+    {
+        return $this->calls->perTelecallerSummary($this->clampToOwn($user, $filters));
+    }
+
+    /** Per-telecaller status mix, clamped as above. */
+    public function statusMixForUser(User $user, array $filters = []): array
+    {
+        return $this->calls->statusMixByTelecaller($this->clampToOwn($user, $filters));
+    }
+
+    /** Promised call-backs against those actually made, clamped as above. */
+    public function followUpComplianceForUser(User $user, array $filters = []): array
+    {
+        return $this->calls->followUpCompliance($this->clampToOwn($user, $filters));
+    }
+
+    /**
+     * Calls per region, for the region report. Scoped by **territory**, not
+     * by caller: the question is how much a region was worked, by anyone.
+     */
+    public function countsByRegionForUser(User $user, array $filters = []): array
+    {
+        if (! $user->isAdmin()) {
+            $filters['region_scope'] = $this->assignment->idsFor($user);
+        }
+
+        return $this->calls->countsByRegion($filters);
     }
 
     public function lastCallsFor(User $user, array $personIds): Collection

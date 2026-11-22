@@ -20,6 +20,14 @@ interface PersonServiceInterface
     /** How many persons this user may see, clamped like the list. */
     public function countForUser(User $user, array $filters = []): int;
 
+    /**
+     * Active persons assigned to each rep, clamped to this viewer:
+     * `assigned_mr_id => count`.
+     *
+     * @return array<int, int>
+     */
+    public function activeCountsByMrForUser(User $user, array $filters = []): array;
+
     public function find(int|string $id): Person;
 
     /**

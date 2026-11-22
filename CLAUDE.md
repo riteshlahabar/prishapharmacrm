@@ -25,7 +25,7 @@ region-scoped person list, call status + notes, and messages to an MR —
 in-app, **no Firebase**. Telecallers also get scoped panel access.
 
 ## Current phase
-**All phases 0–10 ✅** — backend, panel, both Flutter apps, hardening.
+**All phases 0–11 ✅** — backend, panel, both Flutter apps, hardening, reports.
 Gate before any commit: `bash tests/smoke/phase8-suite.sh`.
 
 ## Session log
@@ -35,27 +35,30 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   `docs/api/v1-common.md`.
 `2026-11-22` Phases 7, 9 and 10 (dashboards, MR app, telecaller app) are
   rotated out — see `docs/history/2026-11-phase{7,9,10}.md`.
-`2026-11-22` Phase 8: hardening. 284 feature tests replace Laravel's stock
-  example (which failed, since `/` is behind `auth`): one file per module
-  surface, plus `ApiContractTest` for what every list shares. Module-owned
-  factories wired by `#[UseFactory]`; `Tests\TestCase` seeds the Access
-  seeders, since the panel gates on permissions. Found and fixed three real
-  holes: the **attendance** panel report was the only list not clamped, so a
-  telecaller granted `attendance.view` read every rep in the company;
-  **persons** `show`/`edit` never asked `PersonPolicy::view`, making the
-  list's region clamp cosmetic; region `code` and user `email` were
-  normalised *after* validating, so `unique` tested a different string than
-  the one stored (a 500 on a case-sensitive collation). Also fixed the
-  persons `down()`, which only rolled back on MySQL. `DemoSeeder` builds a
-  demo world and refuses to run in production. Pint clean.
-  Details in `docs/testing.md`.
+`2026-11-22` Phase 8: hardening. 284 tests replace Laravel's stock example;
+  module-owned factories; `DemoSeeder`. Found and fixed three scope holes —
+  the attendance panel report read company-wide, persons `show`/`edit` never
+  asked `PersonPolicy::view`, and `code`/`email` were normalised *after*
+  validating. `docs/history/2026-11-phase8.md`.
+`2026-11-22` Phase 11: reports. A `Reports` module owning **no table** — six
+  reports (MR, telecaller, coverage gaps, region, attendance register,
+  follow-up compliance) composed only from siblings' `…ForUser` contracts, so
+  the clamp stays with the module owning the data and no unclamped form
+  exists to reach for. Each source module gained a rollup in its own
+  repository. Territory clamps reps/regions/coverage/register; the telecaller
+  and follow-up reports clamp by *caller*, so a telecaller sees one row.
+  Streamed CSV (no dependency), `ReportDefinition` drives head, sort and file
+  together, `=+-@` quoted against Excel formula injection. New `reports.view`
+  / `reports.export`, only `view` a telecaller default. 366 tests green.
+  `docs/history/2026-11-phase11.md`.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real
 hardware, and both keep their token in `SharedPreferences` — see each app's
-README. Panel filter dropdowns (MR/region pickers on every report) list all
-options regardless of the viewer's territory; the rows are clamped, so this
-is a name-only leak to a scoped telecaller, left as-is deliberately.
+README. The **module** reports (visits, calls, attendance, messages) still
+show every MR and region in their filter pickers whatever the viewer covers;
+rows and totals are clamped, so it is a name-only leak, and the new Reports
+module scopes its pickers properly. Worth aligning the older five one day.
 
 ## Open items
 - ProKit (Medilab) lives in the MR app repo under `design/`, excluded from

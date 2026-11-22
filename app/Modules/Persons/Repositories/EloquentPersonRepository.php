@@ -75,6 +75,27 @@ class EloquentPersonRepository extends EloquentRepository implements PersonRepos
         return $this->applyFilters($this->query(), $filters)->count();
     }
 
+    /**
+     * Active persons assigned to each rep: `assigned_mr_id => count`.
+     *
+     * This is the denominator of the MR report's coverage figure — "of the
+     * contacts that are this rep's responsibility, how many did they get to".
+     * Unassigned persons are left out: they are nobody's coverage gap yet.
+     *
+     * @return array<int, int>
+     */
+    public function activeCountsByMr(array $filters = []): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->where('is_active', true)
+            ->whereNotNull('assigned_mr_id')
+            ->selectRaw('assigned_mr_id, count(*) as total')
+            ->groupBy('assigned_mr_id')
+            ->pluck('total', 'assigned_mr_id')
+            ->map(intval(...))
+            ->all();
+    }
+
     public function countsByRegion(array $regionIds): array
     {
         if ($regionIds === []) {

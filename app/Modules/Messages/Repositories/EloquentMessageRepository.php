@@ -94,6 +94,22 @@ class EloquentMessageRepository extends EloquentRepository implements MessageRep
         ];
     }
 
+    /**
+     * Messages sent per sender in the range: `from_user_id => count`. One
+     * column on the telecaller report — "did they pass the lead on".
+     *
+     * @return array<int, int>
+     */
+    public function sentCountsByUser(array $filters = []): array
+    {
+        return $this->applyFilters($this->query(), $filters)
+            ->selectRaw('from_user_id, count(*) as total')
+            ->groupBy('from_user_id')
+            ->pluck('total', 'from_user_id')
+            ->map(intval(...))
+            ->all();
+    }
+
     public function markRead(int $recipientId, ?int $messageId = null): int
     {
         return $this->query()

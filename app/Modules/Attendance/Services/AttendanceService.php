@@ -97,6 +97,18 @@ class AttendanceService implements AttendanceServiceInterface
         return $this->paginate($this->clampToTerritory($user, $filters), $perPage);
     }
 
+    /** Per-rep presence for the Reports module, clamped to this viewer. */
+    public function perMrSummaryForUser(User $user, array $filters = []): array
+    {
+        return $this->attendances->perMrSummary($this->clampToTerritory($user, $filters));
+    }
+
+    /** The register grid, clamped to this viewer. */
+    public function registerForUser(User $user, array $filters = []): array
+    {
+        return $this->attendances->registerGrid($this->clampToTerritory($user, $filters));
+    }
+
     /** Totals for whatever territory this user covers. */
     public function summaryForUser(User $user, array $filters = []): array
     {

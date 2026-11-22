@@ -161,6 +161,19 @@ class MessageService implements MessageServiceInterface
         return $this->summary($this->clampToOwn($user, $filters));
     }
 
+    /**
+     * Messages sent per sender in the range, for the telecaller report.
+     * A non-admin is clamped to their own id, so they see one figure: theirs.
+     */
+    public function sentCountsForUser(User $user, array $filters = []): array
+    {
+        if (! $user->isAdmin()) {
+            $filters['from_user_id'] = $user->id;
+        }
+
+        return $this->messages->sentCountsByUser($filters);
+    }
+
     /** A message has two owners: a non-admin sees their own, either way round. */
     private function clampToOwn(User $user, array $filters): array
     {

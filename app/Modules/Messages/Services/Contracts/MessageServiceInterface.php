@@ -56,4 +56,12 @@ interface MessageServiceInterface
 
     /** The same counters, clamped the same way as paginateForUser. */
     public function summaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * Messages sent per sender in the range, clamped to this viewer:
+     * `from_user_id => count`.
+     *
+     * @return array<int, int>
+     */
+    public function sentCountsForUser(User $user, array $filters = []): array;
 }

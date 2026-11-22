@@ -49,6 +49,35 @@ interface CallLogServiceInterface
     public function summaryForUser(User $user, array $filters = []): array;
 
     /**
+     * Per-telecaller call figures, clamped: an admin sees every telecaller,
+     * a telecaller sees only themselves.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function perTelecallerSummaryForUser(User $user, array $filters = []): array;
+
+    /**
+     * Per-telecaller status mix, clamped as above.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function statusMixForUser(User $user, array $filters = []): array;
+
+    /**
+     * Promised call-backs against those made, clamped as above.
+     *
+     * @return array<int, array<string, int>>
+     */
+    public function followUpComplianceForUser(User $user, array $filters = []): array;
+
+    /**
+     * Calls per region, scoped by territory rather than by caller.
+     *
+     * @return array<int, int>
+     */
+    public function countsByRegionForUser(User $user, array $filters = []): array;
+
+    /**
      * Calls per day, `YYYY-MM-DD => count`, clamped to this caller (or every
      * call, for an admin). Days with no rows are absent.
      */
