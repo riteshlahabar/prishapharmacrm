@@ -1,7 +1,7 @@
 # Cuba theme — assets and load order
 
-Companion to `ui-cuba.md`, which covers markup. Everything here lives in
-`public/assets`, committed.
+Companion to `ui-cuba.md` (markup). Everything here is in `public/assets`,
+committed.
 
 ## Stylesheet order — `resources/views/layouts/css.blade.php`
 1. `css/fontawesome.css`
@@ -12,8 +12,8 @@ Companion to `ui-cuba.md`, which covers markup. Everything here lives in
 6. `css/responsive.css`
 7. **`css/prisha.css`** — ours, and it has to stay last
 
-Bootstrap must come before `style.css`. Cuba is a layer of overrides on top of
-it: `.row`, `.col-*`, `.form-control`, `.table` and `.badge` exist only in
+Bootstrap must come before `style.css`. Cuba is a layer of overrides on it:
+`.row`, `.col-*`, `.form-control`, `.table` and `.badge` exist only in
 Bootstrap, and Cuba's `.btn-primary` sets colour without `display`. Omit
 Bootstrap and the grid collapses into stacked blocks while buttons render
 their label in the colour of their own background — the page looks styled,
@@ -21,20 +21,23 @@ so the cause is easy to miss.
 
 ## Scripts — `layouts/scripts.blade.php`
 jQuery first, then Bootstrap's bundle, feather, simplebar, `config.js`,
-`sidebar-menu.js`, `sidebar-pin.js`, then `@yield('scripts')`, then
-`script.js`. The layout yields `scripts`; a view that pushes to a stack
-renders nothing.
+`sidebar-menu.js`, then `@yield('scripts')`, then `script.js`. The layout
+yields `scripts`; a view that pushes to a stack renders nothing.
 
-`assets/js/login.js` toggles `input[name="login[password]"]`, which is not a
-name Laravel validation accepts, so the login view ships its own four-line
-show/hide handler against `#password` instead.
+`sidebar-pin.js` is **not** loaded: the sidebar has no thumbtacks and no
+"Pinned" heading, and the script reads `.pin-title` into `.classList` on
+load, so it throws on every page without one.
+
+`assets/js/login.js` toggles `input[name="login[password]"]`, a name Laravel
+validation rejects, so the login view ships its own four-line show/hide
+handler against `#password` instead.
 
 ## Patched theme files
-`js/sidebar-menu.js` carries three fixes — see `ui-theme-patches.md`.
+`js/sidebar-menu.js` and `css/style.css` — see `ui-theme-patches.md`.
 
 ## Paths
-`asset('assets/...')` — the `assets/` prefix is required; 42 calls were once
-missing it. Feather CSS is at `assets/css/vendors/feather-icon.css`.
+`asset('assets/...')` — the prefix is required; 42 calls once missed it.
+Feather CSS is at `assets/css/vendors/feather-icon.css`.
 
 ## Branding
 Exactly three logos exist — no `logo-white.png`. `images/logo/logo.png`

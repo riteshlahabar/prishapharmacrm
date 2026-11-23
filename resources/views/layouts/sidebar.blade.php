@@ -5,6 +5,11 @@
     li.sidebar-list > a.sidebar-link.sidebar-title + ul.sidebar-submenu.
     The JS binds to #sidebar-menu and simplebar binds to #simple-bar.
 
+    Cuba's pin feature is not used here: no thumbtack per entry and no
+    "Pinned" heading. The collapse control beside the logo is gone too — on
+    a narrow screen Cuba shows its own toggle in the header instead
+    (responsive.css), so the menu is still reachable there.
+
     Every entry is wrapped in @can with a permission from
     App\Modules\Access\Support\PermissionCatalog, so a telecaller sees exactly
     what the admin granted. A section title is only emitted when at least one
@@ -24,9 +29,6 @@
             <img class="img-fluid for-dark" src="{{ asset('assets/images/logo/logo_dark.png') }}" alt="Prisha Pharma">
         </a>
         <div class="back-btn"><i class="fa-solid fa-angle-left"></i></div>
-        <div class="toggle-sidebar">
-            <i class="status_toggle middle sidebar-toggle" data-feather="grid"></i>
-        </div>
     </div>
     <div class="logo-icon-wrapper">
         <a href="{{ route('dashboard') }}">
@@ -48,17 +50,12 @@
                     </div>
                 </li>
 
-                <li class="pin-title sidebar-main-title">
-                    <div><h6>Pinned</h6></div>
-                </li>
-
                 @can('dashboard.view')
                 <li class="sidebar-main-title">
                     <div><h6>General</h6></div>
                 </li>
 
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('dashboard') ? 'active' : '' }}"
                        href="{{ route('dashboard') }}">
                         <i data-feather="home"></i><span>Dashboard</span>
@@ -74,7 +71,6 @@
 
                 @can('regions.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('regions.*') ? 'active' : '' }}" href="#">
                         <i data-feather="map-pin"></i><span>Regions</span>
                     </a>
@@ -89,7 +85,6 @@
 
                 @if(auth()->user()?->canAny(['persons.view', 'client_types.view']))
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('clients.*') || request()->routeIs('client-types.*') ? 'active' : '' }}" href="#">
                         <i data-feather="users"></i><span>Clients</span>
                     </a>
@@ -118,7 +113,6 @@
 
                 @can('attendance.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
                        href="{{ route('attendance.index') }}">
                         <i data-feather="clock"></i><span>Attendance</span>
@@ -128,7 +122,6 @@
 
                 @can('visits.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('visits.*') ? 'active' : '' }}"
                        href="{{ route('visits.index') }}">
                         <i data-feather="briefcase"></i><span>Visits</span>
@@ -138,7 +131,6 @@
 
                 @can('calls.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('calls.*') ? 'active' : '' }}"
                        href="{{ route('calls.index') }}">
                         <i data-feather="phone-call"></i><span>Calls</span>
@@ -148,7 +140,6 @@
 
                 @can('messages.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('messages.*') ? 'active' : '' }}"
                        href="{{ route('messages.index') }}">
                         <i data-feather="message-square"></i><span>Messages</span>
@@ -162,7 +153,6 @@
                 </li>
 
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="#">
                         <i data-feather="bar-chart-2"></i><span>Reports</span>
                     </a>
@@ -186,7 +176,6 @@
 
                 @can('mrs.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('mrs.*') ? 'active' : '' }}" href="#">
                         <i data-feather="user-check"></i><span>Medical Reps</span>
                     </a>
@@ -201,7 +190,6 @@
 
                 @can('telecallers.view')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title {{ request()->routeIs('telecallers.*') ? 'active' : '' }}" href="#">
                         <i data-feather="headphones"></i><span>Telecallers</span>
                     </a>
@@ -216,7 +204,6 @@
 
                 @can('access.manage')
                 <li class="sidebar-list">
-                    <i class="fa-solid fa-thumbtack"></i>
                     <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('access.*') ? 'active' : '' }}"
                        href="{{ route('access.permissions.index') }}">
                         <i data-feather="shield"></i><span>Permissions</span>

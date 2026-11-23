@@ -12,7 +12,10 @@
 <script src="{{ asset('assets/js/config.js') }}"></script>
 <!-- Plugins JS start-->
 <script src="{{ asset('assets/js/sidebar-menu.js') }}"></script>
-<script src="{{ asset('assets/js/sidebar-pin.js') }}"></script>
+{{-- sidebar-pin.js is deliberately not loaded: the sidebar carries no
+     thumbtacks and no "Pinned" heading any more, and the script reads
+     `.pin-title` straight into `.classList` on load, so it throws on every
+     page without them. --}}
 <script src="{{ asset('assets/js/slick/slick.min.js') }}"></script>
 <script src="{{ asset('assets/js/slick/slick.js') }}"></script>
 <script src="{{ asset('assets/js/header-slick.js') }}"></script>

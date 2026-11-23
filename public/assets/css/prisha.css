@@ -38,6 +38,13 @@
     height: auto;
 }
 
+/* Cuba hangs a box-shadow under the sidebar's logo block, which reads as a
+   rule drawn across the menu above the first section heading. */
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-wrapper,
+.page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .logo-icon-wrapper {
+    box-shadow: none;
+}
+
 /* The login card's logo. Without a width it renders at its natural 420px,
    which is most of the card. */
 .login-card .logo img,
