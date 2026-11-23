@@ -2,8 +2,8 @@
 
 namespace App\Modules\Persons\Models;
 
+use App\Modules\ClientTypes\Models\ClientType;
 use App\Modules\Persons\Database\Factories\PersonFactory;
-use App\Modules\Persons\Enums\PersonType;
 use App\Modules\Regions\Models\Region;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -13,8 +13,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * A doctor, hospital or medical store — the people MRs visit and telecallers
- * call. Replaced the generic `customers` table in Phase 2.
+ * A client: a doctor, a hospital, a medical store, or any other type an admin
+ * has added — the people MRs visit and telecallers call. Replaced the generic
+ * `customers` table in Phase 2; the panel calls them clients, the model and
+ * the mobile API still say person (docs/modules/persons.md).
+ *
+ * `type` holds a `client_types.slug`, not an enum case: the kinds of client
+ * are editable from the panel. It stays a plain string because both Flutter
+ * apps decode it as one.
  *
  * State and relationships only; querying lives in the repository.
  */
@@ -32,10 +38,17 @@ class Person extends Model
 
     protected function casts(): array
     {
-        return [
-            'type' => PersonType::class,
-            'is_active' => 'boolean',
-        ];
+        return ['is_active' => 'boolean'];
+    }
+
+    /**
+     * The type master row behind `type`. Joined on the slug rather than an
+     * id so the column keeps the value the API publishes; list queries eager
+     * load it (EloquentPersonRepository) so a page of clients reads it once.
+     */
+    public function clientType(): BelongsTo
+    {
+        return $this->belongsTo(ClientType::class, 'type', 'slug');
     }
 
     public function region(): BelongsTo
@@ -55,6 +68,18 @@ class Person extends Model
 
     public function typeLabel(): string
     {
-        return $this->type?->label() ?? '—';
+        return $this->clientType?->label ?? ($this->type ? ucfirst((string) $this->type) : '—');
+    }
+
+    /** Cuba badge class, so every list colour-codes the type the same way. */
+    public function typeBadgeClass(): string
+    {
+        return $this->clientType?->badgeClass() ?? 'badge-light-secondary';
+    }
+
+    /** Only some types carry one — a doctor does, a medical store does not. */
+    public function hasSpecialization(): bool
+    {
+        return (bool) $this->clientType?->has_specialization;
     }
 }

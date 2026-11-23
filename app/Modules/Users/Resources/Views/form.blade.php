@@ -126,7 +126,7 @@
                                 @error('region_ids.*')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 <div class="form-text">
                                     {{ $multipleRegions
-                                        ? 'Ctrl/Cmd-click to pick several. A telecaller sees only persons in these regions.'
+                                        ? 'Ctrl/Cmd-click to pick several. A telecaller sees only clients in these regions.'
                                         : 'The territory this medical rep covers.' }}
                                     @if($regionOptions->isEmpty())
                                         <a href="{{ route('regions.create') }}">Add a region</a>.

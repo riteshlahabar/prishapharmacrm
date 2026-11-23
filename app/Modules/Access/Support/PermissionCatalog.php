@@ -23,7 +23,8 @@ final class PermissionCatalog
         return [
             'dashboard' => ['label' => 'Dashboard', 'abilities' => ['view']],
             'regions' => ['label' => 'Regions', 'abilities' => ['view', 'create', 'update', 'delete']],
-            'persons' => ['label' => 'Persons', 'abilities' => ['view', 'create', 'update', 'delete']],
+            'persons' => ['label' => 'Clients', 'abilities' => ['view', 'create', 'update', 'delete']],
+            'client_types' => ['label' => 'Client Types', 'abilities' => ['view', 'create', 'update', 'delete']],
             'mrs' => ['label' => 'Medical Reps', 'abilities' => ['view', 'create', 'update', 'delete']],
             'telecallers' => ['label' => 'Telecallers', 'abilities' => ['view', 'create', 'update', 'delete']],
             'attendance' => ['label' => 'Attendance', 'abilities' => ['view']],
@@ -62,7 +63,7 @@ final class PermissionCatalog
     public static function grantable(): array
     {
         $groups = self::groups();
-        unset($groups['access'], $groups['mrs'], $groups['telecallers']);
+        unset($groups['access'], $groups['mrs'], $groups['telecallers'], $groups['client_types']);
 
         return $groups;
     }

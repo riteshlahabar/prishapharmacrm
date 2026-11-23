@@ -42,15 +42,15 @@
                             <table class="table table-bordernone">
                                 <tbody>
                                     <tr>
-                                        <th class="w-25">Person</th>
+                                        <th class="w-25">Client</th>
                                         <td>
                                             @if($call->person)
                                                 @can('persons.view')
-                                                    <a href="{{ route('persons.show', $call->person->id) }}">{{ $call->person->name }}</a>
+                                                    <a href="{{ route('clients.show', $call->person->id) }}">{{ $call->person->name }}</a>
                                                 @else
                                                     {{ $call->person->name }}
                                                 @endcan
-                                                <span class="badge {{ $call->person->type?->badgeClass() }} ms-1">
+                                                <span class="badge {{ $call->person->typeBadgeClass() }} ms-1">
                                                     {{ $call->person->typeLabel() }}
                                                 </span>
                                             @else

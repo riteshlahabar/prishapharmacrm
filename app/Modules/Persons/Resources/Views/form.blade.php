@@ -1,17 +1,20 @@
 {{--
-    Create / edit a person. The specialization field only applies to doctors,
-    so it is shown or hidden from the type select; PersonService clears it
+    Create / edit a client.
+
+    The specialization field applies only to the types flagged for it in the
+    client-type master, so the select carries that flag to the browser and the
+    field is shown or hidden from it; PersonService clears the column
     server-side too, so a type change never leaves stale text behind.
 --}}
 @extends('layouts.master')
 
 @php
     $editing = $person !== null;
-    $action = $editing ? route('persons.update', $person->id) : route('persons.store');
-    $currentType = old('type', $person->type?->value ?? 'doctor');
+    $action = $editing ? route('clients.update', $person->id) : route('clients.store');
+    $currentType = old('type', $person->type ?? $types->first()?->slug);
 @endphp
 
-@section('title', ($editing ? 'Edit ' : 'Add ').'Person')
+@section('title', ($editing ? 'Edit ' : 'Add ').'Client')
 
 @section('content')
 <div class="page-body">
@@ -19,11 +22,11 @@
 
         <div class="page-title">
             <div class="row">
-                <div class="col-6"><h3>{{ $editing ? 'Edit' : 'Add' }} Person</h3></div>
+                <div class="col-6"><h3>{{ $editing ? 'Edit' : 'Add' }} Client</h3></div>
                 <div class="col-6">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i data-feather="home"></i></a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('persons.index') }}">Persons</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('clients.index') }}">Clients</a></li>
                         <li class="breadcrumb-item active">{{ $editing ? 'Edit' : 'Add' }}</li>
                     </ol>
                 </div>
@@ -55,12 +58,18 @@
                                 <label class="form-label" for="type">Type <span class="txt-danger">*</span></label>
                                 <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
                                     @foreach($types as $type)
-                                        <option value="{{ $type->value }}" @selected($currentType === $type->value)>
-                                            {{ $type->label() }}
+                                        <option value="{{ $type->slug }}" @selected($currentType === $type->slug)
+                                                data-specialization="{{ $type->has_specialization ? '1' : '0' }}">
+                                            {{ $type->label }}
                                         </option>
                                     @endforeach
                                 </select>
                                 @error('type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                @can('client_types.view')
+                                <div class="form-text">
+                                    Managed under <a href="{{ route('client-types.index') }}">Client Types</a>.
+                                </div>
+                                @endcan
                             </div>
 
                             <div class="col-md-6">
@@ -82,7 +91,7 @@
                                 <input class="form-control" id="specialization" type="text" name="specialization"
                                        value="{{ old('specialization', $person->specialization ?? '') }}"
                                        placeholder="Cardiologist">
-                                <div class="form-text">Doctors only — cleared automatically for other types.</div>
+                                <div class="form-text">Shown for the types that carry one — cleared automatically for the rest.</div>
                             </div>
 
                             <div class="col-md-6">
@@ -102,7 +111,7 @@
                         <div class="card-header">
                             <h5>Territory and ownership</h5>
                             <span class="f-light">
-                                The region decides which telecallers can see this person at all;
+                                The region decides which telecallers can see this client at all;
                                 the assignments decide who is responsible for them.
                             </span>
                         </div>
@@ -157,16 +166,16 @@
                                     <input class="form-check-input" id="is_active" type="checkbox" name="is_active"
                                            value="1" @checked(old('is_active', $person->is_active ?? true))>
                                     <label class="form-check-label" for="is_active">
-                                        Active — inactive persons stay on past visits and calls but drop out of working lists
+                                        Active — an inactive client stays on past visits and calls but drops out of working lists
                                     </label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="card-footer text-end">
-                            <a class="btn btn-light" href="{{ route('persons.index') }}">Cancel</a>
+                            <a class="btn btn-light" href="{{ route('clients.index') }}">Cancel</a>
                             <button class="btn btn-primary" type="submit">
-                                {{ $editing ? 'Save changes' : 'Create Person' }}
+                                {{ $editing ? 'Save changes' : 'Create Client' }}
                             </button>
                         </div>
                     </div>
@@ -180,11 +189,22 @@
 
 @section('scripts')
 <script>
-    // Specialization only means something for a doctor.
+    // Which types carry a specialization is a column on the type, not a
+    // hard-coded slug: each option ships the flag, so adding a type in the
+    // panel needs no change here.
     (function () {
         var type = document.getElementById('type');
         var field = document.getElementById('specialization-field');
-        function sync() { field.style.display = type.value === 'doctor' ? '' : 'none'; }
+
+        if (!type || !field) {
+            return;
+        }
+
+        function sync() {
+            var option = type.options[type.selectedIndex];
+            field.style.display = option && option.dataset.specialization === '1' ? '' : 'none';
+        }
+
         type.addEventListener('change', sync);
         sync();
     })();

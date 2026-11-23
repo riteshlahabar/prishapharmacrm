@@ -31,11 +31,11 @@
                     <div class="card-body">
                         <p class="f-light">{{ $report['blurb'] }}</p>
                         <a class="btn btn-primary" href="{{ route('reports.show', $slug) }}">
-                            <i data-feather="bar-chart-2" class="me-1"></i> Open
+                            <i data-feather="bar-chart-2"></i> Open
                         </a>
                         @can('reports.export')
                         <a class="btn btn-light" href="{{ route('reports.export', $slug) }}">
-                            <i data-feather="download" class="me-1"></i> CSV
+                            <i data-feather="download"></i> CSV
                         </a>
                         @endcan
                     </div>

@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form class="row g-2 mb-4" method="GET" action="{{ route('attendance.index') }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route('attendance.index') }}">
                             <div class="col-md-2">
                                 <label class="form-label f-light" for="date_from">From</label>
                                 <input class="form-control" id="date_from" type="date" name="date_from"
@@ -79,7 +79,7 @@
                             </div>
                             <div class="col-12 mt-3">
                                 <button class="btn btn-outline-primary" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route('attendance.index') }}">Today</a>
                             </div>
@@ -136,7 +136,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $rows->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $rows, 'noun' => 'record'])
                     </div>
                 </div>
             </div>

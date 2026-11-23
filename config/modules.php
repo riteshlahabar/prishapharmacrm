@@ -4,6 +4,7 @@ use App\Modules\Access\Providers\AccessServiceProvider;
 use App\Modules\Attendance\Providers\AttendanceServiceProvider;
 use App\Modules\Auth\Providers\AuthServiceProvider;
 use App\Modules\Calls\Providers\CallsServiceProvider;
+use App\Modules\ClientTypes\Providers\ClientTypesServiceProvider;
 use App\Modules\Dashboard\Providers\DashboardServiceProvider;
 use App\Modules\Messages\Providers\MessagesServiceProvider;
 use App\Modules\Persons\Providers\PersonsServiceProvider;
@@ -27,6 +28,8 @@ return [
         AuthServiceProvider::class,
         UsersServiceProvider::class,
         RegionsServiceProvider::class,
+        // Before Persons: the client form reads its options from this master.
+        ClientTypesServiceProvider::class,
         PersonsServiceProvider::class,
         AttendanceServiceProvider::class,
         VisitsServiceProvider::class,

@@ -104,10 +104,10 @@ ck "mr has no session"       "302" "$(code /tmp/p7m.jar /)"
 ck "guest bounced from /"    "302" "$(curl -s -o /dev/null -w '%{http_code}' "$B/")"
 
 echo "=== 7. the rest of the panel is untouched ==="
-for p in /persons /regions /visits /calls /messages /attendance /mrs /telecallers /access/permissions; do
+for p in /clients /client-types /regions /visits /calls /messages /attendance /mrs /telecallers /access/permissions; do
   ck "admin  $p" "200" "$(code /tmp/p7a.jar $p)"
 done
-for p in /persons /calls /messages; do
+for p in /clients /calls /messages; do
   ck "tc     $p" "200" "$(code /tmp/p7t.jar $p)"
 done
 for p in /visits /attendance /mrs; do

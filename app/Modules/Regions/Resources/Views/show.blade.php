@@ -26,12 +26,12 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="row align-items-center">
-                            <div class="col"><h5>Region details</h5></div>
+                        <div class="card-toolbar">
+                            <div><h5>Region details</h5></div>
                             @can('regions.update')
-                            <div class="col-auto">
+                            <div class="card-toolbar-actions">
                                 <a class="btn btn-primary" href="{{ route('regions.edit', $region->id) }}">
-                                    <i data-feather="edit-2" class="me-1"></i> Edit
+                                    <i data-feather="edit-2"></i> Edit
                                 </a>
                             </div>
                             @endcan
@@ -54,7 +54,7 @@
                                     </tr>
                                     <tr><th>Medical reps in this territory</th><td>{{ $usage['mrs'] ?? 0 }}</td></tr>
                                     <tr><th>Telecallers covering it</th><td>{{ $usage['telecallers'] ?? 0 }}</td></tr>
-                                    <tr><th>Persons</th><td>{{ $usage['persons'] ?? 0 }}</td></tr>
+                                    <tr><th>Clients</th><td>{{ $usage['persons'] ?? 0 }}</td></tr>
                                     <tr><th>Created</th><td>{{ $region->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
                                 </tbody>
                             </table>

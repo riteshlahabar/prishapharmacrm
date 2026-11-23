@@ -35,7 +35,7 @@ class VisitResource extends JsonResource
             'person' => $this->whenLoaded('person', fn () => [
                 'id' => $v->person->id,
                 'name' => $v->person->name,
-                'type' => $v->person->type?->value,
+                'type' => $v->person->type,
                 'mobile' => $v->person->mobile,
                 'city' => $v->person->city,
             ]),

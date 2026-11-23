@@ -1,0 +1,420 @@
+/*
+ * Prisha brand layer — loaded last, after Cuba's style.css and responsive.css.
+ *
+ * Cuba's own primary purple was repainted to the brand teal inside style.css
+ * (docs/ui-theme-patches.md); this file holds the things that are ours rather
+ * than a recolour of theirs: the logo sizing, the table chrome, the pagination
+ * row, the toolbar alignment and the coloured dashboard tiles.
+ *
+ * Nothing in here redefines a Bootstrap or Cuba component from scratch — each
+ * rule is an override on a selector those files already style.
+ */
+
+:root {
+    --prisha-green: #6EAE40;
+    --prisha-green-dark: #5A9433;
+    --prisha-teal: #00797C;
+    --prisha-teal-dark: #005F61;
+    --prisha-ink: #22313F;
+    --prisha-surface: #F4F8F6;
+    --prisha-line: #E4ECE7;
+    --prisha-gradient: linear-gradient(135deg, var(--prisha-teal) 0%, var(--prisha-green) 100%);
+}
+
+/* ---------------------------------------------------------------- branding */
+
+/* The artwork is 2.1:1, not the 3.5:1 of the stock Cuba wordmark, so it is
+   sized here rather than left at its natural width. */
+.logo-wrapper img,
+.page-header .header-logo-wrapper .logo-wrapper img {
+    width: 178px;
+    height: auto;
+}
+
+.logo-icon-wrapper img,
+.sidebar-links li.back-btn img {
+    width: 44px;
+    height: auto;
+}
+
+/* ------------------------------------------------------------ page heading */
+
+.page-title h3 {
+    font-weight: 600;
+    color: var(--prisha-ink);
+}
+
+.page-title .breadcrumb-item.active {
+    color: var(--prisha-teal);
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------- card head */
+
+.card .card-header {
+    border-bottom: 1px solid var(--prisha-line);
+}
+
+.card .card-header h5 {
+    font-weight: 600;
+    color: var(--prisha-ink);
+}
+
+/* A heading, a sub-line and the page's actions on one baseline, wrapping to
+   their own row on a narrow screen instead of squeezing the buttons. */
+.card-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.card-toolbar .card-toolbar-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+/*
+ * Feather renders each `<i data-feather>` as a 24px `<svg>`, which on a button
+ * sits on the text baseline and drags the label onto a second line. Laying the
+ * button out as a flex row puts icon and label side by side at any font size,
+ * and is why no view needs its own spacing hacks.
+ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn svg,
+.btn .feather {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.2;
+    flex: 0 0 auto;
+}
+
+.btn-sm svg,
+.btn-sm .feather {
+    width: 14px;
+    height: 14px;
+}
+
+/* Icon-only buttons in a table's action column: square, no label gap. */
+.btn.btn-icon {
+    gap: 0;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 8px;
+}
+
+/* Cuba's .btn-link tints its icon in the theme colour at low contrast, which
+   on a 16px glyph is barely visible; and .btn-sm would shrink it to 14. */
+.btn.btn-icon svg {
+    width: 17px;
+    height: 17px;
+}
+
+.btn-link.btn-icon {
+    color: #566E7A;
+}
+
+.btn-link.btn-icon:hover {
+    color: var(--prisha-teal);
+    background: var(--prisha-surface);
+}
+
+.btn-link.btn-icon.txt-danger,
+.btn-link.btn-icon.txt-danger:hover {
+    color: #DC3545;
+}
+
+.btn-brand {
+    background: var(--prisha-gradient);
+    border: none;
+    color: #fff;
+}
+
+.btn-brand:hover,
+.btn-brand:focus {
+    color: #fff;
+    filter: brightness(1.06);
+}
+
+/* ------------------------------------------------------------- filter bar */
+
+.filter-bar {
+    background: var(--prisha-surface);
+    border: 1px solid var(--prisha-line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 18px;
+}
+
+/* Most filter forms are the Bootstrap row itself, so the gutter's negative
+   side margins have to go or the first field hangs over the panel's edge. */
+.filter-bar.row {
+    --bs-gutter-x: 0.75rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.filter-bar .form-label {
+    margin-bottom: 4px;
+}
+
+.filter-bar .form-control,
+.filter-bar .form-select {
+    background-color: #fff;
+}
+
+.filter-bar .filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+/* A checkbox filter sits on the same line as the buttons; without this the
+   flex row shrinks its label and the text runs under the first button. */
+.filter-bar .filter-actions .form-check {
+    flex: 0 0 auto;
+    margin-bottom: 0;
+}
+
+/* ----------------------------------------------------------------- tables */
+
+.table-responsive {
+    border: 1px solid var(--prisha-line);
+    border-radius: 12px;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+/* The gradient is on the row, not the cell: per-cell it restarts at every
+   column and the header reads as stripes. */
+.table > thead > tr {
+    background: linear-gradient(90deg, var(--prisha-teal) 0%, var(--prisha-green) 100%);
+}
+
+.table > thead > tr > th {
+    background-color: transparent;
+    color: #fff;
+    border-bottom: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 14px 16px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Bootstrap paints cells with an inset box-shadow, which otherwise covers
+   the row gradient on a .table-striped / .table-hover table. */
+.table > thead > tr > th {
+    --bs-table-accent-bg: transparent;
+    --bs-table-bg-type: transparent;
+    box-shadow: none;
+}
+
+.table > thead > tr > th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table > thead > tr > th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.table > tbody > tr > td {
+    padding: 13px 16px;
+    vertical-align: middle;
+    border-color: var(--prisha-line);
+}
+
+.table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: #FAFCFB;
+    --bs-table-bg-type: #FAFCFB;
+}
+
+.table.table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: #EFF6F2;
+    --bs-table-bg-type: #EFF6F2;
+}
+
+.table > tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+/* The action column: four icon buttons belong on one line, not wrapped into
+   a block in a column sized for text. */
+.table > tbody > tr > td:last-child {
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- pagination */
+
+/*
+ * The row under every table: a plain-language count on the left, the pager on
+ * the right, stacked on a phone. Laravel's own Bootstrap-5 pagination view is
+ * what renders the list (AppServiceProvider), so only the colours are ours.
+ */
+.table-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.table-foot .pagination {
+    margin-bottom: 0;
+}
+
+.table-foot nav {
+    margin-left: auto;
+}
+
+.pagination .page-link {
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+    border: 1px solid var(--prisha-line);
+    border-radius: 9px;
+    color: var(--prisha-ink);
+    font-weight: 500;
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--prisha-gradient);
+    border-color: transparent;
+    color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #AEBBC4;
+    background: #fff;
+}
+
+.pagination .page-link:hover {
+    background: var(--prisha-surface);
+    color: var(--prisha-teal);
+}
+
+.table-foot .pagination-summary {
+    color: #6B7C8A;
+    font-size: 13px;
+}
+
+/* --------------------------------------------------------- dashboard tiles */
+
+/*
+ * Six headline cards, one accent each. The accent name arrives from
+ * DashboardService with the rest of the tile, so the palette is decided once,
+ * in PHP, and this file only knows how to paint it.
+ */
+.stat-tile {
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 14px;
+    color: #fff;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.stat-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(34, 49, 63, 0.18);
+}
+
+/* A soft disc behind the icon, bleeding off the top-right corner. */
+.stat-tile::after {
+    content: "";
+    position: absolute;
+    top: -38px;
+    right: -28px;
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.13);
+}
+
+.stat-tile .stat-label,
+.stat-tile .stat-sub {
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.stat-tile .stat-value {
+    color: #fff;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.stat-tile .stat-icon {
+    position: relative;
+    z-index: 1;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.22);
+}
+
+.stat-tile .stat-icon svg {
+    width: 20px;
+    height: 20px;
+    color: #fff;
+}
+
+.stat-tile.tile-teal    { background: linear-gradient(135deg, #00797C 0%, #0FA3A6 100%); }
+.stat-tile.tile-green   { background: linear-gradient(135deg, #4E9B2E 0%, #85C455 100%); }
+.stat-tile.tile-blue    { background: linear-gradient(135deg, #1B6CA8 0%, #3FA9DE 100%); }
+.stat-tile.tile-amber   { background: linear-gradient(135deg, #D98324 0%, #F5B759 100%); }
+.stat-tile.tile-violet  { background: linear-gradient(135deg, #5B4B9B 0%, #8E7CD6 100%); }
+.stat-tile.tile-rose    { background: linear-gradient(135deg, #C0392B 0%, #EF7A6B 100%); }
+
+/* ----------------------------------------------------------------- badges */
+
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    padding: 0.42em 0.7em;
+    border-radius: 7px;
+}
+
+/* ------------------------------------------------------------------ misc */
+
+.card {
+    border-radius: 14px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 16px;
+    color: #6B7C8A;
+}
+
+.empty-state svg {
+    width: 34px;
+    height: 34px;
+    color: var(--prisha-teal);
+    opacity: 0.6;
+}

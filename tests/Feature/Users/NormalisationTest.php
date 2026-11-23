@@ -49,8 +49,8 @@ class NormalisationTest extends TestCase
         Person::factory()->create(['mobile' => '8700000001']);
 
         $this->actingAs($this->admin())
-            ->from('/persons/create')
-            ->post('/persons', [
+            ->from('/clients/create')
+            ->post('/clients', [
                 'name' => 'Padded Person',
                 'type' => 'doctor',
                 'mobile' => ' 8700000001 ',

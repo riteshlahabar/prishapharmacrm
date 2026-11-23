@@ -39,9 +39,14 @@
 
                     <div class="card-body">
                         <div class="mb-4">
+                            {{-- A total is named by the column it totals when
+                                 there is one, so the chip and the column head
+                                 cannot disagree (e.g. "Clients seen", not
+                                 "Persons seen"). --}}
                             @foreach($data['totals'] as $label => $value)
                                 <span class="badge badge-light-primary me-1">
-                                    {{ ucfirst(str_replace('_', ' ', $label)) }}: {{ $value }}
+                                    {{ $definition['columns'][$label]['label'] ?? ucfirst(str_replace('_', ' ', $label)) }}:
+                                    {{ $value }}
                                 </span>
                             @endforeach
                         </div>

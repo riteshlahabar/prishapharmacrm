@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form class="row g-2 mb-4" method="GET" action="{{ route('access.permissions.index') }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route('access.permissions.index') }}">
                             <div class="col-md-5">
                                 <input class="form-control" type="search" name="search"
                                        value="{{ $filters['search'] ?? '' }}"
@@ -44,7 +44,7 @@
                             </div>
                             <div class="col-md-4">
                                 <button class="btn btn-outline-primary" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route('access.permissions.index') }}">Reset</a>
                             </div>
@@ -77,7 +77,7 @@
                                         <td class="text-end">
                                             <a class="btn btn-outline-primary btn-sm"
                                                href="{{ route('access.permissions.edit', $telecaller->id) }}">
-                                                <i data-feather="shield" class="me-1"></i> Edit permissions
+                                                <i data-feather="shield"></i> Edit permissions
                                             </a>
                                         </td>
                                     </tr>
@@ -93,7 +93,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $telecallers->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $telecallers, 'noun' => 'telecaller'])
                     </div>
                 </div>
             </div>

@@ -57,15 +57,15 @@
                                         <td>
                                             @if($message->person)
                                                 @can('persons.view')
-                                                    <a href="{{ route('persons.show', $message->person->id) }}">{{ $message->person->name }}</a>
+                                                    <a href="{{ route('clients.show', $message->person->id) }}">{{ $message->person->name }}</a>
                                                 @else
                                                     {{ $message->person->name }}
                                                 @endcan
-                                                <span class="badge {{ $message->person->type?->badgeClass() }} ms-1">
+                                                <span class="badge {{ $message->person->typeBadgeClass() }} ms-1">
                                                     {{ $message->person->typeLabel() }}
                                                 </span>
                                             @else
-                                                No person attached
+                                                No client attached
                                             @endif
                                         </td>
                                     </tr>

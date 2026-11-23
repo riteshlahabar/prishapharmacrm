@@ -3,7 +3,7 @@
 namespace App\Modules\Reports\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Persons\Enums\PersonType;
+use App\Modules\ClientTypes\Services\Contracts\ClientTypeServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionServiceInterface;
 use App\Modules\Reports\Services\Contracts\ReportServiceInterface;
@@ -27,6 +27,7 @@ class ReportController extends Controller
         private readonly ReportServiceInterface $reports,
         private readonly RegionServiceInterface $regions,
         private readonly RegionAssignmentServiceInterface $assignment,
+        private readonly ClientTypeServiceInterface $clientTypes,
     ) {}
 
     /** The landing page: what reports exist, and what each one answers. */
@@ -51,7 +52,7 @@ class ReportController extends Controller
             'regionOptions' => $request->user()->isAdmin()
                 ? $this->regions->activeOptions()
                 : $this->assignment->regionsFor($request->user()),
-            'types' => PersonType::cases(),
+            'types' => $this->clientTypes->activeOptions(),
         ]);
     }
 

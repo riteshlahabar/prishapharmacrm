@@ -8,8 +8,10 @@
 --}}
 <!-- Font Awesome-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/fontawesome.css') }}">
-<!-- Favicons -->
+<!-- Favicons — the Prisha mark, same artwork as the sidebar logo -->
 <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/png">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+<link rel="apple-touch-icon" href="{{ asset('assets/images/logo/logo-icon.png') }}">
 <!-- Google font-->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;family=Open+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <!-- Bootstrap 5.3 (base for every Cuba component rule) -->
@@ -19,3 +21,5 @@
 <!-- Cuba theme -->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+<!-- Prisha brand layer — must stay last, it overrides both files above -->
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/prisha.css') }}">

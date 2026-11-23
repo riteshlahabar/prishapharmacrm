@@ -37,7 +37,7 @@ class PersonResource extends JsonResource
         $data = [
             'id' => $p->id,
             'name' => $p->name,
-            'type' => $p->type?->value,
+            'type' => $p->type,
             'type_label' => $p->typeLabel(),
             'mobile' => $p->mobile,
             'email' => $p->email,

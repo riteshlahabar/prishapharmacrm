@@ -11,7 +11,7 @@
     of its entries survives, otherwise the sidebar shows empty headings.
 --}}
 @php
-    $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view']) ?? false;
+    $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view', 'client_types.view']) ?? false;
     $canUsers = auth()->user()?->canAny(['mrs.view', 'telecallers.view']) ?? false;
     $canField = auth()->user()?->canAny(['attendance.view', 'visits.view', 'calls.view', 'messages.view']) ?? false;
     $canAccess = auth()->user()?->can('access.manage') ?? false;
@@ -87,20 +87,28 @@
                 </li>
                 @endcan
 
-                @can('persons.view')
+                @if(auth()->user()?->canAny(['persons.view', 'client_types.view']))
                 <li class="sidebar-list">
                     <i class="fa-solid fa-thumbtack"></i>
-                    <a class="sidebar-link sidebar-title {{ request()->routeIs('persons.*') ? 'active' : '' }}" href="#">
-                        <i data-feather="users"></i><span>Persons</span>
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('clients.*') || request()->routeIs('client-types.*') ? 'active' : '' }}" href="#">
+                        <i data-feather="users"></i><span>Clients</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('persons.index') }}">All Persons</a></li>
+                        @can('persons.view')
+                        <li><a href="{{ route('clients.index') }}">All Clients</a></li>
+                        @endcan
                         @can('persons.create')
-                        <li><a href="{{ route('persons.create') }}">Add Person</a></li>
+                        <li><a href="{{ route('clients.create') }}">Add Client</a></li>
+                        @endcan
+                        @can('client_types.view')
+                        <li><a href="{{ route('client-types.index') }}">Client Types</a></li>
+                        @endcan
+                        @can('client_types.create')
+                        <li><a href="{{ route('client-types.create') }}">Add Client Type</a></li>
                         @endcan
                     </ul>
                 </li>
-                @endcan
+                @endif
 
                 @if($canField)
                 <li class="sidebar-main-title">

@@ -29,7 +29,7 @@
                         <h5>Call report</h5>
                         <span class="f-light">
                             {{ $summary['total'] }} call(s) ·
-                            {{ $summary['persons'] }} person(s) ·
+                            {{ $summary['persons'] }} client(s) ·
                             {{ $summary['converted'] }} converted ·
                             {{ $summary['follow_ups_open'] }} call-back(s) open
                             @unless(auth()->user()->isAdmin()) · your own calls only @endunless
@@ -50,7 +50,7 @@
                         </div>
                         @endif
 
-                        <form class="row g-2 mb-4" method="GET" action="{{ route('calls.index') }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route('calls.index') }}">
                             <div class="col-md-2">
                                 <label class="form-label f-light" for="date_from">From</label>
                                 <input class="form-control" id="date_from" type="date" name="date_from"
@@ -100,7 +100,7 @@
                             <div class="col-md-5 mt-3">
                                 <input class="form-control" type="search" name="search"
                                        value="{{ $filters['search'] ?? '' }}"
-                                       placeholder="Search person, telecaller or notes">
+                                       placeholder="Search client, telecaller or notes">
                             </div>
                             <div class="col-12 mt-3">
                                 <div class="form-check form-check-inline">
@@ -114,7 +114,7 @@
                                     <label class="form-check-label" for="follow_up_due">Due now</label>
                                 </div>
                                 <button class="btn btn-outline-primary ms-2" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route('calls.index') }}">Reset</a>
                             </div>
@@ -125,7 +125,7 @@
                                 <thead>
                                     <tr>
                                         <th>Called</th>
-                                        <th>Person</th>
+                                        <th>Client</th>
                                         <th>Telecaller</th>
                                         <th>Outcome</th>
                                         <th>Call back</th>
@@ -178,7 +178,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $calls->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $calls, 'noun' => 'call'])
                     </div>
                 </div>
             </div>

@@ -14,10 +14,14 @@ where the rule lives and a tile always matches the screen it links to.
 
 One template serves admin and telecaller. The service asks each module's
 **policy** (`viewAny`) which cards the viewer may have, so there is no role
-test in the controller or the Blade — a telecaller gets persons, calls,
+test in the controller or the Blade — a telecaller gets clients, calls,
 conversion and messages; an admin also gets attendance and visits. A card
 nobody may see costs no queries. (It names sibling *models* only as the
 subject of a Gate check, never to read from.)
+
+Each tile carries its accent (`colour`) from the service, so the palette is
+decided once and a telecaller's shorter list does not reshuffle the colours;
+the gradients themselves are `.stat-tile.tile-*` in `ui-brand.md`.
 
 Charts are ApexCharts 3.46.0, already committed under
 `public/assets/js/chart/apex-chart/`. Cuba's `chart-custom.js` beside it is

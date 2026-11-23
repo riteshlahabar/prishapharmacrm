@@ -29,7 +29,7 @@
                         <h5>Visit report</h5>
                         <span class="f-light">
                             {{ $summary['total'] }} visit(s) ·
-                            {{ $summary['persons'] }} person(s) ·
+                            {{ $summary['persons'] }} client(s) ·
                             {{ $summary['mrs'] }} rep(s) ·
                             {{ $summary['geotagged'] }} with a location
                             @unless(auth()->user()->isAdmin()) · your regions only @endunless
@@ -48,7 +48,7 @@
                         </div>
                         @endif
 
-                        <form class="row g-2 mb-4" method="GET" action="{{ route('visits.index') }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route('visits.index') }}">
                             <div class="col-md-2">
                                 <label class="form-label f-light" for="date_from">From</label>
                                 <input class="form-control" id="date_from" type="date" name="date_from"
@@ -95,7 +95,7 @@
                             <div class="col-md-5 mt-3">
                                 <input class="form-control" type="search" name="search"
                                        value="{{ $filters['search'] ?? '' }}"
-                                       placeholder="Search person, rep or notes">
+                                       placeholder="Search client, rep or notes">
                             </div>
                             <div class="col-12 mt-3">
                                 <div class="form-check form-check-inline">
@@ -104,7 +104,7 @@
                                     <label class="form-check-label" for="without_location">No location captured</label>
                                 </div>
                                 <button class="btn btn-outline-primary ms-2" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route('visits.index') }}">Reset</a>
                             </div>
@@ -115,7 +115,7 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Person</th>
+                                        <th>Client</th>
                                         <th>Medical Rep</th>
                                         <th>Purpose</th>
                                         <th>In</th>
@@ -174,7 +174,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $visits->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $visits, 'noun' => 'visit'])
                     </div>
                 </div>
             </div>

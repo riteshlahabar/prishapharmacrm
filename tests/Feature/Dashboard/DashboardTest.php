@@ -79,9 +79,9 @@ class DashboardTest extends TestCase
         $this->actingAs($telecaller)->get('/')
             ->assertOk()
             ->assertViewHas('data', function (array $data) {
-                $persons = collect($data['tiles'])->firstWhere('label', 'Persons');
+                $persons = collect($data['tiles'])->firstWhere('label', 'Clients');
 
-                $this->assertNotNull($persons, 'the persons tile should be present');
+                $this->assertNotNull($persons, 'the clients tile should be present');
                 $this->assertSame(1, $persons['value']);
                 $this->assertSame('active, your regions', $persons['sub']);
 

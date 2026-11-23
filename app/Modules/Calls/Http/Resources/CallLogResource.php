@@ -34,7 +34,7 @@ class CallLogResource extends JsonResource
             'person' => $this->whenLoaded('person', fn () => [
                 'id' => $c->person->id,
                 'name' => $c->person->name,
-                'type' => $c->person->type?->value,
+                'type' => $c->person->type,
                 'mobile' => $c->person->mobile,
                 'city' => $c->person->city,
             ]),

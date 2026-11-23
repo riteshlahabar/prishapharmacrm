@@ -19,9 +19,9 @@ class PersonPanelTest extends TestCase
     {
         Person::factory()->count(3)->inRegion(Region::factory()->create())->create();
 
-        $this->actingAs($this->admin())->get('/persons')
+        $this->actingAs($this->admin())->get('/clients')
             ->assertOk()
-            ->assertViewHas('persons', fn (LengthAwarePaginator $p) => $p->total() === 3);
+            ->assertViewHas('clients', fn (LengthAwarePaginator $p) => $p->total() === 3);
     }
 
     public function test_an_admin_creates_a_person(): void
@@ -30,7 +30,7 @@ class PersonPanelTest extends TestCase
         $mr = $this->mr($region);
         $telecaller = $this->telecaller([$region]);
 
-        $this->actingAs($this->admin())->post('/persons', [
+        $this->actingAs($this->admin())->post('/clients', [
             'name' => 'Dr Anjali Rao',
             'type' => 'doctor',
             'mobile' => '9876543210',
@@ -41,7 +41,7 @@ class PersonPanelTest extends TestCase
             'assigned_mr_id' => $mr->id,
             'assigned_telecaller_id' => $telecaller->id,
             'is_active' => '1',
-        ])->assertRedirect(route('persons.index'));
+        ])->assertRedirect(route('clients.index'));
 
         $this->assertDatabaseHas('persons', [
             'name' => 'Dr Anjali Rao',
@@ -58,16 +58,16 @@ class PersonPanelTest extends TestCase
         Person::factory()->create(['mobile' => '9876543210']);
 
         $this->actingAs($this->admin())
-            ->from('/persons/create')
-            ->post('/persons', ['name' => 'Someone', 'type' => 'doctor', 'mobile' => '9876543210'])
+            ->from('/clients/create')
+            ->post('/clients', ['name' => 'Someone', 'type' => 'doctor', 'mobile' => '9876543210'])
             ->assertSessionHasErrors('mobile');
     }
 
     public function test_the_mobile_number_is_format_checked(): void
     {
         $this->actingAs($this->admin())
-            ->from('/persons/create')
-            ->post('/persons', ['name' => 'Someone', 'type' => 'doctor', 'mobile' => 'not a number'])
+            ->from('/clients/create')
+            ->post('/clients', ['name' => 'Someone', 'type' => 'doctor', 'mobile' => 'not a number'])
             ->assertSessionHasErrors('mobile');
     }
 
@@ -78,8 +78,8 @@ class PersonPanelTest extends TestCase
         $telecaller = $this->telecaller([$region]);
 
         $this->actingAs($this->admin())
-            ->from('/persons/create')
-            ->post('/persons', [
+            ->from('/clients/create')
+            ->post('/clients', [
                 'name' => 'Someone',
                 'type' => 'doctor',
                 'mobile' => '9876500000',
@@ -92,11 +92,11 @@ class PersonPanelTest extends TestCase
     {
         $person = Person::factory()->create(['name' => 'Old Name', 'mobile' => '9800000001']);
 
-        $this->actingAs($this->admin())->put("/persons/{$person->id}", [
+        $this->actingAs($this->admin())->put("/clients/{$person->id}", [
             'name' => 'New Name',
             'type' => 'hospital',
             'mobile' => '9800000001',
-        ])->assertRedirect(route('persons.index'));
+        ])->assertRedirect(route('clients.index'));
 
         $this->assertDatabaseHas('persons', ['id' => $person->id, 'name' => 'New Name', 'type' => 'hospital']);
     }
@@ -105,12 +105,12 @@ class PersonPanelTest extends TestCase
     {
         $person = Person::factory()->create();
 
-        $this->actingAs($this->admin())->patch("/persons/{$person->id}/toggle")
-            ->assertRedirect(route('persons.index'));
+        $this->actingAs($this->admin())->patch("/clients/{$person->id}/toggle")
+            ->assertRedirect(route('clients.index'));
         $this->assertFalse($person->refresh()->is_active);
 
-        $this->actingAs($this->admin())->delete("/persons/{$person->id}")
-            ->assertRedirect(route('persons.index'));
+        $this->actingAs($this->admin())->delete("/clients/{$person->id}")
+            ->assertRedirect(route('clients.index'));
         $this->assertDatabaseMissing('persons', ['id' => $person->id]);
     }
 
@@ -123,9 +123,9 @@ class PersonPanelTest extends TestCase
         $visible = Person::factory()->inRegion($mine)->create();
         Person::factory()->count(4)->inRegion($theirs)->create();
 
-        $this->actingAs($telecaller)->get('/persons')
+        $this->actingAs($telecaller)->get('/clients')
             ->assertOk()
-            ->assertViewHas('persons', fn (LengthAwarePaginator $p) => $p->pluck('id')->all() === [$visible->id]);
+            ->assertViewHas('clients', fn (LengthAwarePaginator $p) => $p->pluck('id')->all() === [$visible->id]);
     }
 
     /**
@@ -138,7 +138,7 @@ class PersonPanelTest extends TestCase
         $telecaller = $this->telecaller([Region::factory()->create()]);
         $hidden = Person::factory()->inRegion(Region::factory()->create())->create();
 
-        $this->actingAs($telecaller)->get("/persons/{$hidden->id}")->assertNotFound();
+        $this->actingAs($telecaller)->get("/clients/{$hidden->id}")->assertNotFound();
     }
 
     public function test_a_telecaller_can_open_a_person_in_their_own_region(): void
@@ -147,7 +147,7 @@ class PersonPanelTest extends TestCase
         $telecaller = $this->telecaller([$mine]);
         $person = Person::factory()->inRegion($mine)->create(['name' => 'Dr Visible']);
 
-        $this->actingAs($telecaller)->get("/persons/{$person->id}")
+        $this->actingAs($telecaller)->get("/clients/{$person->id}")
             ->assertOk()
             ->assertSee('Dr Visible');
     }
@@ -157,8 +157,8 @@ class PersonPanelTest extends TestCase
         $telecaller = $this->telecaller([Region::factory()->create()]);
         $unassigned = Person::factory()->create(['region_id' => null]);
 
-        $this->actingAs($telecaller)->get("/persons/{$unassigned->id}")->assertNotFound();
-        $this->actingAs($this->admin())->get("/persons/{$unassigned->id}")->assertOk();
+        $this->actingAs($telecaller)->get("/clients/{$unassigned->id}")->assertNotFound();
+        $this->actingAs($this->admin())->get("/clients/{$unassigned->id}")->assertOk();
     }
 
     public function test_a_telecaller_cannot_reach_the_edit_form_outside_their_regions(): void
@@ -168,7 +168,7 @@ class PersonPanelTest extends TestCase
 
         $hidden = Person::factory()->inRegion(Region::factory()->create())->create();
 
-        $this->actingAs($telecaller)->get("/persons/{$hidden->id}/edit")->assertNotFound();
+        $this->actingAs($telecaller)->get("/clients/{$hidden->id}/edit")->assertNotFound();
     }
 
     public function test_a_telecaller_cannot_create_or_delete_by_default(): void
@@ -176,18 +176,18 @@ class PersonPanelTest extends TestCase
         $telecaller = $this->telecaller([Region::factory()->create()]);
         $person = Person::factory()->create();
 
-        $this->actingAs($telecaller)->get('/persons/create')->assertForbidden();
-        $this->actingAs($telecaller)->post('/persons', [])->assertForbidden();
-        $this->actingAs($telecaller)->delete("/persons/{$person->id}")->assertForbidden();
+        $this->actingAs($telecaller)->get('/clients/create')->assertForbidden();
+        $this->actingAs($telecaller)->post('/clients', [])->assertForbidden();
+        $this->actingAs($telecaller)->delete("/clients/{$person->id}")->assertForbidden();
     }
 
     public function test_an_mr_has_no_panel_access(): void
     {
-        $this->actingAs($this->mr())->get('/persons')->assertForbidden();
+        $this->actingAs($this->mr())->get('/clients')->assertForbidden();
     }
 
     public function test_a_guest_is_sent_to_the_login_form(): void
     {
-        $this->get('/persons')->assertRedirect(route('login'));
+        $this->get('/clients')->assertRedirect(route('login'));
     }
 }

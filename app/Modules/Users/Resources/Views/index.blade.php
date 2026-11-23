@@ -33,15 +33,15 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                        <div class="card-toolbar">
+                            <div>
                                 <h5>{{ $titles['plural'] }}</h5>
                                 <span class="f-light">{{ $users->total() }} account(s) on record</span>
                             </div>
                             @can("{$routeName}.create")
-                            <div class="col-auto">
+                            <div class="card-toolbar-actions">
                                 <a class="btn btn-primary" href="{{ route("{$routeName}.create") }}">
-                                    <i data-feather="plus" class="me-1"></i> Add {{ $titles['singular'] }}
+                                    <i data-feather="plus"></i> Add {{ $titles['singular'] }}
                                 </a>
                             </div>
                             @endcan
@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form class="row g-2 mb-4" method="GET" action="{{ route("{$routeName}.index") }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route("{$routeName}.index") }}">
                             <div class="col-md-5">
                                 <input class="form-control" type="search" name="search"
                                        value="{{ $filters['search'] ?? '' }}"
@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-md-4">
                                 <button class="btn btn-outline-primary" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route("{$routeName}.index") }}">Reset</a>
                             </div>
@@ -149,7 +149,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $users->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $users, 'noun' => 'user'])
                     </div>
                 </div>
             </div>

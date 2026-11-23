@@ -63,7 +63,7 @@ class EloquentPersonRepository extends EloquentRepository implements PersonRepos
     public function paginateWithRelations(int $perPage = 20, array $filters = []): LengthAwarePaginator
     {
         return $this->applyFilters($this->query(), $filters)
-            ->with(['region', 'assignedMr', 'assignedTelecaller'])
+            ->with(['clientType', 'region', 'assignedMr', 'assignedTelecaller'])
             ->latest()
             ->paginate($perPage)
             ->withQueryString();

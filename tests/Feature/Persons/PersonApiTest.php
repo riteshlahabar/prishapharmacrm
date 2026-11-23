@@ -3,7 +3,7 @@
 namespace Tests\Feature\Persons;
 
 use App\Modules\Calls\Models\CallLog;
-use App\Modules\Persons\Enums\PersonType;
+use App\Modules\ClientTypes\Models\ClientType;
 use App\Modules\Persons\Models\Person;
 use App\Modules\Regions\Models\Region;
 use Tests\TestCase;
@@ -170,10 +170,11 @@ class PersonApiTest extends TestCase
         $this->assertArrayNotHasKey('last_call', $row);
     }
 
-    public function test_the_person_type_enum_decides_which_fields_matter(): void
+    /** The three types the client_types migration ships with. */
+    public function test_the_client_type_master_decides_which_fields_matter(): void
     {
-        $this->assertTrue(PersonType::Doctor->hasSpecialization());
-        $this->assertFalse(PersonType::Hospital->hasSpecialization());
-        $this->assertFalse(PersonType::Medical->hasSpecialization());
+        $this->assertTrue(ClientType::query()->where('slug', 'doctor')->value('has_specialization'));
+        $this->assertFalse((bool) ClientType::query()->where('slug', 'hospital')->value('has_specialization'));
+        $this->assertFalse((bool) ClientType::query()->where('slug', 'medical')->value('has_specialization'));
     }
 }

@@ -10,6 +10,7 @@ Companion to `ui-cuba.md`, which covers markup. Everything here lives in
 4. `css/vendors/feather-icon.css`
 5. `css/style.css` — Cuba
 6. `css/responsive.css`
+7. **`css/prisha.css`** — ours, and it has to stay last
 
 Bootstrap must come before `style.css`. Cuba is a layer of overrides on top of
 it: `.row`, `.col-*`, `.form-control`, `.table` and `.badge` exist only in
@@ -36,7 +37,9 @@ show/hide handler against `#password` instead.
 missing it. Feather CSS is at `assets/css/vendors/feather-icon.css`.
 
 ## Branding
-Exactly three logos exist — no `logo-white.png`.
-`images/logo/logo.png`, `logo_dark.png` and `logo-icon.png` are still the
-stock Cuba artwork. Replacing them with Prisha artwork rebrands the panel and
-the login page at once; no markup changes.
+Exactly three logos exist — no `logo-white.png`. `images/logo/logo.png`
+(wordmark), `logo_dark.png` (the same, lightened for the dark sidebar) and
+`logo-icon.png` (the mark) carry the Prisha artwork; `images/favicon.png`
+and `public/favicon.ico` are the mark too.
+
+The brand layer itself is `ui-brand.md`.

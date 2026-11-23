@@ -2,7 +2,7 @@
 
 namespace App\Modules\Persons\Services;
 
-use App\Modules\Persons\Enums\PersonType;
+use App\Modules\ClientTypes\Services\Contracts\ClientTypeServiceInterface;
 use App\Modules\Persons\Models\Person;
 use App\Modules\Persons\Repositories\Contracts\PersonRepositoryInterface;
 use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
@@ -17,6 +17,7 @@ class PersonService implements PersonServiceInterface
     public function __construct(
         private readonly PersonRepositoryInterface $persons,
         private readonly RegionAssignmentServiceInterface $assignment,
+        private readonly ClientTypeServiceInterface $types,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 20): LengthAwarePaginator
@@ -111,20 +112,22 @@ class PersonService implements PersonServiceInterface
 
     private function attributes(array $data): array
     {
-        $type = $data['type'] instanceof PersonType
-            ? $data['type']
-            : PersonType::from((string) $data['type']);
+        $slug = (string) $data['type'];
+        // Unknown slugs cannot reach here — StorePersonRequest checks the
+        // master — but a type can be deactivated between form and submit,
+        // and that must not silently drop the specialization rules.
+        $carriesSpecialization = (bool) $this->types->findBySlug($slug)?->has_specialization;
 
         return [
             'name' => $data['name'],
-            'type' => $type,
+            'type' => $slug,
             'email' => $data['email'] ?? null,
             'mobile' => $data['mobile'] ?? null,
             'address' => $data['address'] ?? null,
             'city' => $data['city'] ?? null,
-            // Only a doctor has one; keeping it on the others would leave
-            // stale text behind after a type change.
-            'specialization' => $type->hasSpecialization() ? ($data['specialization'] ?? null) : null,
+            // Only a type flagged for it has one; keeping it on the others
+            // would leave stale text behind after a type change.
+            'specialization' => $carriesSpecialization ? ($data['specialization'] ?? null) : null,
             'region_id' => $data['region_id'] ?? null,
             'assigned_mr_id' => $data['assigned_mr_id'] ?? null,
             'assigned_telecaller_id' => $data['assigned_telecaller_id'] ?? null,

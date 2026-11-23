@@ -2,14 +2,17 @@
 
 namespace App\Modules\Persons\Database\Factories;
 
-use App\Modules\Persons\Enums\PersonType;
 use App\Modules\Persons\Models\Person;
 use App\Modules\Regions\Models\Region;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * A doctor, hospital or medical store.
+ * A client — a doctor, hospital or medical store by default.
+ *
+ * `type` is a `client_types.slug`. The three the product ships with are
+ * inserted by the client_types migration, so a factory-made client always
+ * resolves to a real type without a test seeding one.
  *
  * `region_id` is null by default: region is what scopes both apps, so a test
  * states it explicitly rather than inheriting a region a factory invented.
@@ -24,7 +27,7 @@ class PersonFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'type' => PersonType::Doctor,
+            'type' => 'doctor',
             'email' => fake()->unique()->safeEmail(),
             'mobile' => fake()->unique()->numerify('8#########'),
             'address' => fake()->streetAddress(),
@@ -37,23 +40,24 @@ class PersonFactory extends Factory
         ];
     }
 
-    public function ofType(PersonType $type): static
+    /** @param  string  $type  a `client_types.slug` */
+    public function ofType(string $type): static
     {
         return $this->state([
             'type' => $type,
-            // Only a doctor carries a specialization (PersonType::hasSpecialization).
-            'specialization' => $type->hasSpecialization() ? fake()->randomElement(['Cardiology', 'ENT']) : null,
+            // Only the doctor type is flagged as carrying one.
+            'specialization' => $type === 'doctor' ? fake()->randomElement(['Cardiology', 'ENT']) : null,
         ]);
     }
 
     public function hospital(): static
     {
-        return $this->ofType(PersonType::Hospital)->state(['name' => fake()->company().' Hospital']);
+        return $this->ofType('hospital')->state(['name' => fake()->company().' Hospital']);
     }
 
     public function medical(): static
     {
-        return $this->ofType(PersonType::Medical)->state(['name' => fake()->company().' Medicals']);
+        return $this->ofType('medical')->state(['name' => fake()->company().' Medicals']);
     }
 
     public function inRegion(Region|int $region): static

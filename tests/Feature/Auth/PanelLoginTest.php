@@ -137,7 +137,7 @@ class PanelLoginTest extends TestCase
 
     public function test_every_panel_route_sits_behind_auth(): void
     {
-        foreach (['/', '/persons', '/regions', '/attendance', '/calls', '/messages'] as $path) {
+        foreach (['/', '/clients', '/regions', '/attendance', '/calls', '/messages'] as $path) {
             $this->get($path)->assertRedirect(route('login'));
         }
     }

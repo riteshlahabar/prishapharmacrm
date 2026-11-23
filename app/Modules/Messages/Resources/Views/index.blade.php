@@ -37,7 +37,7 @@
                     </div>
 
                     <div class="card-body">
-                        <form class="row g-2 mb-4" method="GET" action="{{ route('messages.index') }}">
+                        <form class="filter-bar row g-2" method="GET" action="{{ route('messages.index') }}">
                             <div class="col-md-2">
                                 <label class="form-label f-light" for="date_from">From</label>
                                 <input class="form-control" id="date_from" type="date" name="date_from"
@@ -85,11 +85,11 @@
                             <div class="col-md-5 mt-3">
                                 <input class="form-control" type="search" name="search"
                                        value="{{ $filters['search'] ?? '' }}"
-                                       placeholder="Search subject, body, person or people">
+                                       placeholder="Search subject, body, client or people">
                             </div>
                             <div class="col-12 mt-3">
                                 <button class="btn btn-outline-primary" type="submit">
-                                    <i data-feather="search" class="me-1"></i> Filter
+                                    <i data-feather="search"></i> Filter
                                 </button>
                                 <a class="btn btn-light" href="{{ route('messages.index') }}">Reset</a>
                             </div>
@@ -148,7 +148,7 @@
                             </table>
                         </div>
 
-                        <div class="mt-3">{{ $messages->links() }}</div>
+                        @include('partials.pagination', ['paginator' => $messages, 'noun' => 'message'])
                     </div>
                 </div>
             </div>

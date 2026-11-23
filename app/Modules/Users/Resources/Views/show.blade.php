@@ -28,14 +28,14 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="row align-items-center">
-                            <div class="col">
+                        <div class="card-toolbar">
+                            <div>
                                 <h5>{{ $titles['singular'] }} details</h5>
                             </div>
                             @can("{$routeName}.update")
-                            <div class="col-auto">
+                            <div class="card-toolbar-actions">
                                 <a class="btn btn-primary" href="{{ route("{$routeName}.edit", $user->id) }}">
-                                    <i data-feather="edit-2" class="me-1"></i> Edit
+                                    <i data-feather="edit-2"></i> Edit
                                 </a>
                             </div>
                             @endcan
@@ -80,7 +80,7 @@
                         @if($user->isTelecaller())
                             @can('access.manage')
                             <a class="btn btn-outline-primary" href="{{ route('access.permissions.edit', $user->id) }}">
-                                <i data-feather="shield" class="me-1"></i> Permissions
+                                <i data-feather="shield"></i> Permissions
                             </a>
                             @endcan
                         @endif

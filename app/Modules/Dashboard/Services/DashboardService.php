@@ -38,11 +38,12 @@ class DashboardService implements DashboardServiceInterface
 {
     /**
      * Cuba badge name => the hex ApexCharts needs, since a canvas cannot read
-     * a CSS class. `primary` is the theme default (`--theme-default`); the
-     * rest are Bootstrap's, which is what Cuba's badges resolve to.
+     * a CSS class. `primary` is the theme default (`--theme-default`), now
+     * the Prisha teal; the rest are Bootstrap's, which is what Cuba's badges
+     * resolve to.
      */
     private const BADGE_HEX = [
-        'primary' => '#7366FF',
+        'primary' => '#00797C',
         'secondary' => '#6C757D',
         'success' => '#198754',
         'danger' => '#DC3545',
@@ -108,8 +109,11 @@ class DashboardService implements DashboardServiceInterface
 
     /**
      * Headline numbers. Each entry is ready to render: label, value, an
-     * optional sub-line, a feather icon name and a link to the screen behind
-     * it, so the view holds no logic.
+     * optional sub-line, a feather icon name, the accent it is painted in
+     * (`.stat-tile.tile-<colour>` in assets/css/prisha.css) and a link to the
+     * screen behind it, so the view holds no logic. The palette is decided
+     * here, once, rather than by position in the loop: a telecaller sees a
+     * shorter list, and the colours should not shuffle because of it.
      *
      * @return array<int, array<string, mixed>>
      */
@@ -125,11 +129,12 @@ class DashboardService implements DashboardServiceInterface
 
         if ($can['persons']) {
             $tiles[] = [
-                'label' => 'Persons',
+                'label' => 'Clients',
                 'value' => $this->persons->countForUser($user, ['status' => 'active']),
                 'sub' => $user->isAdmin() ? 'active, all regions' : 'active, your regions',
                 'icon' => 'users',
-                'route' => 'persons.index',
+                'colour' => 'teal',
+                'route' => 'clients.index',
             ];
         }
 
@@ -143,10 +148,11 @@ class DashboardService implements DashboardServiceInterface
             $present = $today['on_duty'] + $today['completed'];
 
             $tiles[] = [
-                'label' => 'Checked in today',
+                'label' => 'Checked in',
                 'value' => $reps > 0 ? "{$present} of {$reps}" : '—',
                 'sub' => $today['on_duty'].' still on duty',
                 'icon' => 'clock',
+                'colour' => 'green',
                 'route' => 'attendance.index',
             ];
         }
@@ -155,9 +161,10 @@ class DashboardService implements DashboardServiceInterface
             $tiles[] = [
                 'label' => 'Visits',
                 'value' => $visits['total'],
-                'sub' => $visits['persons'].' '.Str::plural('person', $visits['persons'])
+                'sub' => $visits['persons'].' '.Str::plural('client', $visits['persons'])
                     .' · '.$visits['geotagged'].' geotagged',
                 'icon' => 'map-pin',
+                'colour' => 'blue',
                 'route' => 'visits.index',
             ];
         }
@@ -168,6 +175,7 @@ class DashboardService implements DashboardServiceInterface
                 'value' => $calls['total'],
                 'sub' => $calls['follow_ups_open'].' '.Str::plural('call-back', $calls['follow_ups_open']).' open',
                 'icon' => 'phone-call',
+                'colour' => 'amber',
                 'route' => 'calls.index',
             ];
             $tiles[] = [
@@ -175,6 +183,7 @@ class DashboardService implements DashboardServiceInterface
                 'value' => $this->rate($calls['converted'], $calls['total']).'%',
                 'sub' => $calls['converted'].' of '.$calls['total'].' converted',
                 'icon' => 'trending-up',
+                'colour' => 'violet',
                 'route' => 'calls.index',
             ];
         }
@@ -186,6 +195,7 @@ class DashboardService implements DashboardServiceInterface
                 'value' => $sent['total'],
                 'sub' => $sent['unread'].' still unread',
                 'icon' => 'message-square',
+                'colour' => 'rose',
                 'route' => 'messages.index',
             ];
         }

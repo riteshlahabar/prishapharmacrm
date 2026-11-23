@@ -42,7 +42,7 @@ class MessageResource extends JsonResource
             'person' => $this->whenLoaded('person', fn () => $m->person === null ? null : [
                 'id' => $m->person->id,
                 'name' => $m->person->name,
-                'type' => $m->person->type?->value,
+                'type' => $m->person->type,
                 'mobile' => $m->person->mobile,
             ]),
             'call_log_id' => $m->call_log_id,

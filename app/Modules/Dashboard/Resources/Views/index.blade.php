@@ -201,14 +201,14 @@
             draw('#chart-activity', {
                 series: chartData.series,
                 chart: { type: 'area', height: 320, toolbar: { show: false } },
-                colors: ['#7366FF', '#0DCAF0'],
+                colors: ['#00797C', '#6EAE40'],
                 dataLabels: { enabled: false },
                 stroke: { curve: 'smooth', width: 2 },
                 fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
                 xaxis: dayAxis,
                 yaxis: intYAxis.apply(null, chartData.series.map(function (s) { return s.data; })),
                 legend: { position: 'top', horizontalAlign: 'right' },
-                grid: { borderColor: '#ECF3FA' },
+                grid: { borderColor: '#E4ECE7' },
                 tooltip: { x: { format: 'dd MMM yyyy' } }
             });
         }
@@ -229,12 +229,12 @@
             draw('#chart-attendance', {
                 series: [chartData.attendance],
                 chart: { type: 'bar', height: 300, toolbar: { show: false } },
-                colors: ['#198754'],
+                colors: ['#6EAE40'],
                 dataLabels: { enabled: false },
                 plotOptions: { bar: { columnWidth: '55%', borderRadius: 2 } },
                 xaxis: dayAxis,
                 yaxis: intYAxis(chartData.attendance.data),
-                grid: { borderColor: '#ECF3FA' }
+                grid: { borderColor: '#E4ECE7' }
             });
         }
 
@@ -242,11 +242,11 @@
             draw('#chart-visits-mr', {
                 series: [{ name: 'Visits', data: chartData.visits_by_mr.data }],
                 chart: { type: 'bar', height: 300, toolbar: { show: false } },
-                colors: ['#7366FF'],
+                colors: ['#00797C'],
                 dataLabels: { enabled: true },
                 plotOptions: { bar: { horizontal: true, borderRadius: 2, barHeight: '60%' } },
                 xaxis: Object.assign({}, axis, { categories: chartData.visits_by_mr.labels }),
-                grid: { borderColor: '#ECF3FA' }
+                grid: { borderColor: '#E4ECE7' }
             });
         }
     })();

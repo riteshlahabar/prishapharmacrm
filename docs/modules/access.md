@@ -12,7 +12,9 @@ Tables: `roles`, `permissions`, `model_has_*`, `role_has_permissions`
 
 ## Notes
 `Support/PermissionCatalog.php` is the whole vocabulary (30 names,
-`<group>.<ability>`); seeders, the grant UI and the sidebar all read it.
+`<group>.<ability>`); seeders, the grant UI and the sidebar all read it. The
+`persons` group is labelled "Clients"; `client_types` is admin-only and
+`grantable()` drops it.
 Adding a capability = edit that file + re-seed.
 Roles: three, named by `UserRole`. `admin` is re-synced to the full catalog on
 every seed; `telecaller` gets a baseline once and is then left alone; `mr`

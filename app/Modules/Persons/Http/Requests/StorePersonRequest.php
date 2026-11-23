@@ -2,7 +2,6 @@
 
 namespace App\Modules\Persons\Http\Requests;
 
-use App\Modules\Persons\Enums\PersonType;
 use App\Modules\Users\Enums\UserRole;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -42,7 +41,9 @@ class StorePersonRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in(PersonType::values())],
+            // The master decides what a client may be, so adding a type in
+            // the panel is all it takes to make it postable here.
+            'type' => ['required', 'string', Rule::exists('client_types', 'slug')],
             'mobile' => [
                 'required', 'string', 'max:20', 'regex:/^[0-9+\- ]{7,20}$/',
                 Rule::unique('persons', 'mobile')->ignore($this->route('person')),
@@ -68,6 +69,7 @@ class StorePersonRequest extends FormRequest
     {
         return [
             'mobile.regex' => 'The mobile number may contain digits, spaces, + and - only.',
+            'type.exists' => 'The selected client type no longer exists.',
             'assigned_mr_id.exists' => 'The selected medical rep is not a medical rep.',
             'assigned_telecaller_id.exists' => 'The selected telecaller is not a telecaller.',
         ];

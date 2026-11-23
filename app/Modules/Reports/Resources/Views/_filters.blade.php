@@ -1,6 +1,6 @@
 {{-- Shared report filter bar. The period applies to every report; the person
      filters only matter on the coverage report, so they render only there. --}}
-<form class="row g-2 mb-4" method="GET" action="{{ route('reports.show', $slug) }}">
+<form class="filter-bar row g-2" method="GET" action="{{ route('reports.show', $slug) }}">
     <div class="col-md-2">
         <label class="form-label f-light" for="date_from">From</label>
         <input class="form-control" id="date_from" type="date" name="date_from" value="{{ $filters['date_from'] }}">
@@ -24,7 +24,7 @@
         <select class="form-select" id="type" name="type">
             <option value="">Any type</option>
             @foreach($types as $type)
-                <option value="{{ $type->value }}" @selected(($filters['type'] ?? '') === $type->value)>{{ $type->label() }}</option>
+                <option value="{{ $type->slug }}" @selected(($filters['type'] ?? '') === $type->slug)>{{ $type->label }}</option>
             @endforeach
         </select>
     </div>
@@ -46,7 +46,7 @@
     <div class="col-md-3">
         <label class="form-label f-light" for="search">Search</label>
         <input class="form-control" id="search" type="search" name="search"
-               value="{{ $filters['search'] ?? '' }}" placeholder="Person name or city">
+               value="{{ $filters['search'] ?? '' }}" placeholder="Client name or city">
     </div>
     @endif
 
@@ -54,14 +54,14 @@
 
     <div class="col-12 mt-3">
         <button class="btn btn-outline-primary" type="submit">
-            <i data-feather="search" class="me-1"></i> Apply
+            <i data-feather="search"></i> Apply
         </button>
         <a class="btn btn-light" href="{{ route('reports.show', $slug) }}">Reset</a>
 
         @can('reports.export')
         <a class="btn btn-light float-end"
            href="{{ route('reports.export', array_merge(['report' => $slug], request()->query())) }}">
-            <i data-feather="download" class="me-1"></i> Download CSV
+            <i data-feather="download"></i> Download CSV
         </a>
         @endcan
     </div>
