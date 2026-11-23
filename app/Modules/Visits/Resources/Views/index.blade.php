@@ -37,16 +37,27 @@
                     </div>
 
                     <div class="card-body">
-                        @if($summary['by_purpose'] !== [])
-                        <div class="mb-4">
-                            @foreach($purposes as $purpose)
-                                @php $n = $summary['by_purpose'][$purpose->value] ?? 0; @endphp
-                                @if($n > 0)
-                                    <span class="badge badge-light-primary me-1">{{ $purpose->label() }}: {{ $n }}</span>
-                                @endif
-                            @endforeach
-                        </div>
-                        @endif
+                        {{-- The split by purpose, one small card each. The accent
+                             cycles by the purpose's position in the enum, so a
+                             purpose keeps its colour from screen to screen. --}}
+                        @php
+                            $accents = ['primary', 'info', 'success', 'warning', 'danger', 'secondary'];
+                            $purposeStats = [];
+
+                            foreach (array_values($purposes) as $i => $purpose) {
+                                $n = $summary['by_purpose'][$purpose->value] ?? 0;
+
+                                if ($n > 0) {
+                                    $purposeStats[] = [
+                                        'label' => $purpose->label(),
+                                        'value' => $n,
+                                        'colour' => $accents[$i % count($accents)],
+                                    ];
+                                }
+                            }
+                        @endphp
+
+                        @include('partials.stat-chips', ['stats' => $purposeStats])
 
                         <form class="filter-bar row g-2" method="GET" action="{{ route('visits.index') }}">
                             <div class="col-md-2">
@@ -144,23 +155,23 @@
                                         <td>{{ $visit->durationLabel() }}</td>
                                         <td>
                                             @if($visit->hasLocation())
-                                                <a target="_blank" rel="noopener noreferrer"
+                                                <a class="map-pin" target="_blank" rel="noopener noreferrer"
                                                    title="{{ $visit->latitude }}, {{ $visit->longitude }}"
                                                    href="https://www.google.com/maps/search/?api=1&query={{ $visit->latitude }},{{ $visit->longitude }}">
-                                                    <i data-feather="map-pin" style="width:16px;height:16px"></i>
+                                                    <i data-feather="map-pin"></i>
                                                 </a>
                                             @else
                                                 <span class="f-light">—</span>
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-sm p-1" title="View"
+                                            <a class="btn btn-link btn-icon btn-sm" title="View"
                                                href="{{ route('visits.show', $visit->id) }}"><i data-feather="eye"></i></a>
                                             @can('visits.delete')
                                             <form class="d-inline" method="POST" action="{{ route('visits.destroy', $visit->id) }}"
                                                   onsubmit="return confirm('Delete this visit? This cannot be undone.');">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-sm p-1 txt-danger" type="submit" title="Delete">
+                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
                                                     <i data-feather="trash-2"></i>
                                                 </button>
                                             </form>

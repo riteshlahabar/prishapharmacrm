@@ -24,17 +24,30 @@
 /* ---------------------------------------------------------------- branding */
 
 /* The artwork is 2.1:1, not the 3.5:1 of the stock Cuba wordmark, so it is
-   sized here rather than left at its natural width. */
+   sized here rather than left at its natural width — and kept modest, or a
+   square-ish logo turns the sidebar head into a banner. */
 .logo-wrapper img,
 .page-header .header-logo-wrapper .logo-wrapper img {
-    width: 178px;
+    width: 132px;
     height: auto;
 }
 
 .logo-icon-wrapper img,
 .sidebar-links li.back-btn img {
-    width: 44px;
+    width: 36px;
     height: auto;
+}
+
+/* The login card's logo. Without a width it renders at its natural 420px,
+   which is most of the card. */
+.login-card .logo img,
+.login-card .logo-wrapper img {
+    width: 150px;
+    height: auto;
+}
+
+.login-card .logo {
+    margin-bottom: 8px;
 }
 
 /* ------------------------------------------------------------ page heading */
@@ -111,21 +124,26 @@
 /* Icon-only buttons in a table's action column: square, no label gap. */
 .btn.btn-icon {
     gap: 0;
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     padding: 0;
     border-radius: 8px;
 }
 
 /* Cuba's .btn-link tints its icon in the theme colour at low contrast, which
-   on a 16px glyph is barely visible; and .btn-sm would shrink it to 14. */
+   on a small glyph is barely visible; and .btn-sm would shrink it to 14.
+   18px is the size the rest of the panel's inline icons use. */
 .btn.btn-icon svg {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
 }
 
+/* Teal, not grey: these sit in a column of their own against a white row,
+   and the same action should not read as two different weights depending on
+   whether the markup made it a link or a form button. */
 .btn-link.btn-icon {
-    color: #566E7A;
+    color: var(--prisha-teal);
 }
 
 .btn-link.btn-icon:hover {
@@ -263,6 +281,17 @@
     white-space: nowrap;
 }
 
+/* A coordinate linked out to a map, in its own column. Same 18px as the
+   action icons, and in the brand teal so it reads as a link. Scoped to
+   .map-pin rather than every link in a table: an action button is a link
+   too, and it takes its colour from .btn-link.btn-icon below. */
+.map-pin svg {
+    width: 18px;
+    height: 18px;
+    color: var(--prisha-teal);
+    vertical-align: middle;
+}
+
 /* ------------------------------------------------------------- pagination */
 
 /*
@@ -320,6 +349,65 @@
     color: #6B7C8A;
     font-size: 13px;
 }
+
+/* ------------------------------------------------- breakdown mini-cards */
+
+/*
+ * The bucket counts above a report's filters (partials/stat-chips). An
+ * auto-fit grid rather than a flex row: every card takes an equal share of
+ * one line, and the set wraps only when a card would fall under 132px, so
+ * seven buckets fit a laptop and still read on a phone.
+ */
+.mini-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 10px;
+}
+
+.mini-stat {
+    position: relative;
+    overflow: hidden;
+    padding: 10px 12px 10px 16px;
+    background: #fff;
+    border: 1px solid var(--prisha-line);
+    border-radius: 11px;
+}
+
+/* The accent is a bar down the left edge, not a fill: a row of seven filled
+   cards fights the table underneath it. */
+.mini-stat::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--mini-accent, var(--prisha-teal));
+}
+
+.mini-stat-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #6B7C8A;
+}
+
+.mini-stat-value {
+    display: block;
+    margin-top: 2px;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--mini-accent, var(--prisha-teal));
+}
+
+.mini-stat-primary   { --mini-accent: #00797C; }
+.mini-stat-success   { --mini-accent: #2E7D32; }
+.mini-stat-info      { --mini-accent: #1B6CA8; }
+.mini-stat-warning   { --mini-accent: #B5701A; }
+.mini-stat-danger    { --mini-accent: #C0392B; }
+.mini-stat-secondary { --mini-accent: #5B6B77; }
 
 /* --------------------------------------------------------- dashboard tiles */
 

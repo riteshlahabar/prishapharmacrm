@@ -14,12 +14,18 @@ nothing redefines a component from scratch. Colours: `--prisha-teal`
 | `.btn` flex row | feather renders a 24px SVG that drags a button's label onto a second line |
 | `.btn-icon` | the square icon buttons in an actions column |
 | `.card-toolbar`, `.filter-bar` | heading + actions on one baseline; filters in a tinted panel |
+| `.mini-stats` | a report's bucket counts, one small card each, on one row |
 | `.stat-tile.tile-*` | the six dashboard accents; the name comes from DashboardService |
 
 ## Table head and Bootstrap 5.3
 A cell's stripe and hover are an `inset 0 0 0 9999px` box-shadow, not a
 background, so the header row needs `box-shadow: none` and a transparent
-`background-color` on `th` for the row's gradient to show at all.
+`background-color` on `th` for the gradient to show at all.
+
+## Sizes
+Logos: 132px in the sidebar, 150px on the login card — the artwork is 420px
+natural, which turns both into a banner. Table icons (the action column, a
+`.map-pin` link) are 18px: feather defaults to 24, `.btn-sm` took them to 14.
 
 ## Pagination
 `AppServiceProvider` calls `Paginator::useBootstrapFive()` and points

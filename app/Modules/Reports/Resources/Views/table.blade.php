@@ -38,18 +38,27 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="mb-4">
-                            {{-- A total is named by the column it totals when
-                                 there is one, so the chip and the column head
-                                 cannot disagree (e.g. "Clients seen", not
-                                 "Persons seen"). --}}
-                            @foreach($data['totals'] as $label => $value)
-                                <span class="badge badge-light-primary me-1">
-                                    {{ $definition['columns'][$label]['label'] ?? ucfirst(str_replace('_', ' ', $label)) }}:
-                                    {{ $value }}
-                                </span>
-                            @endforeach
-                        </div>
+                        {{-- A total is named by the column it totals when there
+                             is one, so a card and the column head cannot
+                             disagree (e.g. "Clients seen", not "Persons
+                             seen"). --}}
+                        @php
+                            $accents = ['primary', 'info', 'success', 'warning', 'danger', 'secondary'];
+                            $totalStats = [];
+
+                            foreach (array_values((array) $data['totals']) as $i => $value) {
+                                $key = array_keys((array) $data['totals'])[$i];
+
+                                $totalStats[] = [
+                                    'label' => $definition['columns'][$key]['label']
+                                        ?? ucfirst(str_replace('_', ' ', $key)),
+                                    'value' => $value,
+                                    'colour' => $accents[$i % count($accents)],
+                                ];
+                            }
+                        @endphp
+
+                        @include('partials.stat-chips', ['stats' => $totalStats])
 
                         @include('reports::_filters')
 

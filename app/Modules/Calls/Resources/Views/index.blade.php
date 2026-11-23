@@ -37,18 +37,26 @@
                     </div>
 
                     <div class="card-body">
-                        @if($summary['by_status'] !== [])
-                        <div class="mb-4">
-                            @foreach($statuses as $status)
-                                @php $n = $summary['by_status'][$status->value] ?? 0; @endphp
-                                @if($n > 0)
-                                    <span class="badge badge-light-{{ $status->badge() }} me-1">
-                                        {{ $status->label() }}: {{ $n }}
-                                    </span>
-                                @endif
-                            @endforeach
-                        </div>
-                        @endif
+                        {{-- The split by outcome, one small card each. The colour
+                             is the status's own badge colour, so a card and the
+                             rows below it agree. --}}
+                        @php
+                            $statusStats = [];
+
+                            foreach ($statuses as $status) {
+                                $n = $summary['by_status'][$status->value] ?? 0;
+
+                                if ($n > 0) {
+                                    $statusStats[] = [
+                                        'label' => $status->label(),
+                                        'value' => $n,
+                                        'colour' => $status->badge(),
+                                    ];
+                                }
+                            }
+                        @endphp
+
+                        @include('partials.stat-chips', ['stats' => $statusStats])
 
                         <form class="filter-bar row g-2" method="GET" action="{{ route('calls.index') }}">
                             <div class="col-md-2">
@@ -158,13 +166,13 @@
                                         </td>
                                         <td class="f-light">{{ Str::limit($call->notes, 40) ?: '—' }}</td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-sm p-1" title="View"
+                                            <a class="btn btn-link btn-icon btn-sm" title="View"
                                                href="{{ route('calls.show', $call->id) }}"><i data-feather="eye"></i></a>
                                             @can('calls.delete')
                                             <form class="d-inline" method="POST" action="{{ route('calls.destroy', $call->id) }}"
                                                   onsubmit="return confirm('Delete this call log? This cannot be undone.');">
                                                 @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-sm p-1 txt-danger" type="submit" title="Delete">
+                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
                                                     <i data-feather="trash-2"></i>
                                                 </button>
                                             </form>
