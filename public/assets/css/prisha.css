@@ -168,13 +168,16 @@ td.text-end .table-actions {
     text-decoration: none;
 }
 
-/* 16px in a 34px tile is Cuba's own ratio. Feather renders at 24 and
-   `.btn-sm` would take it down to 14. */
+/* Feather draws on a 0 0 24 24 viewBox, so stroke-width is in viewBox
+   units, not pixels: at a 16px render size `2` came out as 2/24*16 = 1.33
+   device px, which anti-aliases to a pale half-covered line and leaves the
+   glyph looking faint and tiny inside the tile. 18px with stroke 2.7 lands
+   the stroke on ~2 whole pixels. */
 .btn.btn-icon svg,
 .btn.btn-icon .feather {
-    width: 16px;
-    height: 16px;
-    stroke-width: 2;
+    width: 18px;
+    height: 18px;
+    stroke-width: 2.7;
 }
 
 /* A tinted tile with a teal glyph, not a bare icon: at this size a plain
@@ -183,7 +186,7 @@ td.text-end .table-actions {
    whether the markup made it a link or a form button. Hover fills the tile,
    which is the only hover state a 34px target can show clearly. */
 .btn-link.btn-icon {
-    color: var(--prisha-teal);
+    color: var(--prisha-teal-dark);
     background-color: var(--prisha-surface);
     border: 1px solid var(--prisha-line);
     transition: color .15s ease, background-color .15s ease, border-color .15s ease;
