@@ -3,11 +3,14 @@
 namespace App\Modules\Persons\Services;
 
 use App\Modules\ClientTypes\Services\Contracts\ClientTypeServiceInterface;
+use App\Modules\Persons\Exceptions\AppClientNotPermitted;
 use App\Modules\Persons\Models\Person;
 use App\Modules\Persons\Repositories\Contracts\PersonRepositoryInterface;
 use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
+use App\Modules\Users\Enums\UserRole;
 use App\Modules\Users\Models\User;
+use App\Modules\Users\Services\Contracts\UserServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +21,10 @@ class PersonService implements PersonServiceInterface
         private readonly PersonRepositoryInterface $persons,
         private readonly RegionAssignmentServiceInterface $assignment,
         private readonly ClientTypeServiceInterface $types,
+        // Cross-module, through the contract: the region of a client added
+        // from an app follows the MR it is assigned to, and only the Users
+        // module knows where an MR works (docs/conventions.md).
+        private readonly UserServiceInterface $users,
     ) {}
 
     public function paginate(array $filters = [], int $perPage = 20): LengthAwarePaginator
@@ -35,6 +42,32 @@ class PersonService implements PersonServiceInterface
         if (! $user->isAdmin()) {
             $filters['region_scope'] = $this->assignment->idsFor($user);
         }
+
+        return $this->paginate($filters, $perPage);
+    }
+
+    /**
+     * "My clients" for either app: the rows this user is an assignee on.
+     *
+     * The clamp is ownership rather than territory, and that is the point —
+     * a telecaller may be handed a client in a region they do not cover, and
+     * `paginateForUser`'s region scope would hide it. An admin has no app
+     * token and so never reaches this; were one to, they fall back to the
+     * territory clamp rather than silently getting an unscoped list.
+     */
+    public function paginateAssignedTo(User $user, array $filters = [], int $perPage = 20): LengthAwarePaginator
+    {
+        $column = match (true) {
+            $user->isMr() => 'assigned_mr_id',
+            $user->isTelecaller() => 'assigned_telecaller_id',
+            default => null,
+        };
+
+        if ($column === null) {
+            return $this->paginateForUser($user, $filters, $perPage);
+        }
+
+        $filters[$column] = $user->id;
 
         return $this->paginate($filters, $perPage);
     }
@@ -88,6 +121,52 @@ class PersonService implements PersonServiceInterface
     {
         /** @var Person */
         return $this->persons->create($this->attributes($data));
+    }
+
+    /**
+     * Add Client, from the MR or the telecaller app.
+     *
+     * Three things the device does not get to decide, settled here rather
+     * than in the request so neither app can forget one:
+     *
+     *  - **the caller's own assignment** comes from the token, the same rule
+     *    as `mr_id` on a visit and `telecaller_id` on a call log;
+     *  - **the region** follows the assigned MR, who is the one with a
+     *    territory (`users.region_id`); a telecaller covers several, so
+     *    theirs would not identify one. That also keeps the new client
+     *    inside the territory scope every panel list and report already
+     *    uses — a client filed nowhere would be invisible to the admin.
+     *  - **is_active** is true: a client someone just added is a client to
+     *    work today.
+     */
+    public function createForApp(User $creator, array $data): Person
+    {
+        $data = match (true) {
+            $creator->isMr() => [...$data, 'assigned_mr_id' => $creator->id],
+            $creator->isTelecaller() => [...$data, 'assigned_telecaller_id' => $creator->id],
+            default => throw AppClientNotPermitted::forRole($creator->role?->value),
+        };
+
+        $data['region_id'] = $this->regionOfMr($data['assigned_mr_id'] ?? null);
+        $data['is_active'] = true;
+
+        return $this->create($data);
+    }
+
+    /**
+     * Where an MR works, or null if they have no territory yet.
+     *
+     * A missing region is left as null rather than guessed: the client still
+     * belongs to the two people named on it, and an admin assigning the MR a
+     * region later is what fills it in.
+     */
+    private function regionOfMr(int|string|null $mrId): ?int
+    {
+        if ($mrId === null) {
+            return null;
+        }
+
+        return $this->users->findForRole(UserRole::Mr, $mrId)->region_id;
     }
 
     public function update(int|string $id, array $data): Person

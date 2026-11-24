@@ -45,11 +45,19 @@ class PersonResource extends JsonResource
             'city' => $p->city,
             'specialization' => $p->specialization,
             'is_active' => $p->is_active,
-            'region' => $this->whenLoaded('region', fn () => [
+            'region' => $this->whenLoaded('region', fn () => $p->region === null ? null : [
                 'id' => $p->region->id,
                 'name' => $p->region->name,
                 'code' => $p->region->code,
             ]),
+            // Who the client is shared with. My Clients shows the *other*
+            // side — a telecaller reads the MR here and vice versa — so each
+            // app knows who to talk to about a client it did not add itself.
+            'assigned_mr' => $this->whenLoaded('assignedMr', fn () => self::person($p->assignedMr)),
+            'assigned_telecaller' => $this->whenLoaded(
+                'assignedTelecaller',
+                fn () => self::person($p->assignedTelecaller),
+            ),
         ];
 
         if ($this->lastCall !== null) {
@@ -57,5 +65,21 @@ class PersonResource extends JsonResource
         }
 
         return $data;
+    }
+
+    /**
+     * An assignee as a picker-sized shape: enough to name and ring, nothing
+     * more. Null when the column is empty — an admin may leave one side off
+     * a client, even though a client added from an app always has both.
+     *
+     * @return array<string, mixed>|null
+     */
+    private static function person(mixed $user): ?array
+    {
+        return $user === null ? null : [
+            'id' => $user->id,
+            'name' => $user->name,
+            'mobile' => $user->mobile,
+        ];
     }
 }

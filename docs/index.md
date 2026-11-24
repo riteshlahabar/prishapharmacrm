@@ -1,7 +1,7 @@
 # Prisha Pharma — Master Index
 
 **need → doc → code path.** Read this first; open only the doc it names.
-Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blocked
+Status: ✅ done · 🟡 partial · ⬜ pending
 
 ## Projects
 | Code | Project | Repo | Stack |
@@ -17,7 +17,7 @@ Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blocked
 | Auth | ✅ | `modules/auth.md` | panel login, Sanctum tokens |
 | Users | ✅ | `modules/users.md` | admin creates MR + TC |
 | Regions | ✅ | `modules/regions.md` | region master, assignment |
-| Persons | ✅ | `modules/persons.md` | clients (doctor, hospital…) |
+| Persons | ✅ | `modules/persons.md` | clients (doctor, hospital) |
 | ClientTypes | ✅ | `modules/client-types.md` | editable type master |
 | Attendance | ✅ | `modules/attendance.md` | MR check-in/out |
 | Visits | ✅ | `modules/visits.md` | visit entry, times, geo |
@@ -29,15 +29,16 @@ Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blocked
 ## Where do I find…?
 | Need | Go to |
 |---|---|
-| Phases, what's next | `roadmap.md` |
-| Tests, factories, demo data | `testing.md` |
+| Phases, next | `roadmap.md` |
+| Tests, factories, demo | `testing.md` |
 | Table columns, relations | `schema.md` |
-| SOLID / module rules | `conventions.md` |
-| Cuba markup, broken layout | `ui-cuba.md` |
+| SOLID, module rules | `conventions.md` |
+| Cuba markup, layout | `ui-cuba.md` |
 | Logos · brand CSS · actions | `ui-{assets,brand,actions}.md` |
-| Patches to Cuba's files | `ui-theme-patches.md` |
+| Patches to Cuba | `ui-theme-patches.md` |
 | Envelope, errors, paging | `api/v1-common.md` |
-| App login, app endpoints | `api/v1-auth.md` · `api/v1-{mr,telecaller}.md` |
+| App login, endpoints | `api/v1-auth.md` · `api/v1-{mr,telecaller}.md` |
+| Add Client · My Clients | `api/v1-clients.md` |
 | Permission names | `modules/access.md` |
 | Shared base classes | `app/Core/` |
 | 403 vs 404, policies | `authorization.md` |

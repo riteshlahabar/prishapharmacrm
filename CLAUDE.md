@@ -26,7 +26,7 @@ and messages to an MR — in-app, **no Firebase**. Telecallers also get scoped
 panel access.
 
 ## Current phase
-**All phases 0–12 ✅** — backend, panel, both Flutter apps, hardening,
+**All phases 0–13 ✅** — backend, panel, both Flutter apps, hardening,
 reports, branding. Gate before any commit: `bash tests/smoke/phase8-suite.sh`.
 
 ## Session log
@@ -54,15 +54,13 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   and both apps are untouched. Both Flutter apps get a splash screen, the
   launcher icon, and a light brand theme (pale gradients, coloured icons,
   branded bottom bar); no SDK or package version moved. 389 tests green.
-`2026-11-24` Fix: action-column icons. Bare `.btn-link` glyphs laid out
-  inline: underlined, the `<form>` buttons half a line low, `.txt-danger`
-  (`!important`) beating delete. Now Cuba's `.product-action` shape — a
-  `.table-actions` flex row of 34px tiles; `ui-actions.md`, a test. Edited CSS
-  loads via `@assetv` (mtime) or the browser serves its cached copy.
-
-`2026-11-24` Fix: dark mode. `prisha.css` loads after `style.css`, so its
-  light colours beat every `body.dark-only` rule and MR, telecaller and every
-  other list kept a white table — `ui-dark.md`, `DarkModeCssTest`.
+`2026-11-24` Phase 13: Add Client + My Clients in both apps. One write for
+  the apps (`POST /persons`): the adder is one assignee from the token, names
+  the other from a dropdown, and the region follows the assigned MR —
+  `api/v1-clients.md`, new `Api/{AssigneeController,ClientTypeController}`,
+  `?mine=1` is an ownership clamp, not a territory one. 442 tests green.
+`2026-11-24` Two UI fixes (action-column icons, dark mode) are rotated out —
+  see `history/2026-11-fixes.md`.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real
