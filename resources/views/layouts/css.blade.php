@@ -5,6 +5,10 @@
     base, and .row / .col-* exist nowhere else). Without vendors/bootstrap.css
     the grid collapses to stacked blocks and buttons render as text the colour
     of their own background.
+
+    style.css and prisha.css go through @assetv, not asset(): they are the two
+    files we edit, and without the mtime query a browser serves its cached copy
+    and a CSS change looks like it never landed (App\Core\Support\AssetVersion).
 --}}
 <!-- Font Awesome-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/fontawesome.css') }}">
@@ -19,7 +23,7 @@
 <!-- Feather icons -->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/vendors/feather-icon.css') }}">
 <!-- Cuba theme -->
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+<link rel="stylesheet" type="text/css" href="@assetv('assets/css/style.css')">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
 <!-- Prisha brand layer — must stay last, it overrides both files above -->
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/prisha.css') }}">
+<link rel="stylesheet" type="text/css" href="@assetv('assets/css/prisha.css')">

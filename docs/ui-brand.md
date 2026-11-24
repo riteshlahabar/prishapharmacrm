@@ -8,14 +8,15 @@ nothing redefines a component from scratch. Colours: `--prisha-teal`
 | What | Why it is here |
 |---|---|
 | `.logo-wrapper img` width | the artwork is 2.1:1, the stock Cuba file 3.5:1 |
-| `.table > thead > tr` gradient | on the **row**: per cell it restarts each column and reads as stripes |
+| `.table > thead > tr` gradient | on the **row**; per cell it reads as stripes |
 | `.table-foot` | the count and the pager on one line under every table |
 | `.pagination` | Bootstrap-5 markup from `partials/pagination-links` |
-| `.btn` flex row | feather renders a 24px SVG that drags a button's label onto a second line |
+| `.btn` flex row | feather's 24px SVG drags a button's label to a second line |
 | `.table-actions`, `.btn-icon` | the action column — `ui-actions.md` |
 | `.card-toolbar`, `.filter-bar` | heading + actions on one baseline; filters in a tinted panel |
 | `.mini-stats` | a report's bucket counts, one small card each, on one row |
 | `.stat-tile.tile-*` | the six dashboard accents; the name comes from DashboardService |
+| `@assetv` | mtime on style.css + prisha.css, or a browser serves a stale copy |
 
 ## Table head and Bootstrap 5.3
 A cell's stripe and hover are an `inset 0 0 0 9999px` box-shadow, not a

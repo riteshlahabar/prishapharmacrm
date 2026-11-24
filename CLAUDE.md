@@ -58,10 +58,11 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   launcher icon, and a light brand theme (pale gradients, coloured icons,
   branded bottom bar); no SDK or package version moved. 389 tests green.
 `2026-11-24` Fix: action-column icons. Bare `.btn-link` glyphs laid out
-  inline — Bootstrap underlined each one, the `<form>` buttons sat half a
-  line below the `<a>` ones, and `.txt-danger` (`!important`) beat the delete
-  colour. Now Cuba's `.product-action` shape: a `.table-actions` flex row of
-  34px tiles, `.btn-icon-danger` for delete. Seven views, `ui-actions.md`.
+  inline: Bootstrap underlined each one, the `<form>` buttons sat half a line
+  low, and `.txt-danger` (`!important`) beat the delete colour. Now Cuba's
+  `.product-action` shape — a `.table-actions` flex row of 34px tiles,
+  `.btn-icon-danger` for delete; seven views, `ui-actions.md`, a test. Edited
+  CSS loads via `@assetv` (mtime): the browser was serving its cached copy.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real

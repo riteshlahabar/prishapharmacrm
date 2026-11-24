@@ -40,3 +40,8 @@ teal on hover.
 Action tiles: 34px, 16px glyph. A `.map-pin` link is inline text, not a tile,
 so it stays 18px. Feather renders at 24 and `.btn-sm` would take it to 14 —
 both are overridden.
+
+## A CSS change that will not show
+Cuba is served off disk with no build step, so a browser caches `prisha.css`
+and serves the old copy. `@assetv` (AppServiceProvider) appends the file's
+mtime, so the URL changes when the file does. Still stale? Hard-reload once.
