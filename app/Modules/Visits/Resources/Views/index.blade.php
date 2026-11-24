@@ -165,17 +165,19 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route('visits.show', $visit->id) }}"><i data-feather="eye"></i></a>
-                                            @can('visits.delete')
-                                            <form class="d-inline" method="POST" action="{{ route('visits.destroy', $visit->id) }}"
-                                                  onsubmit="return confirm('Delete this visit? This cannot be undone.');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route('visits.show', $visit->id) }}"><i data-feather="eye"></i></a>
+                                                @can('visits.delete')
+                                                <form class="d-inline" method="POST" action="{{ route('visits.destroy', $visit->id) }}"
+                                                      onsubmit="return confirm('Delete this visit? This cannot be undone.');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

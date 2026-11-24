@@ -57,6 +57,11 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   and both apps are untouched. Both Flutter apps get a splash screen, the
   launcher icon, and a light brand theme (pale gradients, coloured icons,
   branded bottom bar); no SDK or package version moved. 389 tests green.
+`2026-11-24` Fix: action-column icons. Bare `.btn-link` glyphs laid out
+  inline — Bootstrap underlined each one, the `<form>` buttons sat half a
+  line below the `<a>` ones, and `.txt-danger` (`!important`) beat the delete
+  colour. Now Cuba's `.product-action` shape: a `.table-actions` flex row of
+  34px tiles, `.btn-icon-danger` for delete. Seven views, `ui-actions.md`.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real

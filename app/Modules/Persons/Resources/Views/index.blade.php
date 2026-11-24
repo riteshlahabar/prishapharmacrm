@@ -157,28 +157,30 @@
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route('clients.show', $person->id) }}"><i data-feather="eye"></i></a>
-                                            @can('persons.update')
-                                            <a class="btn btn-link btn-icon btn-sm" title="Edit"
-                                               href="{{ route('clients.edit', $person->id) }}"><i data-feather="edit-2"></i></a>
-                                            <form class="d-inline" method="POST" action="{{ route('clients.toggle', $person->id) }}">
-                                                @csrf @method('PATCH')
-                                                <button class="btn btn-link btn-icon btn-sm" type="submit"
-                                                        title="{{ $person->is_active ? 'Deactivate' : 'Activate' }}">
-                                                    <i data-feather="{{ $person->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
-                                            @can('persons.delete')
-                                            <form class="d-inline" method="POST" action="{{ route('clients.destroy', $person->id) }}"
-                                                  onsubmit="return confirm('Delete {{ $person->name }}?');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route('clients.show', $person->id) }}"><i data-feather="eye"></i></a>
+                                                @can('persons.update')
+                                                <a class="btn btn-link btn-icon btn-sm" title="Edit"
+                                                   href="{{ route('clients.edit', $person->id) }}"><i data-feather="edit-2"></i></a>
+                                                <form class="d-inline" method="POST" action="{{ route('clients.toggle', $person->id) }}">
+                                                    @csrf @method('PATCH')
+                                                    <button class="btn btn-link btn-icon btn-sm" type="submit"
+                                                            title="{{ $person->is_active ? 'Deactivate' : 'Activate' }}">
+                                                        <i data-feather="{{ $person->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                                @can('persons.delete')
+                                                <form class="d-inline" method="POST" action="{{ route('clients.destroy', $person->id) }}"
+                                                      onsubmit="return confirm('Delete {{ $person->name }}?');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

@@ -34,8 +34,8 @@ Status: ✅ done · 🟡 partial · ⬜ pending · ⛔ blocked
 | Table columns, relations | `schema.md` |
 | SOLID / module rules | `conventions.md` |
 | Cuba markup, broken layout | `ui-cuba.md` |
-| Logos, assets · brand CSS | `ui-assets.md` · `ui-brand.md` |
-| Patches to Cuba's own files | `ui-theme-patches.md` |
+| Logos · brand CSS · actions | `ui-{assets,brand,actions}.md` |
+| Patches to Cuba's files | `ui-theme-patches.md` |
 | Envelope, errors, paging | `api/v1-common.md` |
 | App login, app endpoints | `api/v1-auth.md` · `api/v1-{mr,telecaller}.md` |
 | Permission names | `modules/access.md` |

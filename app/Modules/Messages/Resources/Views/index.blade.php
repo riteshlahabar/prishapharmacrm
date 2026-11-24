@@ -128,17 +128,19 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route('messages.show', $message->id) }}"><i data-feather="eye"></i></a>
-                                            @can('messages.delete')
-                                            <form class="d-inline" method="POST" action="{{ route('messages.destroy', $message->id) }}"
-                                                  onsubmit="return confirm('Delete this message? This cannot be undone.');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route('messages.show', $message->id) }}"><i data-feather="eye"></i></a>
+                                                @can('messages.delete')
+                                                <form class="d-inline" method="POST" action="{{ route('messages.destroy', $message->id) }}"
+                                                      onsubmit="return confirm('Delete this message? This cannot be undone.');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

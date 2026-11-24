@@ -12,7 +12,7 @@ nothing redefines a component from scratch. Colours: `--prisha-teal`
 | `.table-foot` | the count and the pager on one line under every table |
 | `.pagination` | Bootstrap-5 markup from `partials/pagination-links` |
 | `.btn` flex row | feather renders a 24px SVG that drags a button's label onto a second line |
-| `.btn-icon` | the square icon buttons in an actions column |
+| `.table-actions`, `.btn-icon` | the action column — `ui-actions.md` |
 | `.card-toolbar`, `.filter-bar` | heading + actions on one baseline; filters in a tinted panel |
 | `.mini-stats` | a report's bucket counts, one small card each, on one row |
 | `.stat-tile.tile-*` | the six dashboard accents; the name comes from DashboardService |
@@ -24,8 +24,8 @@ background, so the header row needs `box-shadow: none` and a transparent
 
 ## Sizes
 Logos: 132px in the sidebar, 150px on the login card — the artwork is 420px
-natural, which turns both into a banner. Table icons (the action column, a
-`.map-pin` link) are 18px: feather defaults to 24, `.btn-sm` took them to 14.
+natural, which turns both into a banner. Table and action-column icon sizes
+live in `ui-actions.md`.
 
 ## Pagination
 `AppServiceProvider` calls `Paginator::useBootstrapFive()` and points
