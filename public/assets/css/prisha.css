@@ -153,50 +153,50 @@ td.text-end .table-actions {
 }
 
 /*
- * The tile. Two Bootstrap defaults have to go: `.btn-link` sets
- * `text-decoration: underline`, which on an icon-only button paints a rule
- * under the glyph, and `.btn`'s padding would stop the square from being one.
+ * The control. No tile: a box around a 24px glyph only shrank the glyph, so
+ * the icon is the button. The 34px square stays as the hit area (a 24px
+ * target is below the 32px minimum for a tap) — it is just invisible until
+ * hover. Bootstrap's `.btn-link` underline has to go, or it paints a rule
+ * under the glyph, and `.btn`'s padding would squeeze the icon.
  */
 .btn.btn-icon {
     gap: 0;
     width: 34px;
     height: 34px;
     padding: 0;
+    border: none;
+    background: none;
     border-radius: 8px;
     line-height: 1;
     vertical-align: middle;
     text-decoration: none;
 }
 
-/* Feather draws on a 0 0 24 24 viewBox, so stroke-width is in viewBox
-   units, not pixels: at a 16px render size `2` came out as 2/24*16 = 1.33
-   device px, which anti-aliases to a pale half-covered line and leaves the
-   glyph looking faint and tiny inside the tile. 18px with stroke 2.7 lands
-   the stroke on ~2 whole pixels. */
+/*
+ * Feather draws on a `0 0 24 24` viewBox, so stroke-width is in viewBox
+ * units rather than pixels: `2` at a 16px render size came out as
+ * 2/24*16 = 1.33 device px, a half-covered line that anti-aliased to pale
+ * grey and left the glyph looking faint. Keep `stroke = 48 / size` so the
+ * stroke lands on two whole pixels at whatever size this is.
+ */
 .btn.btn-icon svg,
 .btn.btn-icon .feather {
-    width: 18px;
-    height: 18px;
-    stroke-width: 2.7;
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
 }
 
-/* A tinted tile with a teal glyph, not a bare icon: at this size a plain
-   stroke against a white row reads as decoration rather than a button, and
-   the same action should not look like two different weights depending on
-   whether the markup made it a link or a form button. Hover fills the tile,
-   which is the only hover state a 34px target can show clearly. */
+/* Teal, not Cuba's low-contrast link grey. With no tile to fill, hover is
+   the glyph darkening over a faint wash of the brand surface. */
 .btn-link.btn-icon {
-    color: var(--prisha-teal-dark);
-    background-color: var(--prisha-surface);
-    border: 1px solid var(--prisha-line);
-    transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+    color: var(--prisha-teal);
+    transition: color .15s ease, background-color .15s ease;
 }
 
 .btn-link.btn-icon:hover,
 .btn-link.btn-icon:active {
-    color: #fff;
-    background-color: var(--prisha-teal);
-    border-color: var(--prisha-teal);
+    color: var(--prisha-teal-dark);
+    background-color: var(--prisha-surface);
 }
 
 .btn-link.btn-icon:focus-visible {
@@ -205,33 +205,28 @@ td.text-end .table-actions {
 
 /*
  * Delete, in red. This is `.btn-icon-danger` and not Cuba's `.txt-danger`
- * because that class is `color: #fc564a !important` — no rule here can give
- * the glyph a white fill on hover while it is on the element.
+ * because that class is `color: #fc564a !important`, which no rule here can
+ * override on hover.
  */
 .btn-link.btn-icon.btn-icon-danger {
     color: #DC3545;
-    background-color: #FDF2F3;
-    border-color: #F6D6D9;
 }
 
 .btn-link.btn-icon.btn-icon-danger:hover,
 .btn-link.btn-icon.btn-icon-danger:active {
-    color: #fff;
-    background-color: #DC3545;
-    border-color: #DC3545;
+    color: #B02A37;
+    background-color: #FDF2F3;
 }
 
 .btn-link.btn-icon.btn-icon-danger:focus-visible {
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.22);
 }
 
-/* A disabled tile (a built-in row that cannot be deleted) still has to look
-   like a tile, just a spent one. */
+/* A spent control (a built-in row that cannot be deleted). */
 .btn.btn-icon:disabled,
 .btn.btn-icon.disabled {
-    color: #9AA7B1;
-    background-color: #F6F7F8;
-    border-color: #E8EBED;
+    color: #B6C0C7;
+    background: none;
     opacity: 1;
 }
 
