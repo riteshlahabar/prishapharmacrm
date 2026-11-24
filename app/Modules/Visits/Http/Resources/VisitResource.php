@@ -29,6 +29,12 @@ class VisitResource extends JsonResource
             'latitude' => $v->latitude,
             'longitude' => $v->longitude,
             'location_fetched_at' => $v->location_fetched_at?->toIso8601String(),
+            // The photo is *reported*, not linked: the file lives on a
+            // private disk and is served to the panel behind the visit
+            // policy, so there is no URL an app could fetch. The app only
+            // needs to know its upload arrived.
+            'has_photo' => $v->hasPhoto(),
+            'photo_taken_at' => $v->photo_taken_at?->toIso8601String(),
             'notes' => $v->notes,
             // When the server received it, so a late entry is visible as one.
             'recorded_at' => $v->created_at?->toIso8601String(),

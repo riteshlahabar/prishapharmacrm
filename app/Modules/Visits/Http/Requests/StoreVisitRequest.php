@@ -32,6 +32,13 @@ class StoreVisitRequest extends FormRequest
             'latitude' => ['nullable', 'numeric', 'between:-90,90', 'required_with:longitude'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
             'location_fetched_at' => ['nullable', 'date', 'before_or_equal:now'],
+            // The shopfront photo. Optional — a visit filed on a bad signal,
+            // or from an older app build, has none. `image` is the mime
+            // check, and the extension list keeps out the formats the panel
+            // cannot render in an <img>. 8 MB covers a modern phone camera
+            // at the quality the app compresses to.
+            'photo' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
+            'photo_taken_at' => ['nullable', 'date', 'before_or_equal:now'],
             'notes' => ['nullable', 'string', 'max:2000'],
             // Optional on every visit and every call: most are a
             // conversation with nothing to record. A line that is sent is
@@ -50,6 +57,9 @@ class StoreVisitRequest extends FormRequest
             'out_time.after_or_equal' => 'The out time cannot be before the in time.',
             'person_id.exists' => 'That person is not on the active list.',
             'visit_date.before_or_equal' => 'A visit cannot be dated in the future.',
+            'photo.image' => 'The photo must be an image.',
+            'photo.mimes' => 'The photo must be a JPG, PNG or WEBP.',
+            'photo.max' => 'That photo is too large — 8 MB is the limit.',
             'latitude.required_with' => 'Both coordinates are needed, or neither.',
             'longitude.required_with' => 'Both coordinates are needed, or neither.',
             'products.*.product_id.exists' => 'One of those products no longer exists.',
@@ -69,6 +79,10 @@ class StoreVisitRequest extends FormRequest
             'latitude' => $this->input('latitude') !== null ? (float) $this->input('latitude') : null,
             'longitude' => $this->input('longitude') !== null ? (float) $this->input('longitude') : null,
             'location_fetched_at' => $this->input('location_fetched_at') ?: null,
+            // The file itself, not a path: the service hands it to the photo
+            // store, which decides where it lands.
+            'photo' => $this->file('photo'),
+            'photo_taken_at' => $this->input('photo_taken_at') ?: null,
             'notes' => $this->filled('notes') ? $this->string('notes')->trim()->value() : null,
             'products' => $this->productLines(),
         ];

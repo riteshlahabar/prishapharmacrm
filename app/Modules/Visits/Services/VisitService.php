@@ -8,9 +8,11 @@ use App\Modules\Users\Models\User;
 use App\Modules\Visits\Enums\VisitPurpose;
 use App\Modules\Visits\Models\Visit;
 use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
+use App\Modules\Visits\Services\Contracts\VisitPhotoStoreInterface;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
@@ -22,6 +24,9 @@ class VisitService implements VisitServiceInterface
         // Through the contract: this module stores what was detailed, the
         // Products module decides what a box costs (docs/conventions.md).
         private readonly ProductServiceInterface $products,
+        // Where the shopfront photo goes. The service knows a visit may carry
+        // one; only this knows which disk and folder.
+        private readonly VisitPhotoStoreInterface $photos,
     ) {}
 
     /**
@@ -31,6 +36,12 @@ class VisitService implements VisitServiceInterface
      */
     public function createFor(User $mr, array $data): Visit
     {
+        // Written before the row so the insert carries its path: a visit is
+        // never saved pointing at a file that failed to land.
+        $photoPath = ($data['photo'] ?? null) instanceof UploadedFile
+            ? $this->photos->put($data['photo'])
+            : null;
+
         /** @var Visit $visit */
         $visit = $this->visits->create([
             'mr_id' => $mr->id,
@@ -48,6 +59,12 @@ class VisitService implements VisitServiceInterface
             'location_fetched_at' => isset($data['latitude'], $data['longitude'])
                 ? ($data['location_fetched_at'] ?? now())
                 : null,
+            'photo_path' => $photoPath,
+            // The device clock at the shutter, when the app said so. Absent
+            // with no photo, so the column never dates a visit that has none.
+            'photo_taken_at' => $photoPath === null
+                ? null
+                : ($data['photo_taken_at'] ?? now()),
             'notes' => $data['notes'] ?? null,
         ]);
 
@@ -96,9 +113,22 @@ class VisitService implements VisitServiceInterface
         return $visit;
     }
 
+    /**
+     * Drops the row and its photo together. The file goes second: a failed
+     * delete would otherwise leave a visit pointing at bytes that are gone,
+     * and an orphan file is the cheaper of the two mistakes.
+     */
     public function delete(int|string $id): bool
     {
-        return $this->visits->delete($id);
+        $path = $this->visits->find($id)?->photo_path;
+
+        $deleted = $this->visits->delete($id);
+
+        if ($deleted) {
+            $this->photos->delete($path);
+        }
+
+        return $deleted;
     }
 
     public function paginate(array $filters = [], int $perPage = 20): LengthAwarePaginator

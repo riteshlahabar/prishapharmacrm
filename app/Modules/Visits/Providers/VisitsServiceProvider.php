@@ -7,7 +7,9 @@ use App\Modules\Visits\Models\Visit;
 use App\Modules\Visits\Policies\VisitPolicy;
 use App\Modules\Visits\Repositories\Contracts\VisitRepositoryInterface;
 use App\Modules\Visits\Repositories\EloquentVisitRepository;
+use App\Modules\Visits\Services\Contracts\VisitPhotoStoreInterface;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
+use App\Modules\Visits\Services\VisitPhotoStore;
 use App\Modules\Visits\Services\VisitService;
 
 class VisitsServiceProvider extends ModuleServiceProvider
@@ -25,6 +27,7 @@ class VisitsServiceProvider extends ModuleServiceProvider
         return [
             VisitRepositoryInterface::class => EloquentVisitRepository::class,
             VisitServiceInterface::class => VisitService::class,
+            VisitPhotoStoreInterface::class => VisitPhotoStore::class,
         ];
     }
 

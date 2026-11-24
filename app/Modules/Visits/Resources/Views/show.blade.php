@@ -72,7 +72,7 @@
                                         <td>
                                             @if($visit->hasLocation())
                                                 <a target="_blank" rel="noopener noreferrer"
-                                                   href="https://www.google.com/maps/search/?api=1&query={{ $visit->latitude }},{{ $visit->longitude }}">
+                                                   href="{{ $visit->mapsUrl() }}">
                                                     {{ $visit->latitude }}, {{ $visit->longitude }}
                                                 </a>
                                             @else
@@ -83,6 +83,19 @@
                                     <tr>
                                         <th>Location read at</th>
                                         <td>{{ $visit->location_fetched_at?->format('d M Y, H:i') ?? '—' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Photo</th>
+                                        <td>
+                                            @if($visit->hasPhoto())
+                                                <span class="badge badge-light-success">Captured</span>
+                                                <span class="f-light ms-1">
+                                                    {{ $visit->photo_taken_at?->format('d M Y, H:i') ?? 'time not sent' }}
+                                                </span>
+                                            @else
+                                                Not captured
+                                            @endif
+                                        </td>
                                     </tr>
                                     <tr>
                                         <th>Received by server</th>
@@ -107,6 +120,75 @@
                 </div>
 
                 @include('partials.product-lines', ['lines' => $visit->products])
+            </div>
+
+            {{-- Photo and map. Both are evidence of the same thing — that the
+                 rep stood outside this place — so they sit together, beside
+                 the figures rather than below them. --}}
+            <div class="col-xl-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Shopfront photo</h5>
+                        <span class="f-light">
+                            @if($visit->hasPhoto())
+                                Taken on the visit — click to open full size
+                            @else
+                                The app did not send one with this visit.
+                            @endif
+                        </span>
+                    </div>
+
+                    @if($visit->hasPhoto())
+                    <div class="card-body">
+                        {{-- Served by VisitPhotoController, not from /storage:
+                             the file is on a private disk and inherits this
+                             visit's territory scope. --}}
+                        <a href="{{ route('visits.photo', $visit->id) }}" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ route('visits.photo', $visit->id) }}"
+                                 class="img-fluid rounded w-100"
+                                 style="max-height: 420px; object-fit: cover;"
+                                 alt="Photo taken at {{ $visit->person?->name ?? 'this visit' }}">
+                        </a>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Where it was filed</h5>
+                        <span class="f-light">
+                            @if($visit->hasLocation())
+                                The device's reading when the visit was saved
+                            @else
+                                No coordinates were captured.
+                            @endif
+                        </span>
+                    </div>
+
+                    @if($visit->hasLocation())
+                    <div class="card-body">
+                        {{-- OpenStreetMap: it embeds with no API key, so the
+                             panel needs no billing account and no key in its
+                             HTML (Visit::mapEmbedUrl). It does need the
+                             browser to reach openstreetmap.org — on a closed
+                             network the frame stays blank and the links
+                             below still work. --}}
+                        <div class="ratio ratio-4x3 rounded overflow-hidden border">
+                            <iframe src="{{ $visit->mapEmbedUrl() }}"
+                                    title="Map of where this visit was filed"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer"
+                                    style="border: 0;"></iframe>
+                        </div>
+                        <div class="mt-2 text-center">
+                            <a class="btn btn-sm btn-outline-primary" target="_blank" rel="noopener noreferrer"
+                               href="{{ $visit->mapsUrl() }}">
+                                <i data-feather="map-pin"></i> Open in Google Maps
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+                </div>
             </div>
         </div>
 

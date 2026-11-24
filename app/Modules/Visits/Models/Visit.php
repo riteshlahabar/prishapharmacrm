@@ -18,7 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 #[Fillable([
     'mr_id', 'person_id', 'visit_date', 'purpose', 'in_time', 'out_time',
-    'latitude', 'longitude', 'location_fetched_at', 'notes',
+    'latitude', 'longitude', 'location_fetched_at', 'photo_path',
+    'photo_taken_at', 'notes',
 ])]
 #[UseFactory(VisitFactory::class)]
 class Visit extends Model
@@ -34,6 +35,7 @@ class Visit extends Model
             'visit_date' => 'date',
             'purpose' => VisitPurpose::class,
             'location_fetched_at' => 'datetime',
+            'photo_taken_at' => 'datetime',
             'latitude' => 'decimal:7',
             'longitude' => 'decimal:7',
         ];
@@ -55,9 +57,55 @@ class Visit extends Model
         return $this->hasMany(VisitProduct::class, 'visit_id');
     }
 
+    /**
+     * Whether a shopfront photo was filed with this visit. The path alone is
+     * the answer: the file is only ever written after a successful upload,
+     * and a missing file on disk is a deploy problem, not a different visit.
+     */
+    public function hasPhoto(): bool
+    {
+        return $this->photo_path !== null && $this->photo_path !== '';
+    }
+
     public function hasLocation(): bool
     {
         return $this->latitude !== null && $this->longitude !== null;
+    }
+
+    /**
+     * The pin on an external map, for the "open in Google Maps" link.
+     */
+    public function mapsUrl(): ?string
+    {
+        return $this->hasLocation()
+            ? 'https://www.google.com/maps/search/?api=1&query='.$this->latitude.','.$this->longitude
+            : null;
+    }
+
+    /**
+     * An OpenStreetMap frame centred on the visit, for the panel's detail
+     * page. OSM rather than Google because it embeds with **no API key and
+     * no billing account** — a Google frame would put a key in the page's
+     * HTML. Swapping it is one method (docs/modules/visits.md).
+     *
+     * `$span` is the box around the pin in degrees; 0.004 is roughly 400 m,
+     * close enough to read the street but wide enough to place it.
+     */
+    public function mapEmbedUrl(float $span = 0.004): ?string
+    {
+        if (! $this->hasLocation()) {
+            return null;
+        }
+
+        $lat = (float) $this->latitude;
+        $lng = (float) $this->longitude;
+
+        return 'https://www.openstreetmap.org/export/embed.html?'.http_build_query([
+            // minLon, minLat, maxLon, maxLat — OSM's order, not lat-first.
+            'bbox' => implode(',', [$lng - $span, $lat - $span, $lng + $span, $lat + $span]),
+            'layer' => 'mapnik',
+            'marker' => $lat.','.$lng,
+        ]);
     }
 
     /** Null unless both ends were given — an unfinished entry stays honest. */

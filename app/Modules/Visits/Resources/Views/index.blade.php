@@ -132,7 +132,7 @@
                                         <th>In</th>
                                         <th>Out</th>
                                         <th>Duration</th>
-                                        <th>Geo</th>
+                                        <th>Geo · Photo</th>
                                         <th class="text-end">Actions</th>
                                     </tr>
                                 </thead>
@@ -157,11 +157,20 @@
                                             @if($visit->hasLocation())
                                                 <a class="map-pin" target="_blank" rel="noopener noreferrer"
                                                    title="{{ $visit->latitude }}, {{ $visit->longitude }}"
-                                                   href="https://www.google.com/maps/search/?api=1&query={{ $visit->latitude }},{{ $visit->longitude }}">
+                                                   href="{{ $visit->mapsUrl() }}">
                                                     <i data-feather="map-pin"></i>
                                                 </a>
                                             @else
                                                 <span class="f-light">—</span>
+                                            @endif
+                                            {{-- The camera only marks that one exists; the picture
+                                                 itself is on the visit page, so the list stays a list
+                                                 and does not fetch 25 images. --}}
+                                            @if($visit->hasPhoto())
+                                                <a class="map-pin ms-1" title="Photo captured"
+                                                   href="{{ route('visits.show', $visit->id) }}">
+                                                    <i data-feather="camera"></i>
+                                                </a>
                                             @endif
                                         </td>
                                         <td class="text-end">

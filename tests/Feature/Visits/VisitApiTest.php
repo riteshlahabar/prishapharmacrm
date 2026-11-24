@@ -3,10 +3,13 @@
 namespace Tests\Feature\Visits;
 
 use App\Modules\Persons\Models\Person;
+use App\Modules\Products\Models\Product;
 use App\Modules\Regions\Models\Region;
 use App\Modules\Visits\Enums\VisitPurpose;
 use App\Modules\Visits\Models\Visit;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 /**
@@ -235,6 +238,117 @@ class VisitApiTest extends TestCase
 
         $this->actingAsApp($token)->getJson('/api/v1/visits')->assertStatus(403);
         $this->actingAsApp($token)->postJson('/api/v1/visits', [])->assertStatus(403);
+    }
+
+    public function test_an_mr_files_a_visit_with_a_shopfront_photo(): void
+    {
+        Carbon::setTestNow('2026-11-24 11:00:00');
+        Storage::fake('local');
+
+        $region = Region::factory()->create();
+        $mr = $this->mr($region);
+        $person = Person::factory()->inRegion($region)->create();
+
+        $this->actingAsApp($mr)->post('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'product_detailing',
+            'photo' => UploadedFile::fake()->image('shopfront.jpg', 1200, 900),
+            'photo_taken_at' => '2026-11-24T10:55:00Z',
+        ], ['Accept' => 'application/json'])
+            ->assertStatus(201)
+            // Reported, never linked: the file has no URL an app could fetch.
+            ->assertJsonPath('data.has_photo', true)
+            ->assertJsonMissingPath('data.photo_path');
+
+        $visit = Visit::firstOrFail();
+        $this->assertTrue($visit->hasPhoto());
+        $this->assertSame('2026-11-24 10:55:00', $visit->photo_taken_at->toDateTimeString());
+        // Private disk, dated folder, and a name of ours — not the phone's.
+        $this->assertStringStartsWith('visit-photos/2026/11/', $visit->photo_path);
+        Storage::disk('local')->assertExists($visit->photo_path);
+    }
+
+    /** The common case: no camera, no photo, and the visit still files. */
+    public function test_a_visit_without_a_photo_is_still_accepted(): void
+    {
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+
+        $this->actingAsApp($mr)->postJson('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'courtesy',
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.has_photo', false)
+            ->assertJsonPath('data.photo_taken_at', null);
+
+        $visit = Visit::firstOrFail();
+        $this->assertFalse($visit->hasPhoto());
+        // No photo, so nothing dates one.
+        $this->assertNull($visit->photo_taken_at);
+    }
+
+    public function test_a_file_that_is_not_an_image_is_rejected(): void
+    {
+        Storage::fake('local');
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+
+        $this->actingAsApp($mr)->post('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'courtesy',
+            'photo' => UploadedFile::fake()->create('invoice.pdf', 20, 'application/pdf'),
+        ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonPath('errors.reason', 'validation')
+            ->assertJsonStructure(['errors' => ['photo']]);
+
+        // Nothing filed and nothing written: the upload is checked before the
+        // row, so a rejected photo never leaves a visit or a file behind.
+        $this->assertDatabaseCount('visits', 0);
+    }
+
+    public function test_an_oversized_photo_is_rejected(): void
+    {
+        Storage::fake('local');
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+
+        $this->actingAsApp($mr)->post('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'courtesy',
+            // 9 MB, past the 8 MB ceiling the request sets.
+            'photo' => UploadedFile::fake()->create('huge.jpg', 9216, 'image/jpeg'),
+        ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['photo']]);
+    }
+
+    /** Multipart posts strings; the rest of the payload must survive it. */
+    public function test_product_lines_survive_a_multipart_post(): void
+    {
+        Storage::fake('local');
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+        $product = Product::factory()->create(['cost' => '120.50']);
+
+        $this->actingAsApp($mr)->post('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'product_detailing',
+            'in_time' => '10:30',
+            'out_time' => '11:15',
+            'latitude' => '19.0760000',
+            'longitude' => '72.8777000',
+            'photo' => UploadedFile::fake()->image('shopfront.jpg'),
+            'products' => [['product_id' => $product->id, 'box_qty' => 3]],
+        ], ['Accept' => 'application/json'])
+            ->assertStatus(201)
+            ->assertJsonPath('data.products.0.box_qty', 3)
+            ->assertJsonPath('data.products.0.unit_cost', '120.50');
+
+        $visit = Visit::firstOrFail();
+        $this->assertSame(45, $visit->durationMinutes());
+        $this->assertTrue($visit->hasLocation());
     }
 
     public function test_an_unfinished_visit_reports_no_duration_rather_than_guessing(): void

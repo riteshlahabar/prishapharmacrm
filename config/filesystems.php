@@ -64,6 +64,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Visit photos
+    |--------------------------------------------------------------------------
+    |
+    | Which disk a visit's shopfront photo is stored on. It is deliberately a
+    | *private* disk: the file is territory-scoped business data, served by
+    | VisitPhotoController behind the visit policy, never from a public URL
+    | (docs/modules/visits.md). Point it at "s3" to move the files off the
+    | server without touching the Visits module.
+    |
+    */
+
+    'visit_photos' => env('VISIT_PHOTO_DISK', 'local'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Symbolic Links
     |--------------------------------------------------------------------------
     |

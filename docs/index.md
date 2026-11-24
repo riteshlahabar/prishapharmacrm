@@ -1,12 +1,11 @@
 # Prisha Pharma — Master Index
 
 **need → doc → code path.** Read this first; open only the doc it names.
-Status: ✅ done · 🟡 partial · ⬜ pending
 
 ## Projects
 | Code | Project | Repo | Stack |
 |---|---|---|---|
-| CRM | Panel + mobile API | `prishapharmacrm` | Laravel 13, MySQL, Cuba |
+| CRM | Panel + API | `prishapharmacrm` | Laravel 13, MySQL, Cuba |
 | MR | Medical Rep app ✅ | `prishapharmamrapp` | Flutter |
 | TC | Telecaller app ✅ | `prishapharmatellecallerapp` | Flutter |
 
@@ -20,10 +19,10 @@ Status: ✅ done · 🟡 partial · ⬜ pending
 | ClientTypes | ✅ | `modules/client-types.md` | editable type master |
 | Products | ✅ | `modules/products.md` | products, visit/call lines |
 | Attendance | ✅ | `modules/attendance.md` | MR check-in/out |
-| Visits | ✅ | `modules/visits.md` | visit entry, times, geo |
+| Visits | ✅ | `modules/visits.md` | visit entry, times, geo, photo |
 | Calls | ✅ | `modules/calls.md` | call status + notes |
 | Messages | ✅ | `modules/messages.md` | telecaller → MR |
-| Dashboard · Reports | ✅ | `modules/{dashboard,reports}.md` | tiles, 6 reports, CSV |
+| Dashboard · Reports | ✅ | `modules/{dashboard,reports}.md` | tiles, reports, CSV |
 
 ## Where do I find…?
 | Need | Go to |
@@ -32,6 +31,7 @@ Status: ✅ done · 🟡 partial · ⬜ pending
 | Tests, factories, demo | `testing.md` |
 | Table columns, relations | `schema.md` |
 | SOLID, module rules | `conventions.md` |
+| Visit photo · map in a view | `visit-photos.md` |
 | Cuba markup, layout | `ui-cuba.md` |
 | Logos · brand CSS · actions | `ui-{assets,brand,actions}.md` |
 | Patches to Cuba | `ui-theme-patches.md` |
@@ -39,7 +39,7 @@ Status: ✅ done · 🟡 partial · ⬜ pending
 | App login, endpoints | `api/v1-auth.md` · `api/v1-{mr,telecaller}.md` |
 | Clients · products from an app | `api/v1-{clients,products}.md` |
 | Permission names | `modules/access.md` |
-| Shared base classes | `app/Core/` |
+| Base classes | `app/Core/` |
 | 403 vs 404, policies | `authorization.md` |
 | Module registry | `config/modules.php` |
 | Older session log | `history/` |

@@ -47,27 +47,23 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   teal, `css/prisha.css` as our layer, "client" in the panel, the editable
   ClientTypes master, and a splash + launcher icon + light theme in both
   apps. Rotated out: `history/2026-11-phase12.md`.
-`2026-11-24` Phase 13: Add Client + My Clients in both apps. One write for
-  the apps (`POST /persons`): the adder is one assignee from the token, names
-  the other from a dropdown, and the region follows the assigned MR —
-  `api/v1-clients.md`, new `Api/{AssigneeController,ClientTypeController}`,
-  `?mine=1` is an ownership clamp, not a territory one.
-`2026-11-24` Two UI fixes (action icons, dark mode): `2026-11-fixes.md`.
-`2026-11-24` Phase 14: products. A **Products** master (name, box qty,
-  cost), `GET /api/v1/products` for both apps, and optional product lines on
-  a visit and a call log — repeatable rows with a **+** below the notes,
-  from one shared `ProductLinesField`. Stock is the admin's alone:
-  recording a product moves nothing. A line snapshots `unit_cost`, so a
-  price change never rewrites a visit that already happened
-  (`ProductService::priceLines`, which the siblings call through the
-  contract). A product on a line cannot be deleted — deactivate instead.
-  Also fixed: the MR home goldens embedded the live date and would have
-  failed every morning; it comes from `todayProvider` now.
+`2026-11-24` Phases 13 and 14 (clients from an app; products) and two UI
+  fixes are rotated out — `history/2026-11-phase{13,14}.md`,
+  `history/2026-11-fixes.md`.
+`2026-11-24` Phase 15: visit photo + a map in the view. One optional
+  shopfront photo per visit, taken in the MR app and sent in the **same
+  multipart POST** as the visit; it lands on a **private** disk and is
+  served only by `GET /visits/{id}/photo`, which resolves through
+  `findForUser` so the file inherits the visit's territory scope. The apps
+  get `has_photo`, never a URL. The visit view also embeds a keyless
+  **OpenStreetMap** frame (`Visit::mapEmbedUrl`) beside the photo — no API
+  key, no billing. Contract and the cPanel upload-limit note:
+  `docs/visit-photos.md`.
 
 ## Next step
-Feature work is done. Before a release: neither app has run on real hardware
-(a headless web build is as far as this container goes), and both keep their
-token in `SharedPreferences` — see each README. The **module** reports
+Before a release: neither app has run on real hardware (this container has
+no device, emulator or web platform — `analyze` + tests are the ceiling),
+and both keep their token in `SharedPreferences` — see each README. The **module** reports
 (visits, calls, attendance, messages) still list every MR and region in
 their filter pickers whatever the viewer covers; rows and totals are
 clamped, so it is a name-only leak. Worth aligning one day.

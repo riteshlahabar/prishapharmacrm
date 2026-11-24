@@ -66,6 +66,19 @@ class VisitFactory extends Factory
         ]);
     }
 
+    /**
+     * A visit carrying a shopfront photo. The path is all the row holds, so a
+     * test that only needs `hasPhoto()` costs no file; one that fetches the
+     * bytes puts them on the fake disk itself.
+     */
+    public function withPhoto(string $path = 'visit-photos/2026/11/shopfront.jpg'): static
+    {
+        return $this->state([
+            'photo_path' => $path,
+            'photo_taken_at' => now(),
+        ]);
+    }
+
     /** In-time only, so `durationMinutes()` stays null. */
     public function unfinished(): static
     {
