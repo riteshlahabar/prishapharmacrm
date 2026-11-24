@@ -109,33 +109,35 @@
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            @can("{$routeName}.view")
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route("{$routeName}.show", $row->id) }}"><i data-feather="eye"></i></a>
-                                            @endcan
-                                            @can("{$routeName}.update")
-                                            <a class="btn btn-link btn-icon btn-sm" title="Edit"
-                                               href="{{ route("{$routeName}.edit", $row->id) }}"><i data-feather="edit-2"></i></a>
-                                            <form class="d-inline" method="POST" action="{{ route("{$routeName}.toggle", $row->id) }}">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button class="btn btn-link btn-icon btn-sm" type="submit"
-                                                        title="{{ $row->is_active ? 'Disable' : 'Enable' }}">
-                                                    <i data-feather="{{ $row->is_active ? 'user-x' : 'user-check' }}"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
-                                            @can("{$routeName}.delete")
-                                            <form class="d-inline" method="POST"
-                                                  action="{{ route("{$routeName}.destroy", $row->id) }}"
-                                                  onsubmit="return confirm('Delete {{ $row->name }}? This cannot be undone.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                @can("{$routeName}.view")
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route("{$routeName}.show", $row->id) }}"><i data-feather="eye"></i></a>
+                                                @endcan
+                                                @can("{$routeName}.update")
+                                                <a class="btn btn-link btn-icon btn-sm" title="Edit"
+                                                   href="{{ route("{$routeName}.edit", $row->id) }}"><i data-feather="edit-2"></i></a>
+                                                <form class="d-inline" method="POST" action="{{ route("{$routeName}.toggle", $row->id) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button class="btn btn-link btn-icon btn-sm" type="submit"
+                                                            title="{{ $row->is_active ? 'Disable' : 'Enable' }}">
+                                                        <i data-feather="{{ $row->is_active ? 'user-x' : 'user-check' }}"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                                @can("{$routeName}.delete")
+                                                <form class="d-inline" method="POST"
+                                                      action="{{ route("{$routeName}.destroy", $row->id) }}"
+                                                      onsubmit="return confirm('Delete {{ $row->name }}? This cannot be undone.');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

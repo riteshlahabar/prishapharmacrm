@@ -93,28 +93,30 @@
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route('regions.show', $region->id) }}"><i data-feather="eye"></i></a>
-                                            @can('regions.update')
-                                            <a class="btn btn-link btn-icon btn-sm" title="Edit"
-                                               href="{{ route('regions.edit', $region->id) }}"><i data-feather="edit-2"></i></a>
-                                            <form class="d-inline" method="POST" action="{{ route('regions.toggle', $region->id) }}">
-                                                @csrf @method('PATCH')
-                                                <button class="btn btn-link btn-icon btn-sm" type="submit"
-                                                        title="{{ $region->is_active ? 'Deactivate' : 'Activate' }}">
-                                                    <i data-feather="{{ $region->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
-                                            @can('regions.delete')
-                                            <form class="d-inline" method="POST" action="{{ route('regions.destroy', $region->id) }}"
-                                                  onsubmit="return confirm('Delete {{ $region->name }}?');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route('regions.show', $region->id) }}"><i data-feather="eye"></i></a>
+                                                @can('regions.update')
+                                                <a class="btn btn-link btn-icon btn-sm" title="Edit"
+                                                   href="{{ route('regions.edit', $region->id) }}"><i data-feather="edit-2"></i></a>
+                                                <form class="d-inline" method="POST" action="{{ route('regions.toggle', $region->id) }}">
+                                                    @csrf @method('PATCH')
+                                                    <button class="btn btn-link btn-icon btn-sm" type="submit"
+                                                            title="{{ $region->is_active ? 'Deactivate' : 'Activate' }}">
+                                                        <i data-feather="{{ $region->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                                @can('regions.delete')
+                                                <form class="d-inline" method="POST" action="{{ route('regions.destroy', $region->id) }}"
+                                                      onsubmit="return confirm('Delete {{ $region->name }}?');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

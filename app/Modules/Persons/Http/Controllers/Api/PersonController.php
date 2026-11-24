@@ -7,6 +7,7 @@ use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Calls\Http\Resources\CallLogResource;
 use App\Modules\Calls\Services\Contracts\CallLogServiceInterface;
+use App\Modules\Persons\Http\Requests\StoreAppPersonRequest;
 use App\Modules\Persons\Http\Resources\PersonResource;
 use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -22,6 +23,11 @@ use Illuminate\Http\Request;
  * For a telecaller the list doubles as the call queue, so each row carries
  * the last call *they* made on that person. That comes from the Calls module
  * through its service contract, in one query for the whole page.
+ *
+ * `?mine=1` switches the clamp from territory to ownership — "My clients",
+ * the ones the caller is an assignee on, wherever they sit. `store()` is the
+ * other half: either app adds a client, names its counterpart, and the
+ * caller's own side comes from the token.
  */
 class PersonController extends Controller
 {
@@ -48,7 +54,13 @@ class PersonController extends Controller
             $filters['assigned_mr_id'] = $user->id;
         }
 
-        $page = $this->persons->paginateForUser($user, $filters, PerPage::from($request));
+        // "My clients" asks a different question from the call queue: the
+        // rows I own, wherever they sit, rather than the rows in territory I
+        // cover. Only `?mine=1` gets that clamp — the unflagged call keeps
+        // the territory scope the shipped builds already rely on.
+        $page = $request->boolean('mine')
+            ? $this->persons->paginateAssignedTo($user, $filters, PerPage::from($request))
+            : $this->persons->paginateForUser($user, $filters, PerPage::from($request));
 
         $lastCalls = $user->isTelecaller()
             ? $this->calls->lastCallsFor($user, collect($page->items())->pluck('id')->all())
@@ -63,6 +75,25 @@ class PersonController extends Controller
                 )
                 ->resolve()),
             'Persons loaded.',
+        );
+    }
+
+    /**
+     * Add Client. Both apps post here; what differs is which counterpart the
+     * body names, which `StoreAppPersonRequest` decides from the token's
+     * role and `PersonService::createForApp` completes.
+     *
+     * The created row comes back in full, relations loaded, so the app can
+     * drop it straight into My Clients without a second request.
+     */
+    public function store(StoreAppPersonRequest $request): JsonResponse
+    {
+        $person = $this->persons->createForApp($request->user(), $request->payload());
+
+        return ApiResponse::success(
+            new PersonResource($person->load(['clientType', 'region', 'assignedMr', 'assignedTelecaller'])),
+            'Client added.',
+            201,
         );
     }
 }

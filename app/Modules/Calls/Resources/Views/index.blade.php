@@ -166,17 +166,19 @@
                                         </td>
                                         <td class="f-light">{{ Str::limit($call->notes, 40) ?: '—' }}</td>
                                         <td class="text-end">
-                                            <a class="btn btn-link btn-icon btn-sm" title="View"
-                                               href="{{ route('calls.show', $call->id) }}"><i data-feather="eye"></i></a>
-                                            @can('calls.delete')
-                                            <form class="d-inline" method="POST" action="{{ route('calls.destroy', $call->id) }}"
-                                                  onsubmit="return confirm('Delete this call log? This cannot be undone.');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
+                                            <div class="table-actions">
+                                                <a class="btn btn-link btn-icon btn-sm" title="View"
+                                                   href="{{ route('calls.show', $call->id) }}"><i data-feather="eye"></i></a>
+                                                @can('calls.delete')
+                                                <form class="d-inline" method="POST" action="{{ route('calls.destroy', $call->id) }}"
+                                                      onsubmit="return confirm('Delete this call log? This cannot be undone.');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

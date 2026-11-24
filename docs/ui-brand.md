@@ -8,14 +8,16 @@ nothing redefines a component from scratch. Colours: `--prisha-teal`
 | What | Why it is here |
 |---|---|
 | `.logo-wrapper img` width | the artwork is 2.1:1, the stock Cuba file 3.5:1 |
-| `.table > thead > tr` gradient | on the **row**: per cell it restarts each column and reads as stripes |
+| `.table > thead > tr` gradient | on the **row**; per cell it reads as stripes |
 | `.table-foot` | the count and the pager on one line under every table |
 | `.pagination` | Bootstrap-5 markup from `partials/pagination-links` |
-| `.btn` flex row | feather renders a 24px SVG that drags a button's label onto a second line |
-| `.btn-icon` | the square icon buttons in an actions column |
+| `.btn` flex row | feather's 24px SVG drags a button's label to a second line |
+| `.table-actions`, `.btn-icon` | the action column — `ui-actions.md` |
 | `.card-toolbar`, `.filter-bar` | heading + actions on one baseline; filters in a tinted panel |
 | `.mini-stats` | a report's bucket counts, one small card each, on one row |
 | `.stat-tile.tile-*` | the six dashboard accents; the name comes from DashboardService |
+| `@assetv` | mtime on style.css + prisha.css, or a browser serves a stale copy |
+| `body.dark-only` | dark mode — `ui-dark.md` |
 
 ## Table head and Bootstrap 5.3
 A cell's stripe and hover are an `inset 0 0 0 9999px` box-shadow, not a
@@ -24,8 +26,8 @@ background, so the header row needs `box-shadow: none` and a transparent
 
 ## Sizes
 Logos: 132px in the sidebar, 150px on the login card — the artwork is 420px
-natural, which turns both into a banner. Table icons (the action column, a
-`.map-pin` link) are 18px: feather defaults to 24, `.btn-sm` took them to 14.
+natural, which turns both into a banner. Table and action-column icon sizes
+live in `ui-actions.md`.
 
 ## Pagination
 `AppServiceProvider` calls `Paginator::useBootstrapFive()` and points

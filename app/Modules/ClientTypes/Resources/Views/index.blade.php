@@ -101,28 +101,30 @@
                                             </span>
                                         </td>
                                         <td class="text-end">
-                                            @can('client_types.update')
-                                            <a class="btn btn-link btn-icon btn-sm" title="Edit"
-                                               href="{{ route('client-types.edit', $type->id) }}"><i data-feather="edit-2"></i></a>
-                                            <form class="d-inline" method="POST" action="{{ route('client-types.toggle', $type->id) }}">
-                                                @csrf @method('PATCH')
-                                                <button class="btn btn-link btn-icon btn-sm" type="submit"
-                                                        title="{{ $type->is_active ? 'Deactivate' : 'Activate' }}">
-                                                    <i data-feather="{{ $type->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
-                                                </button>
-                                            </form>
-                                            @endcan
-                                            @can('client_types.delete')
-                                            @unless($type->isBuiltIn())
-                                            <form class="d-inline" method="POST" action="{{ route('client-types.destroy', $type->id) }}"
-                                                  onsubmit="return confirm('Delete {{ $type->label }}?');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-link btn-icon btn-sm txt-danger" type="submit" title="Delete">
-                                                    <i data-feather="trash-2"></i>
-                                                </button>
-                                            </form>
-                                            @endunless
-                                            @endcan
+                                            <div class="table-actions">
+                                                @can('client_types.update')
+                                                <a class="btn btn-link btn-icon btn-sm" title="Edit"
+                                                   href="{{ route('client-types.edit', $type->id) }}"><i data-feather="edit-2"></i></a>
+                                                <form class="d-inline" method="POST" action="{{ route('client-types.toggle', $type->id) }}">
+                                                    @csrf @method('PATCH')
+                                                    <button class="btn btn-link btn-icon btn-sm" type="submit"
+                                                            title="{{ $type->is_active ? 'Deactivate' : 'Activate' }}">
+                                                        <i data-feather="{{ $type->is_active ? 'toggle-right' : 'toggle-left' }}"></i>
+                                                    </button>
+                                                </form>
+                                                @endcan
+                                                @can('client_types.delete')
+                                                @unless($type->isBuiltIn())
+                                                <form class="d-inline" method="POST" action="{{ route('client-types.destroy', $type->id) }}"
+                                                      onsubmit="return confirm('Delete {{ $type->label }}?');">
+                                                    @csrf @method('DELETE')
+                                                    <button class="btn btn-link btn-icon btn-icon-danger btn-sm" type="submit" title="Delete">
+                                                        <i data-feather="trash-2"></i>
+                                                    </button>
+                                                </form>
+                                                @endunless
+                                                @endcan
+                                            </div>
                                         </td>
                                     </tr>
                                     @empty

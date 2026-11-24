@@ -26,8 +26,9 @@ and messages to an MR — in-app, **no Firebase**. Telecallers also get scoped
 panel access.
 
 ## Current phase
-**All phases 0–13 ✅** — backend, panel, both apps, hardening, reports,
-branding, products. Gate before a commit: `bash tests/smoke/phase8-suite.sh`.
+**All phases 0–14 ✅** — backend, panel, both apps, hardening, reports,
+branding, clients from the apps, products. Gate before a commit:
+`bash tests/smoke/phase8-suite.sh`.
 
 ## Session log
 Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
@@ -40,55 +41,56 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   `DemoSeeder`, three scope fixes; reports: six viewer-clamped reports and
   streamed CSV in a module owning no table) are rotated out — see
   `docs/history/2026-11-phase{8,11}.md`.
-`2026-11-22` Fix: the Reports menu was invisible on any database seeded
-  before Phase 11 — the new permission rows did not exist, and `RoleSeeder`
-  *skipped* an existing non-admin role. It now **tops up** a role with the
-  defaults it lacks (adds, never syncs). Re-run `php artisan db:seed` after
-  any catalogue change.
+`2026-11-22` Fix: `RoleSeeder` tops up an existing non-admin role with the
+  defaults it lacks — see `history/2026-11-fixes.md`.
 `2026-11-23` Phase 12: branding — Prisha logo and favicon, Cuba repainted
   teal, `css/prisha.css` as our layer, "client" in the panel, the editable
   ClientTypes master, and a splash + launcher icon + light theme in both
-  apps. Rotated out: `docs/history/2026-11-phase12.md`.`2026-11-24` Phase 13: products. A **Products** master (name, box qty,
-  cost) under Masters, `GET /api/v1/products` for both apps, and optional
-  product lines on a visit and on a call log — repeatable rows with a **+**
-  below the notes in both apps, from one shared `ProductLinesField`. Stock
-  is the admin's number alone: recording a product moves nothing. A line
-  snapshots `unit_cost`, so a price change never rewrites a visit that
-  already happened; the pricing lives in `ProductService::priceLines` and
-  the siblings call it through the contract. A product on any line cannot
-  be deleted — deactivate instead. Also fixed: the home-screen goldens
-  embedded the live date and would have failed every morning; the date now
-  comes from `todayProvider`, which the test pins. 415 tests green.
+  apps. Rotated out: `history/2026-11-phase12.md`.
+`2026-11-24` Phase 13: Add Client + My Clients in both apps. One write for
+  the apps (`POST /persons`): the adder is one assignee from the token, names
+  the other from a dropdown, and the region follows the assigned MR —
+  `api/v1-clients.md`, new `Api/{AssigneeController,ClientTypeController}`,
+  `?mine=1` is an ownership clamp, not a territory one.
+`2026-11-24` Two UI fixes (action icons, dark mode): `2026-11-fixes.md`.
+`2026-11-24` Phase 14: products. A **Products** master (name, box qty,
+  cost), `GET /api/v1/products` for both apps, and optional product lines on
+  a visit and a call log — repeatable rows with a **+** below the notes,
+  from one shared `ProductLinesField`. Stock is the admin's alone:
+  recording a product moves nothing. A line snapshots `unit_cost`, so a
+  price change never rewrites a visit that already happened
+  (`ProductService::priceLines`, which the siblings call through the
+  contract). A product on a line cannot be deleted — deactivate instead.
+  Also fixed: the MR home goldens embedded the live date and would have
+  failed every morning; it comes from `todayProvider` now.
 
 ## Next step
-Feature work is done. Before a release: neither Flutter app has run on real
-hardware (a web build in a headless browser is as far as this container
-goes), and both keep their token in `SharedPreferences` — see each README.
-The **module** reports (visits, calls, attendance, messages) still show every
-MR and region in their filter pickers whatever the viewer covers; rows and
-totals are clamped, so it is a name-only leak. Worth aligning one day.
+Feature work is done. Before a release: neither app has run on real hardware
+(a headless web build is as far as this container goes), and both keep their
+token in `SharedPreferences` — see each README. The **module** reports
+(visits, calls, attendance, messages) still list every MR and region in
+their filter pickers whatever the viewer covers; rows and totals are
+clamped, so it is a name-only leak. Worth aligning one day.
 
 ## Open items
 - ProKit (Medilab) lives in the MR app repo under `design/`, excluded from
-  analysis. Its card shapes and spacing survive in both apps; its palette was
-  replaced by Prisha's in Phase 12, and its nb_utils + MobX code never came.
-- Cuba needs no upload: its CSS was always complete. Markup in
-  `docs/ui-cuba.md`, assets in `ui-assets.md`, our layer in `ui-brand.md`.
+  analysis. Its card shapes survive in both apps; its palette was replaced
+  by Prisha's in Phase 12, and its nb_utils + MobX code never came.
+- Cuba needs no upload: its CSS was always complete. Markup in `ui-cuba.md`,
+  assets in `ui-assets.md`, our layer in `ui-brand.md`.
 - Both apps' icons and splash art are generated from the two source images;
   regenerate by hand if the artwork ever changes.
-- Panel admin comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD`. The `.env.example`
-  values are deliberately weak dev defaults so local setup is one command.
-  **Change them before anything is internet-reachable**; reset an existing
-  admin with `php artisan users:set-admin <email>` (the seeder will not).
+- Panel admin comes from `ADMIN_EMAIL` / `ADMIN_PASSWORD`; `.env.example`
+  holds weak dev defaults so local setup is one command. **Change them
+  before anything is internet-reachable**; reset an existing admin with
+  `php artisan users:set-admin <email>` (the seeder will not).
 - cPanel MySQL deliberately **not** connected: ephemeral container IP, port
   3306 blocked, production data at risk. Dev runs on in-container MariaDB.
-- `AGENTS.md` still holds the Laravel Boost bootstrap stub. Boost was **not**
-  installed — `boost:install` would overwrite this file and break the
-  100-line session-log requirement. Ask before installing.
-- A `customers` table converted from a live deployment arrives with every row
-  typed `doctor`. Re-type hospitals and medical stores by hand after deploy.
-- The product catalogue starts empty: add products before a rep opens the
-  visit form, or the field says there are none.
+- `AGENTS.md` still holds the Laravel Boost stub. Boost was **not**
+  installed: `boost:install` would overwrite this file. Ask first.
+- A converted `customers` table arrives with every row typed `doctor`:
+  re-type hospitals and medical stores by hand after deploy. The product
+  catalogue starts empty, so add products before a rep opens a visit form.
 
 ## Working rules
 - Dev branch: `claude/happy-ramanujan-zthjt1` (all three repos). Never push
