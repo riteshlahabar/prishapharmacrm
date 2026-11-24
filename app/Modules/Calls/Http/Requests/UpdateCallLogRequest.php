@@ -27,6 +27,14 @@ class UpdateCallLogRequest extends FormRequest
             'status' => ['sometimes', 'required', Rule::in(CallStatus::values())],
             'notes' => ['sometimes', 'nullable', 'string', 'max:2000'],
             'follow_up_at' => ['sometimes', 'nullable', 'date', 'after:now'],
+            // Optional on every visit and every call: most are a
+            // conversation with nothing to record. A line that is sent is
+            // checked here; ProductService::priceLines is the second belt,
+            // for a product deleted between the app loading its list and
+            // posting the entry.
+            'products' => ['sometimes', 'array', 'max:50'],
+            'products.*.product_id' => ['required_with:products', 'integer', Rule::exists('products', 'id')],
+            'products.*.box_qty' => ['required_with:products', 'integer', 'min:1', 'max:100000'],
         ];
     }
 
@@ -54,7 +62,31 @@ class UpdateCallLogRequest extends FormRequest
             $data['follow_up_at'] = $this->input('follow_up_at') ?: null;
         }
 
+        // Absent means "leave the lines alone"; present and empty means
+        // "the caller removed them all".
+        if ($this->has('products')) {
+            $data['products'] = $this->productLines();
+        }
+
         return $data;
+    }
+
+    /**
+     * The product lines, as the apps post them. Shape only — pricing and
+     * de-duplication are the Products module's job.
+     *
+     * @return array<int, array{product_id: int, box_qty: int}>
+     */
+    private function productLines(): array
+    {
+        return collect($this->input('products', []))
+            ->filter(fn ($row) => is_array($row))
+            ->map(fn (array $row) => [
+                'product_id' => (int) ($row['product_id'] ?? 0),
+                'box_qty' => (int) ($row['box_qty'] ?? 0),
+            ])
+            ->values()
+            ->all();
     }
 
     protected function prepareForValidation(): void

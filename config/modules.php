@@ -8,6 +8,7 @@ use App\Modules\ClientTypes\Providers\ClientTypesServiceProvider;
 use App\Modules\Dashboard\Providers\DashboardServiceProvider;
 use App\Modules\Messages\Providers\MessagesServiceProvider;
 use App\Modules\Persons\Providers\PersonsServiceProvider;
+use App\Modules\Products\Providers\ProductsServiceProvider;
 use App\Modules\Regions\Providers\RegionsServiceProvider;
 use App\Modules\Reports\Providers\ReportsServiceProvider;
 use App\Modules\Users\Providers\UsersServiceProvider;
@@ -31,6 +32,8 @@ return [
         // Before Persons: the client form reads its options from this master.
         ClientTypesServiceProvider::class,
         PersonsServiceProvider::class,
+        // Before Visits and Calls: both price a line from its contract.
+        ProductsServiceProvider::class,
         AttendanceServiceProvider::class,
         VisitsServiceProvider::class,
         CallsServiceProvider::class,

@@ -1,5 +1,5 @@
 # Module: Visits        Status: ✅ done (6/6) — Phases 3, 6
-Paths: `app/Modules/Visits/` · Tables: `visits`
+Paths: `app/Modules/Visits/` · Tables: `visits`, `visit_products`
 
 ## Functions
 | Function | File | Status |
@@ -12,7 +12,14 @@ Paths: `app/Modules/Visits/` · Tables: `visits`
 | policy (territory scope) | `Policies/VisitPolicy.php` | ✅ |
 | trend + per-rep counts | `Repositories/EloquentVisitRepository.php` | ✅ |
 
+| product lines (optional) | `Models/VisitProduct.php` | ✅ |
+
 ## Notes
+A visit may carry product lines — what was detailed, and how many boxes.
+Priced through the **Products contract** so the cost is snapshotted, never
+joined (`api/v1-products.md`). Posting replaces the set; the panel's visit
+detail lists them.
+
 MR fills: person, purpose (`VisitPurpose` enum), in-time, out-time. On save the
 app sends lat/lng; the backend stores them plus `location_fetched_at` and keeps
 `created_at` as the server receive time, so a visit entered hours late shows as

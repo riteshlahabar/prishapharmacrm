@@ -16,7 +16,9 @@
     of its entries survives, otherwise the sidebar shows empty headings.
 --}}
 @php
-    $canMasters = auth()->user()?->canAny(['regions.view', 'persons.view', 'client_types.view']) ?? false;
+    $canMasters = auth()->user()?->canAny([
+        'regions.view', 'persons.view', 'client_types.view', 'products.view',
+    ]) ?? false;
     $canUsers = auth()->user()?->canAny(['mrs.view', 'telecallers.view']) ?? false;
     $canField = auth()->user()?->canAny(['attendance.view', 'visits.view', 'calls.view', 'messages.view']) ?? false;
     $canAccess = auth()->user()?->can('access.manage') ?? false;
@@ -100,6 +102,22 @@
                         @endcan
                         @can('client_types.create')
                         <li><a href="{{ route('client-types.create') }}">Add Client Type</a></li>
+                        @endcan
+                    </ul>
+                </li>
+                @endif
+
+                @if(auth()->user()?->canAny(['products.view', 'products.create']))
+                <li class="sidebar-list">
+                    <a class="sidebar-link sidebar-title {{ request()->routeIs('products.*') ? 'active' : '' }}" href="#">
+                        <i data-feather="package"></i><span>Products</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        @can('products.view')
+                        <li><a href="{{ route('products.index') }}">All Products</a></li>
+                        @endcan
+                        @can('products.create')
+                        <li><a href="{{ route('products.create') }}">Add Product</a></li>
                         @endcan
                     </ul>
                 </li>

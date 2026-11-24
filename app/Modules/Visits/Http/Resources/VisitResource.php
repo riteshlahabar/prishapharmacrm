@@ -32,6 +32,16 @@ class VisitResource extends JsonResource
             'notes' => $v->notes,
             // When the server received it, so a late entry is visible as one.
             'recorded_at' => $v->created_at?->toIso8601String(),
+            // The lines, when they were loaded. `whenLoaded` so a list
+            // endpoint that did not eager load them does not fire a query
+            // per row.
+            'products' => $this->whenLoaded('products', fn () => $v->products->map(fn ($line) => [
+                'product_id' => $line->product_id,
+                'name' => $line->productName(),
+                'box_qty' => $line->box_qty,
+                'unit_cost' => (string) $line->unit_cost,
+                'line_total' => number_format($line->lineTotal(), 2, '.', ''),
+            ])->values()),
             'person' => $this->whenLoaded('person', fn () => [
                 'id' => $v->person->id,
                 'name' => $v->person->name,

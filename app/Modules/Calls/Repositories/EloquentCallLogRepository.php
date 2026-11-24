@@ -74,7 +74,7 @@ class EloquentCallLogRepository extends EloquentRepository implements CallLogRep
     public function paginateWithRelations(int $perPage = 20, array $filters = []): LengthAwarePaginator
     {
         return $this->applyFilters($this->query(), $filters)
-            ->with(['telecaller', 'person.region'])
+            ->with(['telecaller', 'person.region', 'products.product'])
             ->orderByDesc('called_at')
             ->orderByDesc('id')
             ->paginate($perPage)
@@ -243,7 +243,7 @@ class EloquentCallLogRepository extends EloquentRepository implements CallLogRep
             'follow_up' => true,
             'follow_up_due' => $dueOnly,
         ])
-            ->with(['person.region'])
+            ->with(['person.region', 'products.product'])
             ->orderBy('follow_up_at')
             ->paginate($perPage)
             ->withQueryString();

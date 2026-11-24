@@ -46,6 +46,14 @@ class StoreCallLogRequest extends FormRequest
                 Rule::requiredIf(fn () => $this->input('status') === CallStatus::Callback->value),
                 Rule::prohibitedIf(fn () => $this->input('status') !== CallStatus::Callback->value),
             ],
+            // Optional on every visit and every call: most are a
+            // conversation with nothing to record. A line that is sent is
+            // checked here; ProductService::priceLines is the second belt,
+            // for a product deleted between the app loading its list and
+            // posting the entry.
+            'products' => ['sometimes', 'array', 'max:50'],
+            'products.*.product_id' => ['required_with:products', 'integer', Rule::exists('products', 'id')],
+            'products.*.box_qty' => ['required_with:products', 'integer', 'min:1', 'max:100000'],
         ];
     }
 
@@ -56,6 +64,8 @@ class StoreCallLogRequest extends FormRequest
             'follow_up_at.required' => 'A call-back needs a date to come back on.',
             'follow_up_at.prohibited' => 'Only a call-back carries a follow-up date.',
             'follow_up_at.after' => 'The follow-up date has to be in the future.',
+            'products.*.product_id.exists' => 'One of those products no longer exists.',
+            'products.*.box_qty.min' => 'A product line needs at least one box.',
         ];
     }
 
@@ -83,6 +93,25 @@ class StoreCallLogRequest extends FormRequest
             'status' => $this->string('status')->value(),
             'notes' => $this->filled('notes') ? $this->string('notes')->trim()->value() : null,
             'follow_up_at' => $this->input('follow_up_at') ?: null,
+            'products' => $this->productLines(),
         ];
+    }
+
+    /**
+     * The product lines, as the apps post them. Shape only — pricing and
+     * de-duplication are the Products module's job.
+     *
+     * @return array<int, array{product_id: int, box_qty: int}>
+     */
+    private function productLines(): array
+    {
+        return collect($this->input('products', []))
+            ->filter(fn ($row) => is_array($row))
+            ->map(fn (array $row) => [
+                'product_id' => (int) ($row['product_id'] ?? 0),
+                'box_qty' => (int) ($row['box_qty'] ?? 0),
+            ])
+            ->values()
+            ->all();
     }
 }

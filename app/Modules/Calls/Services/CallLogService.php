@@ -6,6 +6,7 @@ use App\Modules\Calls\Enums\CallStatus;
 use App\Modules\Calls\Models\CallLog;
 use App\Modules\Calls\Repositories\Contracts\CallLogRepositoryInterface;
 use App\Modules\Calls\Services\Contracts\CallLogServiceInterface;
+use App\Modules\Products\Services\Contracts\ProductServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -28,6 +29,9 @@ class CallLogService implements CallLogServiceInterface
         // Only the region report needs this: calls are scoped by caller
         // everywhere else, so territory is the exception here, not the rule.
         private readonly RegionAssignmentServiceInterface $assignment,
+        // Through the contract: this module stores what was discussed, the
+        // Products module decides what a box costs.
+        private readonly ProductServiceInterface $products,
     ) {}
 
     public function logFor(User $telecaller, array $data): CallLog
@@ -48,9 +52,27 @@ class CallLogService implements CallLogServiceInterface
             'follow_up_at' => $status->needsFollowUp() ? ($data['follow_up_at'] ?? null) : null,
         ]);
 
+        $this->syncProducts($call, $data['products'] ?? []);
+
         $this->calls->closeOpenFollowUps($telecaller->id, (int) $data['person_id'], $call->id);
 
-        return $call->refresh();
+        return $call->refresh()->load('products.product');
+    }
+
+    /**
+     * Replace the call's product lines with what was posted. An empty list
+     * clears them, which is what the app sends when the caller removes every
+     * row while amending.
+     *
+     * @param  array<int, array{product_id: mixed, box_qty: mixed}>  $rows
+     */
+    private function syncProducts(CallLog $call, array $rows): void
+    {
+        $call->products()->delete();
+
+        foreach ($this->products->priceLines($rows) as $line) {
+            $call->products()->create($line);
+        }
     }
 
     public function updateFor(User $telecaller, int|string $id, array $data): CallLog
@@ -78,8 +100,16 @@ class CallLogService implements CallLogServiceInterface
             $attributes['follow_up_done_at'] = null;
         }
 
-        /** @var CallLog */
-        return $this->calls->update($call->id, $attributes);
+        /** @var CallLog $updated */
+        $updated = $this->calls->update($call->id, $attributes);
+
+        // Only when the amendment mentions them: a PATCH that changes the
+        // outcome alone must not wipe the lines the call was logged with.
+        if (array_key_exists('products', $data)) {
+            $this->syncProducts($updated, $data['products'] ?? []);
+        }
+
+        return $updated->load('products.product');
     }
 
     public function completeFollowUp(User $telecaller, int|string $id): CallLog

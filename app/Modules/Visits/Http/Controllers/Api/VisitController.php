@@ -26,7 +26,7 @@ class VisitController extends Controller
         $visit = $this->visits->createFor($request->user(), $request->payload());
 
         return ApiResponse::success(
-            new VisitResource($visit->load('person')),
+            new VisitResource($visit->load(['person', 'products.product'])),
             'Visit recorded.',
             201,
         );

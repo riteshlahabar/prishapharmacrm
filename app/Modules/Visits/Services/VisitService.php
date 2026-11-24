@@ -2,6 +2,7 @@
 
 namespace App\Modules\Visits\Services;
 
+use App\Modules\Products\Services\Contracts\ProductServiceInterface;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
 use App\Modules\Users\Models\User;
 use App\Modules\Visits\Enums\VisitPurpose;
@@ -18,6 +19,9 @@ class VisitService implements VisitServiceInterface
     public function __construct(
         private readonly VisitRepositoryInterface $visits,
         private readonly RegionAssignmentServiceInterface $assignment,
+        // Through the contract: this module stores what was detailed, the
+        // Products module decides what a box costs (docs/conventions.md).
+        private readonly ProductServiceInterface $products,
     ) {}
 
     /**
@@ -27,8 +31,8 @@ class VisitService implements VisitServiceInterface
      */
     public function createFor(User $mr, array $data): Visit
     {
-        /** @var Visit */
-        return $this->visits->create([
+        /** @var Visit $visit */
+        $visit = $this->visits->create([
             'mr_id' => $mr->id,
             'person_id' => $data['person_id'],
             'visit_date' => $data['visit_date'] ?? now()->toDateString(),
@@ -46,6 +50,26 @@ class VisitService implements VisitServiceInterface
                 : null,
             'notes' => $data['notes'] ?? null,
         ]);
+
+        $this->syncProducts($visit, $data['products'] ?? []);
+
+        return $visit->load('products.product');
+    }
+
+    /**
+     * Replace the visit's product lines with what was posted. Called with an
+     * empty list it clears them, which is what an app sends when the rep
+     * removes every row.
+     *
+     * @param  array<int, array{product_id: mixed, box_qty: mixed}>  $rows
+     */
+    private function syncProducts(Visit $visit, array $rows): void
+    {
+        $visit->products()->delete();
+
+        foreach ($this->products->priceLines($rows) as $line) {
+            $visit->products()->create($line);
+        }
     }
 
     public function find(int|string $id): Visit

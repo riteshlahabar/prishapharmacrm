@@ -25,6 +25,7 @@ final class PermissionCatalog
             'regions' => ['label' => 'Regions', 'abilities' => ['view', 'create', 'update', 'delete']],
             'persons' => ['label' => 'Clients', 'abilities' => ['view', 'create', 'update', 'delete']],
             'client_types' => ['label' => 'Client Types', 'abilities' => ['view', 'create', 'update', 'delete']],
+            'products' => ['label' => 'Products', 'abilities' => ['view', 'create', 'update', 'delete']],
             'mrs' => ['label' => 'Medical Reps', 'abilities' => ['view', 'create', 'update', 'delete']],
             'telecallers' => ['label' => 'Telecallers', 'abilities' => ['view', 'create', 'update', 'delete']],
             'attendance' => ['label' => 'Attendance', 'abilities' => ['view']],

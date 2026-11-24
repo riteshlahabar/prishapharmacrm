@@ -105,6 +105,8 @@
                         @endcan
                     </div>
                 </div>
+
+                @include('partials.product-lines', ['lines' => $visit->products])
             </div>
         </div>
 

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * One call by an MR on a person. State and relationships only.
@@ -46,6 +47,12 @@ class Visit extends Model
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    /** What was detailed on this visit. Empty on most of them. */
+    public function products(): HasMany
+    {
+        return $this->hasMany(VisitProduct::class, 'visit_id');
     }
 
     public function hasLocation(): bool

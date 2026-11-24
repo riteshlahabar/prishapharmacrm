@@ -31,6 +31,16 @@ class CallLogResource extends JsonResource
             'follow_up_done_at' => $c->follow_up_done_at?->toIso8601String(),
             'follow_up_open' => $c->hasOpenFollowUp(),
             'follow_up_due' => $c->isFollowUpDue(),
+            // The lines, when they were loaded. `whenLoaded` so a list
+            // endpoint that did not eager load them does not fire a query
+            // per row.
+            'products' => $this->whenLoaded('products', fn () => $c->products->map(fn ($line) => [
+                'product_id' => $line->product_id,
+                'name' => $line->productName(),
+                'box_qty' => $line->box_qty,
+                'unit_cost' => (string) $line->unit_cost,
+                'line_total' => number_format($line->lineTotal(), 2, '.', ''),
+            ])->values()),
             'person' => $this->whenLoaded('person', fn () => [
                 'id' => $c->person->id,
                 'name' => $c->person->name,

@@ -28,7 +28,7 @@ class CallLogController extends Controller
         $call = $this->calls->logFor($request->user(), $request->payload());
 
         return ApiResponse::success(
-            new CallLogResource($call->load('person')),
+            new CallLogResource($call->load(['person', 'products.product'])),
             'Call logged.',
             201,
         );
@@ -65,7 +65,7 @@ class CallLogController extends Controller
     {
         $call = $this->calls->updateFor($request->user(), $callLog, $request->payload());
 
-        return ApiResponse::success(new CallLogResource($call->load('person')), 'Call updated.');
+        return ApiResponse::success(new CallLogResource($call->load(['person', 'products.product'])), 'Call updated.');
     }
 
     /** Clears a promised call-back without logging a new call. */
@@ -73,7 +73,7 @@ class CallLogController extends Controller
     {
         $call = $this->calls->completeFollowUp($request->user(), $callLog);
 
-        return ApiResponse::success(new CallLogResource($call->load('person')), 'Follow-up closed.');
+        return ApiResponse::success(new CallLogResource($call->load(['person', 'products.product'])), 'Follow-up closed.');
     }
 
     /**

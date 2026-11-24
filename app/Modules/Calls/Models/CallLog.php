@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * One call by a telecaller on a person. State and relationships only.
@@ -45,6 +46,12 @@ class CallLog extends Model
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class, 'person_id');
+    }
+
+    /** What was talked through on this call. Empty on most of them. */
+    public function products(): HasMany
+    {
+        return $this->hasMany(CallLogProduct::class, 'call_log_id');
     }
 
     /** A follow-up still waiting to be made. */

@@ -67,7 +67,7 @@ class EloquentVisitRepository extends EloquentRepository implements VisitReposit
     public function paginateWithRelations(int $perPage = 20, array $filters = []): LengthAwarePaginator
     {
         return $this->applyFilters($this->query(), $filters)
-            ->with(['mr', 'person.region'])
+            ->with(['mr', 'person.region', 'products.product'])
             ->orderByDesc('visit_date')
             ->orderByDesc('id')
             ->paginate($perPage)

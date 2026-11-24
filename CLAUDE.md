@@ -19,15 +19,15 @@ searching the codebase. Phases live in `docs/roadmap.md`.
   repository, contracts type-hinted, no queries outside repositories.
 
 ## Project scope (one line)
-Admin adds clients (doctor/hospital/medical, types editable), regions, MRs
-and telecallers. MR app: check-in/out presence + visit entry, both
+Admin adds clients (doctor/hospital/medical, types editable), products,
+regions, MRs and telecallers. MR app: check-in/out presence + visit entry, both
 geo-stamped. Telecaller app: region-scoped client list, call status + notes,
 and messages to an MR — in-app, **no Firebase**. Telecallers also get scoped
 panel access.
 
 ## Current phase
-**All phases 0–12 ✅** — backend, panel, both Flutter apps, hardening,
-reports, branding. Gate before any commit: `bash tests/smoke/phase8-suite.sh`.
+**All phases 0–13 ✅** — backend, panel, both apps, hardening, reports,
+branding, products. Gate before a commit: `bash tests/smoke/phase8-suite.sh`.
 
 ## Session log
 Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
@@ -45,18 +45,20 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   *skipped* an existing non-admin role. It now **tops up** a role with the
   defaults it lacks (adds, never syncs). Re-run `php artisan db:seed` after
   any catalogue change.
-`2026-11-23` Phase 12: branding. Prisha artwork replaces the stock Cuba
-  logos and favicon; Cuba's purple is repainted teal in `style.css` (402
-  values, `ui-theme-patches.md`) and `css/prisha.css` is our layer on top —
-  gradient table heads, Bootstrap-5 pagination in a `.table-foot` row,
-  `.card-toolbar` / `.filter-bar`, flex buttons (feather's 24px SVG was
-  wrapping labels) and six coloured dashboard tiles. **Person is "client" in
-  the panel**: URLs and route names are `clients.*`, permissions stay
-  `persons.*`. New **ClientTypes** module — doctor/hospital/medical were an
-  enum, now editable rows; `persons.type` still stores the slug, so the API
-  and both apps are untouched. Both Flutter apps get a splash screen, the
-  launcher icon, and a light brand theme (pale gradients, coloured icons,
-  branded bottom bar); no SDK or package version moved. 389 tests green.
+`2026-11-23` Phase 12: branding — Prisha logo and favicon, Cuba repainted
+  teal, `css/prisha.css` as our layer, "client" in the panel, the editable
+  ClientTypes master, and a splash + launcher icon + light theme in both
+  apps. Rotated out: `docs/history/2026-11-phase12.md`.`2026-11-24` Phase 13: products. A **Products** master (name, box qty,
+  cost) under Masters, `GET /api/v1/products` for both apps, and optional
+  product lines on a visit and on a call log — repeatable rows with a **+**
+  below the notes in both apps, from one shared `ProductLinesField`. Stock
+  is the admin's number alone: recording a product moves nothing. A line
+  snapshots `unit_cost`, so a price change never rewrites a visit that
+  already happened; the pricing lives in `ProductService::priceLines` and
+  the siblings call it through the contract. A product on any line cannot
+  be deleted — deactivate instead. Also fixed: the home-screen goldens
+  embedded the live date and would have failed every morning; the date now
+  comes from `todayProvider`, which the test pins. 415 tests green.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real
@@ -85,6 +87,8 @@ totals are clamped, so it is a name-only leak. Worth aligning one day.
   100-line session-log requirement. Ask before installing.
 - A `customers` table converted from a live deployment arrives with every row
   typed `doctor`. Re-type hospitals and medical stores by hand after deploy.
+- The product catalogue starts empty: add products before a rep opens the
+  visit form, or the field says there are none.
 
 ## Working rules
 - Dev branch: `claude/happy-ramanujan-zthjt1` (all three repos). Never push

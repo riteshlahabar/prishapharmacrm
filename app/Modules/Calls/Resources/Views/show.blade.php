@@ -103,6 +103,8 @@
                         @endcan
                     </div>
                 </div>
+
+                @include('partials.product-lines', ['lines' => $call->products])
             </div>
         </div>
 
