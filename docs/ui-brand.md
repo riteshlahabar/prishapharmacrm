@@ -17,6 +17,7 @@ nothing redefines a component from scratch. Colours: `--prisha-teal`
 | `.mini-stats` | a report's bucket counts, one small card each, on one row |
 | `.stat-tile.tile-*` | the six dashboard accents; the name comes from DashboardService |
 | `@assetv` | mtime on style.css + prisha.css, or a browser serves a stale copy |
+| `body.dark-only` | dark mode — `ui-dark.md` |
 
 ## Table head and Bootstrap 5.3
 A cell's stripe and hover are an `inset 0 0 0 9999px` box-shadow, not a

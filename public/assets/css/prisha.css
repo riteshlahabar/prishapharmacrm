@@ -582,3 +582,192 @@ td.text-end .table-actions {
     color: var(--prisha-teal);
     opacity: 0.6;
 }
+
+/* ========================================================== dark mode ====
+
+ * Cuba's dark theme is `body.dark-only` (`js/script.js` toggles it from the
+ * moon in the header and remembers it in `localStorage["mode-cuba"]`). Its own
+ * rules live in `style.css`, which loads *before* this file — so every literal
+ * light colour above beat them and the panel kept a white table, a white
+ * filter panel and near-black headings on a near-black page. Worst on the
+ * Medical Reps and Telecallers lists, which are nothing but a filter panel and
+ * a striped table.
+ *
+ * Two parts. First the four brand tokens are repointed at Cuba's dark palette
+ * — `#1d1e26` page, `#262932` card, `#374558` line — which fixes every rule
+ * above that was already written against a token (headings, card head rule,
+ * filter panel, table borders, pager). Then the rules that hardcoded a hex:
+ * table stripes, input fills, the icon-button washes and the muted greys.
+ *
+ * `--prisha-teal` and `--prisha-green` are deliberately *not* repointed: the
+ * table head, the active page and the dashboard tiles are white-on-gradient
+ * and read as well on a dark page as a light one. Text that merely takes the
+ * accent is a different matter — #00797C on #262932 is under 3:1 — so those
+ * few rules switch to `--prisha-accent`, a lighter teal for dark surfaces.
+ */
+
+body.dark-only {
+    --prisha-ink: rgba(255, 255, 255, 0.82);
+    --prisha-surface: #22242e;
+    --prisha-line: #374558;
+    --prisha-accent: #3BBFC2;
+    --prisha-muted: rgba(255, 255, 255, 0.5);
+}
+
+/* ------------------------------------------------------- dark · headings */
+
+body.dark-only .page-title .breadcrumb-item.active {
+    color: var(--prisha-accent);
+}
+
+/* ----------------------------------------------------- dark · filter bar */
+
+/* The fields sit on the tinted panel, so they take the card colour rather
+   than the page colour — otherwise the inputs vanish into the panel. */
+body.dark-only .filter-bar .form-control,
+body.dark-only .filter-bar .form-select {
+    background-color: #262932;
+    border-color: var(--prisha-line);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* --------------------------------------------------------- dark · tables */
+
+/*
+ * The striped rows were the white background: #FAFCFB won over Cuba's
+ * `--light-datatable-odd`. Both stripe and hover stay a step off the card
+ * colour in the same direction Bootstrap takes them in light mode — odd rows
+ * a shade darker, hover a shade lighter.
+ */
+body.dark-only .table.table-striped > tbody > tr:nth-of-type(odd) > * {
+    --bs-table-accent-bg: #1f212a;
+    --bs-table-bg-type: #1f212a;
+}
+
+body.dark-only .table.table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: #2d313d;
+    --bs-table-bg-type: #2d313d;
+}
+
+body.dark-only .table > tbody > tr > td,
+body.dark-only .table > tbody > tr > th {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+body.dark-only .map-pin svg {
+    color: var(--prisha-accent);
+}
+
+/* --------------------------------------------- dark · action-column icons */
+
+body.dark-only .btn-link.btn-icon {
+    color: var(--prisha-accent);
+}
+
+body.dark-only .btn-link.btn-icon:hover,
+body.dark-only .btn-link.btn-icon:active {
+    color: #6FD4D6;
+    background-color: rgba(59, 191, 194, 0.14);
+}
+
+/* Bootstrap's own red is too dark to sit on #262932; the wash is the same
+   colour at low alpha rather than the pink tint used in light mode. */
+body.dark-only .btn-link.btn-icon.btn-icon-danger {
+    color: #FF7A85;
+}
+
+body.dark-only .btn-link.btn-icon.btn-icon-danger:hover,
+body.dark-only .btn-link.btn-icon.btn-icon-danger:active {
+    color: #FF9AA2;
+    background-color: rgba(255, 122, 133, 0.15);
+}
+
+body.dark-only .btn.btn-icon:disabled,
+body.dark-only .btn.btn-icon.disabled {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+/* -------------------------------------------------------- dark · buttons */
+
+/*
+ * `.btn-light` is the Cancel / Reset / Back button on every form and filter
+ * bar. Cuba recolours its *text* to white in dark mode but leaves Bootstrap's
+ * `#f8f9fa` fill, which is white text on a white button. The `!important` is
+ * forced: Cuba's colour rule carries one.
+ */
+body.dark-only .btn-light {
+    background-color: #262932;
+    border-color: var(--prisha-line);
+    color: rgba(255, 255, 255, 0.72) !important;
+}
+
+body.dark-only .btn-light:hover,
+body.dark-only .btn-light:focus {
+    background-color: #2d313d;
+    border-color: #44546b;
+}
+
+/* ----------------------------------------------------- dark · pagination */
+
+body.dark-only .pagination .page-link {
+    background-color: #1d1e26;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+body.dark-only .pagination .page-link:hover {
+    background-color: #2d313d;
+    color: var(--prisha-accent);
+}
+
+body.dark-only .pagination .page-item.disabled .page-link {
+    background: #1d1e26;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+body.dark-only .table-foot .pagination-summary {
+    color: var(--prisha-muted);
+}
+
+/* --------------------------------------------------------- dark · badges */
+
+/*
+ * Cuba's `.badge-light-*` is a translucent wash with the *solid* colour as
+ * its text — fine on white, under 3:1 on #262932. The wash stays; the text
+ * moves to the light end of each hue. These are the status and region chips
+ * on every list and detail screen.
+ */
+body.dark-only .badge-light-primary   { color: #4FCFD2; }
+body.dark-only .badge-light-success   { color: #8FDB89; }
+body.dark-only .badge-light-info      { color: #74C4EC; }
+body.dark-only .badge-light-warning   { color: #F3C36B; }
+body.dark-only .badge-light-danger    { color: #FF9AA2; }
+body.dark-only .badge-light-secondary { color: #B9C4CE; }
+
+/* ---------------------------------------------------- dark · mini-cards */
+
+body.dark-only .mini-stat {
+    background: #262932;
+}
+
+body.dark-only .mini-stat-label {
+    color: var(--prisha-muted);
+}
+
+/* The accents are chosen for contrast against white; each moves to the light
+   end of the same hue so the figure and its bar still read on #262932. */
+body.dark-only .mini-stat-primary   { --mini-accent: #4FCFD2; }
+body.dark-only .mini-stat-success   { --mini-accent: #7FD67A; }
+body.dark-only .mini-stat-info      { --mini-accent: #6CBEE8; }
+body.dark-only .mini-stat-warning   { --mini-accent: #E9B861; }
+body.dark-only .mini-stat-danger    { --mini-accent: #F08A7D; }
+body.dark-only .mini-stat-secondary { --mini-accent: #A9B6C1; }
+
+/* ----------------------------------------------------------- dark · misc */
+
+body.dark-only .empty-state {
+    color: var(--prisha-muted);
+}
+
+body.dark-only .empty-state svg {
+    color: var(--prisha-accent);
+}

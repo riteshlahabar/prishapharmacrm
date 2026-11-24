@@ -40,11 +40,8 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   `DemoSeeder`, three scope fixes; reports: six viewer-clamped reports and
   streamed CSV in a module owning no table) are rotated out — see
   `docs/history/2026-11-phase{8,11}.md`.
-`2026-11-22` Fix: the Reports menu was invisible on any database seeded
-  before Phase 11 — the new permission rows did not exist, and `RoleSeeder`
-  *skipped* an existing non-admin role. It now **tops up** a role with the
-  defaults it lacks (adds, never syncs). Re-run `php artisan db:seed` after
-  any catalogue change.
+`2026-11-22` Fix: `RoleSeeder` tops up an existing non-admin role with the
+  defaults it lacks — see `history/2026-11-fixes.md`.
 `2026-11-23` Phase 12: branding. Prisha artwork replaces the stock Cuba
   logos and favicon; Cuba's purple is repainted teal in `style.css` (402
   values, `ui-theme-patches.md`) and `css/prisha.css` is our layer on top —
@@ -58,11 +55,14 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   launcher icon, and a light brand theme (pale gradients, coloured icons,
   branded bottom bar); no SDK or package version moved. 389 tests green.
 `2026-11-24` Fix: action-column icons. Bare `.btn-link` glyphs laid out
-  inline: Bootstrap underlined each one, the `<form>` buttons sat half a line
-  low, and `.txt-danger` (`!important`) beat the delete colour. Now Cuba's
-  `.product-action` shape — a `.table-actions` flex row of 34px tiles,
-  `.btn-icon-danger` for delete; seven views, `ui-actions.md`, a test. Edited
-  CSS loads via `@assetv` (mtime): the browser was serving its cached copy.
+  inline: underlined, the `<form>` buttons half a line low, `.txt-danger`
+  (`!important`) beating delete. Now Cuba's `.product-action` shape — a
+  `.table-actions` flex row of 34px tiles; `ui-actions.md`, a test. Edited CSS
+  loads via `@assetv` (mtime) or the browser serves its cached copy.
+
+`2026-11-24` Fix: dark mode. `prisha.css` loads after `style.css`, so its
+  light colours beat every `body.dark-only` rule and MR, telecaller and every
+  other list kept a white table — `ui-dark.md`, `DarkModeCssTest`.
 
 ## Next step
 Feature work is done. Before a release: neither Flutter app has run on real
