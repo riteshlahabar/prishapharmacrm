@@ -17,20 +17,14 @@ use Illuminate\Support\Str;
  * format for no gain. The slug is therefore fixed once a type exists — the
  * panel shows it read-only on edit — while the label stays free to change.
  *
- * The defaults are inserted here rather than left to a seeder. A deployment
- * that only ever runs `migrate` would otherwise come up with an empty type
- * master and no client able to be saved; the same trap the Reports
- * permissions fell into.
+ * The table ships **empty**: Doctor, Hospital and Medical Store used to be
+ * inserted here, and came back on every `migrate`, which left no way to run
+ * the panel on types of your own. Add them from the Client Types screen
+ * before the first client is saved — the client form has nothing to offer
+ * until one type exists.
  */
 return new class extends Migration
 {
-    /** Shipped with the product; `locked` keeps them from being deleted. */
-    private const DEFAULTS = [
-        ['slug' => 'doctor', 'label' => 'Doctor', 'colour' => 'primary', 'has_specialization' => true, 'sort_order' => 10],
-        ['slug' => 'hospital', 'label' => 'Hospital', 'colour' => 'info', 'has_specialization' => false, 'sort_order' => 20],
-        ['slug' => 'medical', 'label' => 'Medical Store', 'colour' => 'success', 'has_specialization' => false, 'sort_order' => 30],
-    ];
-
     public function up(): void
     {
         if (! Schema::hasTable('client_types')) {
@@ -51,16 +45,9 @@ return new class extends Migration
 
         $now = now();
 
-        foreach (self::DEFAULTS as $row) {
-            DB::table('client_types')->updateOrInsert(
-                ['slug' => $row['slug']],
-                $row + ['is_active' => true, 'created_at' => $now, 'updated_at' => $now],
-            );
-        }
-
-        // A deployment converted from the old `customers` table can hold
-        // types these three do not cover. Keep every one of them resolvable
-        // rather than leaving those clients with a blank type.
+        // A deployment converted from the old `customers` table already holds
+        // typed clients. Keep every one of those types resolvable rather than
+        // leaving those clients with a blank type.
         if (Schema::hasTable('persons')) {
             $known = DB::table('client_types')->pluck('slug')->all();
 
