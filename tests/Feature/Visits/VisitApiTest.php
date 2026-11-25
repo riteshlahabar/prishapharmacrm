@@ -242,7 +242,11 @@ class VisitApiTest extends TestCase
 
     public function test_an_mr_files_a_visit_with_a_shopfront_photo(): void
     {
-        Carbon::setTestNow('2026-11-24 11:00:00');
+        // Both ends of the `before_or_equal:now` check are pinned in UTC: the
+        // app sends `photo_taken_at` as `toUtc().toIso8601String()`, so a
+        // naive "now" here would read as IST and put the shutter 5h30 in the
+        // future.
+        Carbon::setTestNow('2026-11-24T11:00:00Z');
         Storage::fake('local');
 
         $region = Region::factory()->create();
@@ -262,7 +266,8 @@ class VisitApiTest extends TestCase
 
         $visit = Visit::firstOrFail();
         $this->assertTrue($visit->hasPhoto());
-        $this->assertSame('2026-11-24 10:55:00', $visit->photo_taken_at->toDateTimeString());
+        // The instant the phone reported, not a local rendering of it.
+        $this->assertTrue($visit->photo_taken_at->eq(Carbon::parse('2026-11-24T10:55:00Z')));
         // Private disk, dated folder, and a name of ours — not the phone's.
         $this->assertStringStartsWith('visit-photos/2026/11/', $visit->photo_path);
         Storage::disk('local')->assertExists($visit->photo_path);

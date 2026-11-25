@@ -51,13 +51,15 @@ class ClientTypeService implements ClientTypeServiceInterface
         return $this->types->update($id, $this->attributes($data, creating: false));
     }
 
+    /**
+     * Every type is equal here: the master is the admin's to shape, so the
+     * three the migration ships with are no more protected than one added
+     * yesterday. Being *used* is the only thing that blocks a delete — that
+     * guard is about not orphaning `persons.type`, not about which row it is.
+     */
     public function delete(int|string $id): bool
     {
         $type = $this->find($id);
-
-        if ($type->isBuiltIn()) {
-            throw ClientTypeInUse::builtIn($type->label);
-        }
 
         $used = $this->usageCounts()[$type->slug] ?? 0;
 

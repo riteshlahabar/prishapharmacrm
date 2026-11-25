@@ -25,9 +25,6 @@ class ClientType extends Model
     /** Badge colours offered by the form; each is a Cuba badge suffix. */
     public const COLOURS = ['primary', 'success', 'info', 'warning', 'danger', 'secondary'];
 
-    /** The three the product ships with. They may be edited, not deleted. */
-    public const BUILT_IN = ['doctor', 'hospital', 'medical'];
-
     protected $table = 'client_types';
 
     protected function casts(): array
@@ -42,10 +39,5 @@ class ClientType extends Model
     public function badgeClass(): string
     {
         return 'badge-light-'.$this->colour;
-    }
-
-    public function isBuiltIn(): bool
-    {
-        return in_array($this->slug, self::BUILT_IN, true);
     }
 }

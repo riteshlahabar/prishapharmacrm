@@ -60,12 +60,17 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify the default timezone for your application, which
-    | will be used by the PHP date and date-time functions. The timezone
-    | is set to "UTC" by default as it is suitable for most use cases.
+    | will be used by the PHP date and date-time functions.
+    |
+    | Asia/Kolkata: every user of this CRM — the admin, the reps and the
+    | telecallers — is in India, and the panel reads attendance, visit and
+    | call times as local clock times. Running the app in IST keeps what is
+    | stored and what is displayed the same reading, so there is no
+    | conversion to get wrong.
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Kolkata',
 
     /*
     |--------------------------------------------------------------------------

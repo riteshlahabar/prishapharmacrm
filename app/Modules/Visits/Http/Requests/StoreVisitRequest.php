@@ -4,6 +4,7 @@ namespace App\Modules\Visits\Http\Requests;
 
 use App\Modules\Visits\Enums\VisitPurpose;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
 /**
@@ -78,14 +79,28 @@ class StoreVisitRequest extends FormRequest
             'out_time' => $this->input('out_time') ?: null,
             'latitude' => $this->input('latitude') !== null ? (float) $this->input('latitude') : null,
             'longitude' => $this->input('longitude') !== null ? (float) $this->input('longitude') : null,
-            'location_fetched_at' => $this->input('location_fetched_at') ?: null,
+            'location_fetched_at' => $this->instant('location_fetched_at'),
             // The file itself, not a path: the service hands it to the photo
             // store, which decides where it lands.
             'photo' => $this->file('photo'),
-            'photo_taken_at' => $this->input('photo_taken_at') ?: null,
+            'photo_taken_at' => $this->instant('photo_taken_at'),
             'notes' => $this->filled('notes') ? $this->string('notes')->trim()->value() : null,
             'products' => $this->productLines(),
         ];
+    }
+
+    /**
+     * A device clock the apps send as UTC (`toUtc().toIso8601String()`),
+     * moved into the app timezone before Eloquent writes it. Eloquent
+     * formats a datetime in whatever zone the value carries but reads it
+     * back in the app's, so a `Z` value stored raw would come back 5h30
+     * out — see the IST note in `config/app.php`.
+     */
+    private function instant(string $key): ?Carbon
+    {
+        $value = $this->input($key);
+
+        return $value ? Carbon::parse($value)->setTimezone(config('app.timezone')) : null;
     }
 
     /**

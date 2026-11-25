@@ -74,6 +74,18 @@
 
                         <div class="table-responsive">
                             <table class="table table-hover table-striped align-middle">
+                                {{--
+                                    Five columns, four of them short: left to itself the name
+                                    eats the row and the narrow headings bunch up against each
+                                    other on the right. These shares give each its own room.
+                                --}}
+                                <colgroup>
+                                    <col style="width: 38%">
+                                    <col style="width: 15%">
+                                    <col style="width: 17%">
+                                    <col style="width: 14%">
+                                    <col style="width: 16%">
+                                </colgroup>
                                 <thead>
                                     <tr>
                                         <th>Name</th>

@@ -71,8 +71,8 @@ class ActionColumnTest extends TestCase
         $telecaller = $this->telecaller([$region]);
         $person = Person::factory()->inRegion($region)->assignedToMr($mr)->create();
 
-        // A type of our own: the three built-ins cannot be deleted, so a table
-        // holding only those renders no delete tile at all.
+        // One unused type, so the delete tile has a row to render on: the
+        // three the migration ships are all carried by the client above.
         ClientType::factory()->create();
 
         Visit::factory()->forMr($mr)->forPerson($person)->create();

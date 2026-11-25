@@ -16,7 +16,7 @@ use Tests\TestCase;
  */
 class ClientTypePanelTest extends TestCase
 {
-    public function test_the_three_built_in_types_arrive_with_the_migration(): void
+    public function test_the_three_default_types_arrive_with_the_migration(): void
     {
         $this->assertSame(
             ['doctor', 'hospital', 'medical'],
@@ -98,8 +98,24 @@ class ClientTypePanelTest extends TestCase
         $this->assertDatabaseHas('client_types', ['id' => $type->id]);
     }
 
-    public function test_a_built_in_type_cannot_be_deleted_even_when_unused(): void
+    /**
+     * The migration's own three carry no special status: nothing in the code
+     * names a slug, so an unused `doctor` deletes exactly like `stockist`.
+     */
+    public function test_a_shipped_type_is_deleted_like_any_other_when_unused(): void
     {
+        $doctor = ClientType::where('slug', 'doctor')->firstOrFail();
+
+        $this->actingAs($this->admin())->delete("/client-types/{$doctor->id}")
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('client_types', ['slug' => 'doctor']);
+    }
+
+    public function test_a_shipped_type_in_use_is_still_protected(): void
+    {
+        Person::factory()->ofType('doctor')->create();
+
         $doctor = ClientType::where('slug', 'doctor')->firstOrFail();
 
         $this->actingAs($this->admin())->delete("/client-types/{$doctor->id}")

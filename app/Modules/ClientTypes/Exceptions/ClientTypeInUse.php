@@ -18,9 +18,4 @@ class ClientTypeInUse extends RuntimeException
             .'it then disappears from the client form while existing clients keep their type.'
         );
     }
-
-    public static function builtIn(string $label): self
-    {
-        return new self("{$label} is a built-in type and cannot be deleted. Deactivate it instead.");
-    }
 }

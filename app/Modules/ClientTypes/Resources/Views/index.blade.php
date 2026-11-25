@@ -30,8 +30,8 @@
                             <div>
                                 <h5>Client Types</h5>
                                 <span class="f-light">
-                                    {{ $types->total() }} type(s) — a client is a doctor, a hospital,
-                                    a medical store or anything else you add here
+                                    {{ $types->total() }} type(s) — every kind of client the
+                                    client form offers is a row here, yours to add, edit or retire
                                 </span>
                             </div>
                             @can('client_types.create')
@@ -87,9 +87,6 @@
                                     <tr>
                                         <td>
                                             <span class="badge {{ $type->badgeClass() }}">{{ $type->label }}</span>
-                                            @if($type->isBuiltIn())
-                                                <span class="f-light f-12 ms-1">built-in</span>
-                                            @endif
                                         </td>
                                         <td><code>{{ $type->slug }}</code></td>
                                         <td>{{ $type->has_specialization ? 'Yes' : '—' }}</td>
@@ -114,7 +111,6 @@
                                                 </form>
                                                 @endcan
                                                 @can('client_types.delete')
-                                                @unless($type->isBuiltIn())
                                                 <form class="d-inline" method="POST" action="{{ route('client-types.destroy', $type->id) }}"
                                                       onsubmit="return confirm('Delete {{ $type->label }}?');">
                                                     @csrf @method('DELETE')
@@ -122,7 +118,6 @@
                                                         <i data-feather="trash-2"></i>
                                                     </button>
                                                 </form>
-                                                @endunless
                                                 @endcan
                                             </div>
                                         </td>
