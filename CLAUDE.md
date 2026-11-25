@@ -59,6 +59,10 @@ Phases 0–6 (foundation through the mobile API v1 contract) are rotated out —
   **OpenStreetMap** frame (`Visit::mapEmbedUrl`) beside the photo — no API
   key, no billing. Contract and the cPanel upload-limit note:
   `docs/visit-photos.md`.
+`2026-11-25` Edit Client from an app: `PATCH /api/v1/persons/{id}`, clamped
+  on **ownership** (`updateForApp` — anyone else's client is a 404). My
+  Clients in the MR app grew an edit button and a map button that hands the
+  address to the phone (`url_launcher`). `api/v1-clients{,-lists}.md`.
 
 ## Next step
 Before a release: neither app has run on real hardware (this container has

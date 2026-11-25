@@ -14,6 +14,7 @@ Base `/api/v1` · Bearer token · `ability:role:mr`, so a telecaller token is
 | PATCH | `/visits/{id}` | correct own entry — purpose, times, notes, products |
 | GET | `/visits/{id}/photo` | the shopfront photo itself, token-scoped |
 | GET | `/persons` | persons assigned to this MR (active only) |
+| PATCH | `/persons/{id}` | correct own client — **`v1-clients.md`** |
 | GET | `/products` | the catalogue — **`v1-products.md`** |
 | GET | `/messages` | inbox (`?unread=1`), newest first |
 | GET | `/messages/unread-count` | polled — no Firebase |
@@ -21,7 +22,7 @@ Base `/api/v1` · Bearer token · `ability:role:mr`, so a telecaller token is
 
 ## Attendance
 The device sends coordinates only; the server sets every time. `today`
-answers even on a day with no row, so the buttons never guess:
+answers on a day with no row too, so the buttons never guess:
 `can_check_in`, `can_check_out`, `status`, `worked_minutes`. **409** with
 `errors.reason` = `already_checked_in`, `not_checked_in` or
 `already_checked_out`.
@@ -29,24 +30,23 @@ answers even on a day with no row, so the buttons never guess:
 ## Visits
 `mr_id` comes from the token, never the body. `purpose` is a `VisitPurpose`.
 `out_time` ≥ `in_time`, `visit_date` not future, lat/lng together → **422**.
-`location_fetched_at` (device GPS) sits beside `recorded_at` (server
-receipt), so a late entry shows as one.
+`location_fetched_at` (device GPS) sits beside `recorded_at` (server), so a
+late entry shows as one.
 
 A visit may carry one shopfront photo, which makes the POST multipart and
 the reply report `has_photo` plus a `photo_url` the app fetches **with its
-bearer token** — the file stays on a private disk and that route carries the
-visit's own scope. Null when there is no photo. Contract in
-**`../visit-photos.md`**.
+bearer token** — the file is on a private disk and that route carries the
+visit's scope. Null without a photo. Contract: **`../visit-photos.md`**.
 
 `PATCH /visits/{id}` corrects an entry: `purpose`, `in_time`/`out_time`
 (both or neither), `notes`, `products`. Keys left out are left alone; an
 empty `products` array clears the lines. `person_id`, the coordinates and
-the photo are **not** amendable — the first would rewrite history, the
-other two are the evidence that the rep stood there. Author-only
+the photo are **not** amendable — the first rewrites history, the other two
+are the rep's evidence. Author-only
 (`VisitPolicy::amend`, no admin bypass): anyone else's visit is a **404**.
 
 ## Lists
-History, visits, persons and the inbox page alike, scoped to the token's MR.
+Every list pages, scoped to the token's MR.
 
 ## Messages
 Read-only here: an MR receives, a telecaller sends. `unread-count` is one

@@ -65,7 +65,20 @@ interface PersonServiceInterface
      */
     public function createForApp(User $creator, array $data): Person;
 
-    public function update(int|string $id, array $data): Person;
+/**
+ * Edit Client from the MR or telecaller app: a partial write on a client
+ * the caller is an assignee on. Someone else's client is a
+ * ModelNotFoundException — a 404, never a 403 — and the keys the body
+ * left out are left alone.
+ *
+ * @param  array<string, mixed>  $data
+ *
+ * @throws AppClientNotPermitted when the caller is neither an MR nor a
+ *                               telecaller.
+ */
+public function updateForApp(User $editor, int|string $id, array $data): Person;
+
+public function update(int|string $id, array $data): Person;
 
     public function delete(int|string $id): bool;
 

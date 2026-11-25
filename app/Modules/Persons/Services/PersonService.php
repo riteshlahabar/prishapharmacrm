@@ -154,6 +154,69 @@ class PersonService implements PersonServiceInterface
     }
 
     /**
+     * Edit Client, from the MR or the telecaller app.
+     *
+     * Only a client this caller is an assignee on, and anyone else's is
+     * reported **missing** rather than forbidden — the same rule as
+     * `findForUser` and a visit amendment, so the app cannot be used to
+     * confirm that a client it may not touch exists.
+     *
+     * A partial write, unlike `createForApp`: the keys the body carried are
+     * merged onto the row and nothing else moves. The region in particular
+     * stays where it is, because neither app may change the side it is
+     * derived from — an MR edits the telecaller, a telecaller edits the MR,
+     * and only the panel moves a client between reps.
+     *
+     * @param  array<string, mixed>  $data  Only the fields being changed.
+     */
+    public function updateForApp(User $editor, int|string $id, array $data): Person
+    {
+        $person = $this->editableByApp($editor, $id);
+
+        if ($data === []) {
+            return $person;
+        }
+
+        // A type change re-decides whether the row carries a specialization
+        // at all, so it is settled against the type being saved rather than
+        // the one on the record.
+        if (array_key_exists('type', $data) || array_key_exists('specialization', $data)) {
+            $slug = (string) ($data['type'] ?? $person->type);
+
+            $data['specialization'] = $this->types->findBySlug($slug)?->has_specialization
+                ? ($data['specialization'] ?? $person->specialization)
+                : null;
+        }
+
+        /** @var Person */
+        return $this->persons->update($person->id, $data);
+    }
+
+    /**
+     * The caller's own client, or a 404.
+     *
+     * Ownership, not territory — the same clamp as `paginateAssignedTo`, so
+     * every row My Clients shows is a row its edit button can save, which is
+     * the whole point of a list with a pencil on it.
+     */
+    private function editableByApp(User $editor, int|string $id): Person
+    {
+        $column = match (true) {
+            $editor->isMr() => 'assigned_mr_id',
+            $editor->isTelecaller() => 'assigned_telecaller_id',
+            default => throw AppClientNotPermitted::forRole($editor->role?->value),
+        };
+
+        $person = $this->find($id);
+
+        if ((int) $person->{$column} !== (int) $editor->id) {
+            throw new ModelNotFoundException;
+        }
+
+        return $person;
+    }
+
+    /**
      * Where an MR works, or null if they have no territory yet.
      *
      * A missing region is left as null rather than guessed: the client still

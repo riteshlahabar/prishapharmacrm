@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Modules\Calls\Http\Resources\CallLogResource;
 use App\Modules\Calls\Services\Contracts\CallLogServiceInterface;
 use App\Modules\Persons\Http\Requests\StoreAppPersonRequest;
+use App\Modules\Persons\Http\Requests\UpdateAppPersonRequest;
 use App\Modules\Persons\Http\Resources\PersonResource;
 use App\Modules\Persons\Services\Contracts\PersonServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -94,6 +95,26 @@ class PersonController extends Controller
             new PersonResource($person->load(['clientType', 'region', 'assignedMr', 'assignedTelecaller'])),
             'Client added.',
             201,
+        );
+    }
+
+    /**
+     * Edit Client. A client the caller is an assignee on — the rows My
+     * Clients shows — and anyone else's is a **404**, the same way an
+     * amendment to another rep's visit is.
+     *
+     * A PATCH: the app sends what the rep changed. What the body may not
+     * carry is what it may not carry on `store()`, plus the caller's own
+     * assignment, which would move the client off the list it was edited
+     * from (`UpdateAppPersonRequest`).
+     */
+    public function update(UpdateAppPersonRequest $request, int|string $person): JsonResponse
+    {
+        $updated = $this->persons->updateForApp($request->user(), $person, $request->payload());
+
+        return ApiResponse::success(
+            new PersonResource($updated->load(['clientType', 'region', 'assignedMr', 'assignedTelecaller'])),
+            'Client updated.',
         );
     }
 }

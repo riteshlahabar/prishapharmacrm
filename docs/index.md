@@ -37,7 +37,7 @@
 | Patches to Cuba | `ui-theme-patches.md` |
 | Envelope, errors, paging | `api/v1-common.md` |
 | App login, endpoints | `api/v1-auth.md` · `api/v1-{mr,telecaller}.md` |
-| Clients · products from an app | `api/v1-{clients,products}.md` |
+| Clients · products from an app | `api/v1-{clients,products}*.md` |
 | Permission names | `modules/access.md` |
 | Base classes | `app/Core/` |
 | 403 vs 404, policies | `authorization.md` |
