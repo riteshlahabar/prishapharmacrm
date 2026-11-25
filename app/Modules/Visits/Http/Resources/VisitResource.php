@@ -29,11 +29,16 @@ class VisitResource extends JsonResource
             'latitude' => $v->latitude,
             'longitude' => $v->longitude,
             'location_fetched_at' => $v->location_fetched_at?->toIso8601String(),
-            // The photo is *reported*, not linked: the file lives on a
-            // private disk and is served to the panel behind the visit
-            // policy, so there is no URL an app could fetch. The app only
-            // needs to know its upload arrived.
             'has_photo' => $v->hasPhoto(),
+            // Where to fetch it, not the bytes: a list of twenty visits must
+            // not carry twenty photos nobody has opened yet. The file stays
+            // on the private disk — this URL is the token-authenticated
+            // `api.v1.visits.photo` route, inheriting the visit's own scope,
+            // so it is worth nothing to anyone without a bearer. Null when
+            // there is no photo, so a client never requests a certain 404.
+            'photo_url' => $v->hasPhoto()
+                ? route('api.v1.visits.photo', $v->id)
+                : null,
             'photo_taken_at' => $v->photo_taken_at?->toIso8601String(),
             'notes' => $v->notes,
             // When the server received it, so a late entry is visible as one.
@@ -52,6 +57,10 @@ class VisitResource extends JsonResource
                 'id' => $v->person->id,
                 'name' => $v->person->name,
                 'type' => $v->person->type,
+                // The master's own wording, as `PersonResource` and the panel
+                // both give it — so a kind renamed in the panel reads the
+                // same on a visit as it does on the client.
+                'type_label' => $v->person->typeLabel(),
                 'mobile' => $v->person->mobile,
                 'city' => $v->person->city,
             ]),

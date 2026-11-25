@@ -356,6 +356,227 @@ class VisitApiTest extends TestCase
         $this->assertTrue($visit->hasLocation());
     }
 
+    public function test_an_mr_corrects_a_visit_they_filed(): void
+    {
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+        $product = Product::factory()->create(['cost' => '120.50']);
+        $visit = Visit::factory()->for($mr, 'mr')->for($person, 'person')->create([
+            'purpose' => VisitPurpose::Courtesy,
+            'in_time' => '10:30',
+            'out_time' => '10:45',
+            'notes' => 'Quick hello.',
+        ]);
+
+        $this->actingAsApp($mr)->patchJson('/api/v1/visits/'.$visit->id, [
+            'purpose' => 'product_detailing',
+            'in_time' => '10:30',
+            'out_time' => '11:15',
+            'notes' => 'Actually detailed the cardio range.',
+            'products' => [['product_id' => $product->id, 'box_qty' => 3]],
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.purpose', 'product_detailing')
+            ->assertJsonPath('data.duration_minutes', 45)
+            ->assertJsonPath('data.products.0.box_qty', 3);
+
+        $this->assertSame('Actually detailed the cardio range.', $visit->fresh()->notes);
+    }
+
+    /** A PATCH that mentions one field leaves the others as they were filed. */
+    public function test_an_amendment_only_touches_what_it_sends(): void
+    {
+        $mr = $this->mr();
+        $product = Product::factory()->create();
+        $visit = Visit::factory()->for($mr, 'mr')->create(['notes' => 'Left alone.']);
+        $visit->products()->create([
+            'product_id' => $product->id,
+            'box_qty' => 2,
+            'unit_cost' => '100.00',
+        ]);
+
+        $this->actingAsApp($mr)->patchJson('/api/v1/visits/'.$visit->id, [
+            'purpose' => 'payment_follow_up',
+        ])->assertOk();
+
+        $visit->refresh();
+        $this->assertSame('Left alone.', $visit->notes);
+        $this->assertSame(1, $visit->products()->count());
+    }
+
+    /** Present and empty means "the rep removed them all". */
+    public function test_an_empty_product_list_clears_the_lines(): void
+    {
+        $mr = $this->mr();
+        $product = Product::factory()->create();
+        $visit = Visit::factory()->for($mr, 'mr')->create();
+        $visit->products()->create([
+            'product_id' => $product->id,
+            'box_qty' => 2,
+            'unit_cost' => '100.00',
+        ]);
+
+        $this->actingAsApp($mr)->patchJson('/api/v1/visits/'.$visit->id, [
+            'products' => [],
+        ])->assertOk();
+
+        $this->assertSame(0, $visit->products()->count());
+    }
+
+    /**
+     * Another rep's visit is reported missing, not forbidden — confirming the
+     * row exists would already leak that somebody called on that person.
+     */
+    public function test_an_mr_cannot_amend_another_reps_visit(): void
+    {
+        $region = Region::factory()->create();
+        $mine = $this->mr($region);
+        $theirs = $this->mr($region);
+        $person = Person::factory()->inRegion($region)->create();
+        $visit = Visit::factory()->for($theirs, 'mr')->for($person, 'person')->create([
+            'notes' => 'Not yours.',
+        ]);
+
+        // Same territory, so `view` would allow it: amending is authorship.
+        $this->actingAsApp($mine)->patchJson('/api/v1/visits/'.$visit->id, [
+            'notes' => 'Rewritten.',
+        ])->assertStatus(404);
+
+        $this->assertSame('Not yours.', $visit->fresh()->notes);
+    }
+
+    public function test_an_amendment_cannot_put_the_out_time_before_the_in_time(): void
+    {
+        $mr = $this->mr();
+        $visit = Visit::factory()->for($mr, 'mr')->create();
+
+        $this->actingAsApp($mr)->patchJson('/api/v1/visits/'.$visit->id, [
+            'in_time' => '11:00',
+            'out_time' => '10:00',
+        ])
+            ->assertStatus(422)
+            ->assertJsonStructure(['errors' => ['out_time']]);
+    }
+
+    /**
+     * The person, the coordinates and the photo are what the visit *is* and
+     * what proves the rep stood there — the request does not take them, so a
+     * payload carrying them changes nothing.
+     */
+    public function test_an_amendment_cannot_re_point_or_re_place_the_visit(): void
+    {
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+        $elsewhere = Person::factory()->create();
+        $visit = Visit::factory()->for($mr, 'mr')->for($person, 'person')->create([
+            'latitude' => '19.0760000',
+            'longitude' => '72.8777000',
+        ]);
+
+        $this->actingAsApp($mr)->patchJson('/api/v1/visits/'.$visit->id, [
+            'person_id' => $elsewhere->id,
+            'latitude' => 28.6139,
+            'longitude' => 77.2090,
+            'notes' => 'Only this lands.',
+        ])->assertOk();
+
+        $visit->refresh();
+        $this->assertSame($person->id, $visit->person_id);
+        $this->assertSame('19.0760000', $visit->latitude);
+        $this->assertSame('Only this lands.', $visit->notes);
+    }
+
+    public function test_a_telecaller_token_cannot_amend_a_visit(): void
+    {
+        $mr = $this->mr();
+        $visit = Visit::factory()->for($mr, 'mr')->create();
+        $token = $this->appTokenFor($this->telecaller());
+
+        $this->actingAsApp($token)
+            ->patchJson('/api/v1/visits/'.$visit->id, ['notes' => 'Nope.'])
+            ->assertStatus(403);
+    }
+
+    public function test_the_app_fetches_a_visits_photo_with_its_token(): void
+    {
+        Storage::fake('local');
+        $region = Region::factory()->create();
+        $mr = $this->mr($region);
+        $person = Person::factory()->inRegion($region)->create();
+
+        $filed = $this->actingAsApp($mr)->post('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'product_detailing',
+            'photo' => UploadedFile::fake()->image('shopfront.jpg'),
+        ], ['Accept' => 'application/json'])->assertStatus(201);
+
+        $url = $filed->json('data.photo_url');
+        $this->assertStringEndsWith('/api/v1/visits/'.Visit::firstOrFail()->id.'/photo', $url);
+
+        $this->actingAsApp($mr)->get($url)
+            ->assertOk()
+            ->assertHeader('content-type', 'image/jpeg');
+    }
+
+    /** No photo, no URL — a client should never request a certain 404. */
+    public function test_a_visit_without_a_photo_carries_no_photo_url(): void
+    {
+        $mr = $this->mr();
+        $person = Person::factory()->create();
+
+        $this->actingAsApp($mr)->postJson('/api/v1/visits', [
+            'person_id' => $person->id,
+            'purpose' => 'courtesy',
+        ])
+            ->assertStatus(201)
+            ->assertJsonPath('data.has_photo', false)
+            ->assertJsonPath('data.photo_url', null);
+    }
+
+    /**
+     * The photo inherits the visit's scope exactly: out of territory is the
+     * same 404 the visit itself would give, not a 403 confirming it exists.
+     */
+    public function test_a_photo_outside_the_callers_territory_is_a_404(): void
+    {
+        Storage::fake('local');
+        $mine = $this->mr(Region::factory()->create());
+        $elsewhere = Region::factory()->create();
+        $theirs = $this->mr($elsewhere);
+
+        $visit = Visit::factory()
+            ->for($theirs, 'mr')
+            ->for(Person::factory()->inRegion($elsewhere), 'person')
+            ->create(['photo_path' => 'visit-photos/2026/11/whatever.jpg']);
+
+        $this->actingAsApp($mine)
+            ->getJson('/api/v1/visits/'.$visit->id.'/photo')
+            ->assertStatus(404);
+    }
+
+    /** A row pointing at bytes that are gone is a 404, not a broken stream. */
+    public function test_a_missing_file_is_a_404_rather_than_half_an_image(): void
+    {
+        Storage::fake('local');
+        $mr = $this->mr();
+        $visit = Visit::factory()->for($mr, 'mr')->create([
+            'photo_path' => 'visit-photos/2026/11/gone.jpg',
+        ]);
+
+        $this->actingAsApp($mr)
+            ->getJson('/api/v1/visits/'.$visit->id.'/photo')
+            ->assertStatus(404);
+    }
+
+    public function test_a_photo_cannot_be_fetched_without_a_token(): void
+    {
+        $visit = Visit::factory()->create(['photo_path' => 'visit-photos/2026/11/x.jpg']);
+
+        $this->asGuestApp()
+            ->getJson('/api/v1/visits/'.$visit->id.'/photo')
+            ->assertStatus(401);
+    }
+
     public function test_an_unfinished_visit_reports_no_duration_rather_than_guessing(): void
     {
         $visit = Visit::factory()->unfinished()->create();

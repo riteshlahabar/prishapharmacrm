@@ -11,14 +11,15 @@ Shared by both apps. Envelope, errors, paging: **`v1-common.md`**.
 | GET | `/assignees/telecallers` | mr | which telecaller to assign to |
 
 ## POST /persons
-Whoever adds a client is one of its two assignees and names the other, so
-such a client always has both and shows in both My Clients.
+Whoever adds a client is one of its two assignees and may name the other.
+The counterpart is optional: left out, the client is owned by the caller
+alone until an admin assigns the other side from the panel.
 
 Body: `name`, `type` (an active `client_types.slug`), `mobile` (unique),
 optionally `email`, `city`, `address`, `specialization` — plus **the
-counterpart, required**: `assigned_mr_id` from the telecaller app,
-`assigned_telecaller_id` from the MR app, which must hold that role and be
-active, else **422**.
+counterpart, optional**: `assigned_mr_id` from the telecaller app,
+`assigned_telecaller_id` from the MR app. Omit it to leave that side
+unassigned; send it and it must hold that role and be active, else **422**.
 
 Four things the body may not carry, each `prohibited` so sending one is a
 422 naming the field:

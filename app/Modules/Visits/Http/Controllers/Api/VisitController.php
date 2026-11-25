@@ -6,16 +6,18 @@ use App\Core\Http\ApiResponse;
 use App\Core\Http\PerPage;
 use App\Http\Controllers\Controller;
 use App\Modules\Visits\Http\Requests\StoreVisitRequest;
+use App\Modules\Visits\Http\Requests\UpdateVisitRequest;
 use App\Modules\Visits\Http\Resources\VisitResource;
 use App\Modules\Visits\Services\Contracts\VisitServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * `/api/v1/visits` — the MR app files a visit and reads its own history.
+ * `/api/v1/visits` — the MR app files a visit, reads its own history, and
+ * corrects an entry it got wrong.
  *
- * Both methods are scoped to the authenticated MR, so there is no way to
- * file against, or read, another rep's work.
+ * Every method is scoped to the authenticated MR, so there is no way to file
+ * against, read, or amend another rep's work.
  */
 class VisitController extends Controller
 {
@@ -47,5 +49,18 @@ class VisitController extends Controller
             $page->through(fn ($visit) => (new VisitResource($visit))->resolve()),
             'Visits loaded.',
         );
+    }
+
+    /**
+     * Corrects a visit this rep filed: the purpose, the clocks, the notes and
+     * the product lines. The person, the coordinates and the photo are not
+     * amendable — `UpdateVisitRequest` says why. Somebody else's visit is a
+     * **404**, never a 403.
+     */
+    public function update(UpdateVisitRequest $request, int|string $visit): JsonResponse
+    {
+        $amended = $this->visits->updateFor($request->user(), $visit, $request->payload());
+
+        return ApiResponse::success(new VisitResource($amended), 'Visit updated.');
     }
 }

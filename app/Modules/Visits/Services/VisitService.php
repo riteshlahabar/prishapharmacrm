@@ -74,6 +74,63 @@ class VisitService implements VisitServiceInterface
     }
 
     /**
+     * Amends a visit the rep filed themselves. Only the keys present in
+     * [$data] are written, so a PATCH that moves the clocks alone leaves the
+     * notes and the product lines as they were.
+     *
+     * The person, the coordinates and the photo are not touched here: those
+     * are what the visit *is*, and what proves the rep was standing there.
+     * See UpdateVisitRequest for the reasoning.
+     */
+    public function updateFor(User $mr, int|string $id, array $data): Visit
+    {
+        $visit = $this->amendableBy($mr, $id);
+
+        $attributes = [];
+
+        if (array_key_exists('purpose', $data)) {
+            $attributes['purpose'] = $data['purpose'] instanceof VisitPurpose
+                ? $data['purpose']
+                : VisitPurpose::from((string) $data['purpose']);
+        }
+
+        foreach (['in_time', 'out_time', 'notes'] as $key) {
+            if (array_key_exists($key, $data)) {
+                $attributes[$key] = $data[$key];
+            }
+        }
+
+        /** @var Visit $updated */
+        $updated = $attributes === []
+            ? $visit
+            : $this->visits->update($visit->id, $attributes);
+
+        // Only when the amendment mentions them: a PATCH that changes the
+        // purpose alone must not wipe the lines the visit was filed with.
+        if (array_key_exists('products', $data)) {
+            $this->syncProducts($updated, $data['products'] ?? []);
+        }
+
+        return $updated->load(['person', 'products.product']);
+    }
+
+    /**
+     * The rep's own visit, or a 404. Reported as missing rather than
+     * forbidden for the same reason as `findForUser`: the app is told only
+     * that there is nothing here for it to edit.
+     */
+    private function amendableBy(User $mr, int|string $id): Visit
+    {
+        $visit = $this->find($id);
+
+        if (! Gate::forUser($mr)->allows('amend', $visit)) {
+            throw new ModelNotFoundException;
+        }
+
+        return $visit;
+    }
+
+    /**
      * Replace the visit's product lines with what was posted. Called with an
      * empty list it clears them, which is what an app sends when the rep
      * removes every row.

@@ -20,8 +20,10 @@ use Illuminate\Validation\Rule;
  * Each is `prohibited` rather than ignored, so a client sending one gets a
  * 422 naming the field instead of silently having it dropped.
  *
- * The counterpart assignment is **required**: every client added from an app
- * has both an MR and a telecaller from the moment it exists.
+ * The counterpart assignment is **optional**: a rep who does not know which
+ * telecaller (or telecaller who does not know which rep) should own the
+ * client leaves it unassigned, and an admin fills it in from the panel. Only
+ * the caller's own side is certain from the moment the client exists.
  */
 class StoreAppPersonRequest extends FormRequest
 {
@@ -61,19 +63,21 @@ class StoreAppPersonRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:120'],
             'specialization' => ['nullable', 'string', 'max:150'],
 
-            // The counterpart: required for the app that must name one,
-            // refused outright for the app whose own id it is.
+            // The counterpart: optional for the app that may name one, and
+            // refused outright for the app whose own id it is. Optional, not
+            // absent — an id that *is* sent still has to be an active user in
+            // that role.
             'assigned_mr_id' => $isMr
                 ? ['prohibited']
                 : [
-                    'required', 'integer',
+                    'nullable', 'integer',
                     Rule::exists('users', 'id')
                         ->where('role', UserRole::Mr->value)
                         ->where('is_active', true),
                 ],
             'assigned_telecaller_id' => $isMr
                 ? [
-                    'required', 'integer',
+                    'nullable', 'integer',
                     Rule::exists('users', 'id')
                         ->where('role', UserRole::Telecaller->value)
                         ->where('is_active', true),
@@ -91,10 +95,8 @@ class StoreAppPersonRequest extends FormRequest
             'mobile.regex' => 'The mobile number may contain digits, spaces, + and - only.',
             'mobile.unique' => 'A client with this mobile number already exists.',
             'type.exists' => 'Choose a client type from the list.',
-            'assigned_mr_id.required' => 'Choose the medical rep this client belongs to.',
             'assigned_mr_id.exists' => 'The selected medical rep is not an active medical rep.',
             'assigned_mr_id.prohibited' => 'You are the medical rep on a client you add.',
-            'assigned_telecaller_id.required' => 'Choose the telecaller this client belongs to.',
             'assigned_telecaller_id.exists' => 'The selected telecaller is not an active telecaller.',
             'assigned_telecaller_id.prohibited' => 'You are the telecaller on a client you add.',
             'region_id.prohibited' => 'The region is set from the assigned rep, not from the app.',

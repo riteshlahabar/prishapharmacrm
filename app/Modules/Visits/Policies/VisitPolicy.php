@@ -57,6 +57,23 @@ class VisitPolicy
             && ($user->isAdmin() || $this->covers($user, $visit));
     }
 
+    /**
+     * Correcting an entry from the app that filed it. Authorship, not
+     * territory and not a panel permission: the rep fixes a purpose they
+     * picked wrong or a clock they guessed, and a second MR on the same
+     * patch — who may *read* the visit — does not get to rewrite it.
+     *
+     * No admin bypass, as on `CallLogPolicy::update`: the panel reads a
+     * visit for reporting and deletes a mistaken one, but does not edit
+     * what a rep reported.
+     */
+    public function amend(User $user, Visit $visit): bool
+    {
+        return $user->canSignIn()
+            && $user->isMr()
+            && (int) $visit->mr_id === (int) $user->id;
+    }
+
     public function delete(User $user, Visit $visit): bool
     {
         return $user->canSignIn()

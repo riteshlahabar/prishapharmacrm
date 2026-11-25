@@ -15,6 +15,14 @@ interface VisitServiceInterface
     /** Record a visit for this MR. The MR is the caller, never the payload. */
     public function createFor(User $mr, array $data): Visit;
 
+    /**
+     * Amend a visit the rep filed themselves — purpose, clocks, notes and
+     * product lines. Only the keys present in `$data` are written. Anyone
+     * but the author gets a 404, and the person, coordinates and photo are
+     * never amendable (see UpdateVisitRequest).
+     */
+    public function updateFor(User $mr, int|string $id, array $data): Visit;
+
     public function find(int|string $id): Visit;
 
     /**
