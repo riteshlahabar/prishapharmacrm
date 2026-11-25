@@ -69,7 +69,7 @@
                                         </td>
                                     </tr>
                                     <tr><th>Active app tokens</th><td>{{ $user->tokens()->count() }}</td></tr>
-                                    <tr><th>Created</th><td>{{ $user->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
+                                    <tr><th>Created</th><td>{{ $user->created_at?->format('d M Y, g:i A') ?? '—' }}</td></tr>
                                 </tbody>
                             </table>
                         </div>

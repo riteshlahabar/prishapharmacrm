@@ -144,7 +144,7 @@
                                 <tbody>
                                     @forelse($calls as $call)
                                     <tr>
-                                        <td>{{ $call->called_at?->format('d M Y, H:i') }}</td>
+                                        <td>{{ $call->called_at?->format('d M Y, g:i A') }}</td>
                                         <td>
                                             <a class="fw-bold" href="{{ route('calls.show', $call->id) }}">
                                                 {{ $call->person?->name ?? '—' }}
@@ -159,7 +159,7 @@
                                         </td>
                                         <td>
                                             @if($call->isFollowUpDue())
-                                                <span class="badge badge-light-warning">Due {{ $call->follow_up_at->format('d M, H:i') }}</span>
+                                                <span class="badge badge-light-warning">Due {{ $call->follow_up_at->format('d M, g:i A') }}</span>
                                             @else
                                                 <span class="f-light">{{ $call->followUpLabel() }}</span>
                                             @endif

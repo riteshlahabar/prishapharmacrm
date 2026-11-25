@@ -111,7 +111,7 @@
                                 <tbody>
                                     @forelse($messages as $message)
                                     <tr>
-                                        <td>{{ $message->created_at?->format('d M Y, H:i') }}</td>
+                                        <td>{{ $message->created_at?->format('d M Y, g:i A') }}</td>
                                         <td>
                                             <a class="fw-bold" href="{{ route('messages.show', $message->id) }}">
                                                 {{ Str::limit($message->subject, 40) }}

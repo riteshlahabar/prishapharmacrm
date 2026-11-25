@@ -68,6 +68,6 @@ class Message extends Model
     {
         return $this->read_at === null
             ? 'Unread'
-            : 'Read '.$this->read_at->format('d M Y, H:i');
+            : 'Read '.$this->read_at->format('d M Y, g:i A');
     }
 }

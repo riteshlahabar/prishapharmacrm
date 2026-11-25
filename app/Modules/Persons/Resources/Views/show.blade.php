@@ -67,7 +67,7 @@
                                     </tr>
                                     <tr><th>Medical rep</th><td>{{ $person->assignedMr?->name ?? 'Unassigned' }}</td></tr>
                                     <tr><th>Telecaller</th><td>{{ $person->assignedTelecaller?->name ?? 'Unassigned' }}</td></tr>
-                                    <tr><th>Added</th><td>{{ $person->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
+                                    <tr><th>Added</th><td>{{ $person->created_at?->format('d M Y, g:i A') ?? '—' }}</td></tr>
                                 </tbody>
                             </table>
                         </div>

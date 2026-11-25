@@ -63,7 +63,7 @@
                                     <tr><th>Region</th><td>{{ $call->person?->region?->label() ?? '—' }}</td></tr>
                                     <tr>
                                         <th>Called at</th>
-                                        <td>{{ $call->called_at?->format('d M Y, H:i') ?? '—' }}
+                                        <td>{{ $call->called_at?->format('d M Y, g:i A') ?? '—' }}
                                             <span class="f-light">(server time)</span>
                                         </td>
                                     </tr>
@@ -73,15 +73,15 @@
                                             @if($call->follow_up_at === null)
                                                 None promised
                                             @elseif($call->follow_up_done_at !== null)
-                                                {{ $call->follow_up_at->format('d M Y, H:i') }}
+                                                {{ $call->follow_up_at->format('d M Y, g:i A') }}
                                                 <span class="badge badge-light-success ms-1">
-                                                    closed {{ $call->follow_up_done_at->format('d M, H:i') }}
+                                                    closed {{ $call->follow_up_done_at->format('d M, g:i A') }}
                                                 </span>
                                             @elseif($call->isFollowUpDue())
-                                                {{ $call->follow_up_at->format('d M Y, H:i') }}
+                                                {{ $call->follow_up_at->format('d M Y, g:i A') }}
                                                 <span class="badge badge-light-warning ms-1">due now</span>
                                             @else
-                                                {{ $call->follow_up_at->format('d M Y, H:i') }}
+                                                {{ $call->follow_up_at->format('d M Y, g:i A') }}
                                                 <span class="badge badge-light-secondary ms-1">scheduled</span>
                                             @endif
                                         </td>

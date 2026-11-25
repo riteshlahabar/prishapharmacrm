@@ -3,6 +3,7 @@
 namespace App\Modules\Calls\Http\Requests;
 
 use App\Modules\Calls\Enums\CallStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -59,7 +60,7 @@ class UpdateCallLogRequest extends FormRequest
         }
 
         if ($this->has('follow_up_at')) {
-            $data['follow_up_at'] = $this->input('follow_up_at') ?: null;
+            $data['follow_up_at'] = $this->followUpAt();
         }
 
         // Absent means "leave the lines alone"; present and empty means
@@ -69,6 +70,18 @@ class UpdateCallLogRequest extends FormRequest
         }
 
         return $data;
+    }
+
+    /**
+     * The moved call-back, in the app timezone. Same reasoning as
+     * `StoreCallLogRequest::followUpAt()`: the app sends an instant carrying
+     * its offset, and Eloquent would store a `Z` value 5h30 out.
+     */
+    private function followUpAt(): ?Carbon
+    {
+        $value = $this->input('follow_up_at');
+
+        return $value ? Carbon::parse($value)->setTimezone(config('app.timezone')) : null;
     }
 
     /**

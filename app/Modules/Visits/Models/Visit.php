@@ -132,7 +132,8 @@ class Visit extends Model
 
     /**
      * MySQL hands a TIME column back as "10:30:00". The seconds are noise on a
-     * report — the app only ever sends H:i.
+     * report — the app only ever sends H:i. The panel is on a 12-hour clock
+     * throughout, so "10:30:00" reads as "10:30 AM".
      */
     public function inTimeLabel(): string
     {
@@ -146,7 +147,9 @@ class Visit extends Model
 
     private function clockLabel(?string $time): string
     {
-        return $time === null ? '—' : substr($time, 0, 5);
+        return $time === null
+            ? '—'
+            : date('g:i A', strtotime(substr($time, 0, 5)));
     }
 
     public function purposeLabel(): string

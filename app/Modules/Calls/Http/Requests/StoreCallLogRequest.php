@@ -4,6 +4,7 @@ namespace App\Modules\Calls\Http\Requests;
 
 use App\Modules\Calls\Enums\CallStatus;
 use App\Modules\Regions\Services\Contracts\RegionAssignmentServiceInterface;
+use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -92,9 +93,24 @@ class StoreCallLogRequest extends FormRequest
             'person_id' => (int) $this->input('person_id'),
             'status' => $this->string('status')->value(),
             'notes' => $this->filled('notes') ? $this->string('notes')->trim()->value() : null,
-            'follow_up_at' => $this->input('follow_up_at') ?: null,
+            'follow_up_at' => $this->followUpAt(),
             'products' => $this->productLines(),
         ];
+    }
+
+    /**
+     * The promised call-back, moved into the app timezone before Eloquent
+     * writes it. The app sends an instant with its offset (`toUtc()`);
+     * Eloquent formats a datetime in whatever zone the value carries but
+     * reads it back in the app's, so a `Z` value stored raw would come back
+     * 5h30 out — see the IST note in `config/app.php` and the same shift in
+     * `StoreVisitRequest::instant()`.
+     */
+    private function followUpAt(): ?Carbon
+    {
+        $value = $this->input('follow_up_at');
+
+        return $value ? Carbon::parse($value)->setTimezone(config('app.timezone')) : null;
     }
 
     /**

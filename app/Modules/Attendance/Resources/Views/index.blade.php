@@ -111,13 +111,13 @@
                                             @endif
                                         </td>
                                         <td>
-                                            {{ $row->check_in_at?->format('H:i') ?? '—' }}
+                                            {{ $row->check_in_at?->format('g:i A') ?? '—' }}
                                             @include('attendance::partials.map-link', [
                                                 'lat' => $row->check_in_lat, 'lng' => $row->check_in_lng,
                                             ])
                                         </td>
                                         <td>
-                                            {{ $row->check_out_at?->format('H:i') ?? '—' }}
+                                            {{ $row->check_out_at?->format('g:i A') ?? '—' }}
                                             @include('attendance::partials.map-link', [
                                                 'lat' => $row->check_out_lat, 'lng' => $row->check_out_lng,
                                             ])

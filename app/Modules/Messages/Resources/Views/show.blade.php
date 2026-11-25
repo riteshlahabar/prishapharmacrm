@@ -51,7 +51,7 @@
                                 <tbody>
                                     <tr><th class="w-25">From</th><td>{{ $message->sender?->name ?? '—' }}</td></tr>
                                     <tr><th>To</th><td>{{ $message->recipient?->name ?? '—' }}</td></tr>
-                                    <tr><th>Sent</th><td>{{ $message->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
+                                    <tr><th>Sent</th><td>{{ $message->created_at?->format('d M Y, g:i A') ?? '—' }}</td></tr>
                                     <tr>
                                         <th>About</th>
                                         <td>

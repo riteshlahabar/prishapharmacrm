@@ -82,7 +82,7 @@
                                     </tr>
                                     <tr>
                                         <th>Location read at</th>
-                                        <td>{{ $visit->location_fetched_at?->format('d M Y, H:i') ?? '—' }}</td>
+                                        <td>{{ $visit->location_fetched_at?->format('d M Y, g:i A') ?? '—' }}</td>
                                     </tr>
                                     <tr>
                                         <th>Photo</th>
@@ -90,7 +90,7 @@
                                             @if($visit->hasPhoto())
                                                 <span class="badge badge-light-success">Captured</span>
                                                 <span class="f-light ms-1">
-                                                    {{ $visit->photo_taken_at?->format('d M Y, H:i') ?? 'time not sent' }}
+                                                    {{ $visit->photo_taken_at?->format('d M Y, g:i A') ?? 'time not sent' }}
                                                 </span>
                                             @else
                                                 Not captured
@@ -99,7 +99,7 @@
                                     </tr>
                                     <tr>
                                         <th>Received by server</th>
-                                        <td>{{ $visit->created_at?->format('d M Y, H:i') ?? '—' }}</td>
+                                        <td>{{ $visit->created_at?->format('d M Y, g:i A') ?? '—' }}</td>
                                     </tr>
                                     <tr><th>Notes</th><td>{{ $visit->notes ?? '—' }}</td></tr>
                                 </tbody>

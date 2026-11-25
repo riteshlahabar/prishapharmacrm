@@ -82,7 +82,7 @@ class CallLog extends Model
             return '—';
         }
 
-        return $this->follow_up_at->format('d M Y, H:i')
+        return $this->follow_up_at->format('d M Y, g:i A')
             .($this->follow_up_done_at !== null ? ' (done)' : '');
     }
 }

@@ -55,7 +55,7 @@
                                     <tr><th>Medical reps in this territory</th><td>{{ $usage['mrs'] ?? 0 }}</td></tr>
                                     <tr><th>Telecallers covering it</th><td>{{ $usage['telecallers'] ?? 0 }}</td></tr>
                                     <tr><th>Clients</th><td>{{ $usage['persons'] ?? 0 }}</td></tr>
-                                    <tr><th>Created</th><td>{{ $region->created_at?->format('d M Y, H:i') ?? '—' }}</td></tr>
+                                    <tr><th>Created</th><td>{{ $region->created_at?->format('d M Y, g:i A') ?? '—' }}</td></tr>
                                 </tbody>
                             </table>
                         </div>
